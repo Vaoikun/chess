@@ -10,7 +10,13 @@ import java.util.Collection;
  */
 public class ChessPiece {
 
+    private ChessGame.TeamColor pieceColor;
+
+    private PieceType type;
+
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+        this.pieceColor = pieceColor;
+        this.type = type;
     }
 
     /**
@@ -37,6 +43,14 @@ public class ChessPiece {
      */
     public PieceType getPieceType() {
         return this.type
+    }
+
+    @java.lang.Override
+    public java.lang.String toString() {
+        return "ChessPiece{" +
+                "pieceColor=" + pieceColor +
+                ", type=" + type +
+                '}';
     }
 
     /**
