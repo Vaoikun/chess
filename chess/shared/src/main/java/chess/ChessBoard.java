@@ -8,7 +8,7 @@ package chess;
  */
 public class ChessBoard {
 
-    private ChessPiece[][] checks = new ChessPiece[8][8]
+    private ChessPiece[][] checks = new ChessPiece[8][8];
 
     public ChessBoard() {
     }
