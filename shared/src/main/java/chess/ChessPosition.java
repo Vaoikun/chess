@@ -31,7 +31,7 @@ public class ChessPosition {
      * 1 codes for the left row
      */
     public int getColumn() {
-        return this.column;
+       return this.column;
     }
 
     @Override
