@@ -63,101 +63,81 @@ public class ChessGame {
 
         if (observedPiece.getPieceType() == null) {
             return null;
-        }else if (observedPiece.getPieceType() == ChessPiece.PieceType.KING){
+        } else if (observedPiece.getPieceType() == ChessPiece.PieceType.KING) {
             for (ChessMove move : legalMoves) {
-
+                if move.getEndPosition()
             }
             return newLegalMoves;
 
-        return legalMoves;
-    }
-
-    /**
-     * Makes a move in a chess game
-     *
-     * @param move chess move to preform
-     * @throws InvalidMoveException if move is invalid
-     */
-    public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
-    }
-
-    /**
-     * Determines if the given team is in check
-     *
-     * @param teamColor which team to check for check
-     * @return True if the specified team is in check
-     */
-    public boolean isInCheck(TeamColor teamColor) {
-        ChessGame.TeamColor oppositeTeamColor = TeamColor teamColor;
+            return legalMoves;
         }
-        for (ChessPiece checker : this.board.)
-    }
+
+        /**
+         * Makes a move in a chess game
+         *
+         * @param move chess move to preform
+         * @throws InvalidMoveException if move is invalid
+         */
+        public void makeMove (ChessMove move) throws InvalidMoveException {
+            throw new RuntimeException("Not implemented");
+        }
+
+        /**
+         * Determines if the given team is in check
+         *
+         * @param teamColor which team to check for check
+         * @return True if the specified team is in check
+         */
+        public boolean isInCheck (TeamColor teamColor){
+            TeamColor oppositeTeamColor = teamColor;
+
+        }
 
         /**
          * finds the position of the king of the given teamColor
          */
-    public static void findKing(TeamColor teamColor) {
-        for ()
-    }
+        public static void findKing (TeamColor teamColor){
+            for (ChessPosition position : board.)
+        }
 
-    /**
-     * Determines if the given team is in checkmate
-     *
-     * @param teamColor which team to check for checkmate
-     * @return True if the specified team is in checkmate
-     */
-    public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
-    }
+        /**
+         * Determines if the given team is in checkmate
+         *
+         * @param teamColor which team to check for checkmate
+         * @return True if the specified team is in checkmate
+         */
+        public boolean isInCheckmate (TeamColor teamColor){
+            throw new RuntimeException("Not implemented");
+        }
 
-    /**
-     * Determines if the given team is in stalemate, which here is defined as having
-     * no valid moves
-     *
-     * @param teamColor which team to check for stalemate
-     * @return True if the specified team is in stalemate, otherwise false
-     */
-    public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
-    }
+        /**
+         * Determines if the given team is in stalemate, which here is defined as having
+         * no valid moves
+         *
+         * @param teamColor which team to check for stalemate
+         * @return True if the specified team is in stalemate, otherwise false
+         */
+        public boolean isInStalemate (TeamColor teamColor){
+            throw new RuntimeException("Not implemented");
+        }
 
-    /**
-     * Sets this game's chessboard with a given board
-     *
-     * @param board the new board to use
-     */
-    public void setBoard(ChessBoard board) {
-        this.board = board;
-    }
+        /**
+         * Sets this game's chessboard with a given board
+         *
+         * @param board the new board to use
+         */
+        public void setBoard (ChessBoard board){
+            this.board = board;
+        }
 
-    /**
-     * Gets the current chessboard
-     *
-     * @return the chessboard
-     */
-    public ChessBoard getBoard() {
-        return this.board;
-    }
+        /**
+         * Gets the current chessboard
+         *
+         * @return the chessboard
+         */
+        public ChessBoard getBoard () {
+            return this.board;
+        }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ChessGame chessGame = (ChessGame) o;
-        return turnColor == chessGame.turnColor && Objects.equals(board, chessGame.board);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(turnColor, board);
-    }
-
-    @Override
-    public String toString() {
-        return "ChessGame{" +
-                "turnColor=" + turnColor +
-                ", board=" + board +
-                '}';
     }
 }
