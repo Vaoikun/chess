@@ -1,6 +1,9 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -10,15 +13,19 @@ import java.util.Collection;
  */
 public class ChessGame {
 
-    public ChessGame() {
+    private ChessGame.TeamColor turnColor;
+    private ChessBoard board = new ChessBoard();
 
+    public ChessGame() {
+        this.turnColor = TeamColor.WHITE;
+        this.board.resetBoard();
     }
 
     /**
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        throw new RuntimeException("Not implemented");
+        return this.turnColor;
     }
 
     /**
@@ -27,7 +34,11 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        throw new RuntimeException("Not implemented");
+        if (team == TeamColor.WHITE) {
+            this.turnColor = TeamColor.BLACK;
+        } else {
+            this.turnColor = TeamColor.WHITE;
+        }
     }
 
     /**
@@ -46,7 +57,19 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        ChessPiece observedPiece = this.board.getPiece(startPosition);
+        Collection<ChessMove> legalMoves = observedPiece.pieceMoves(this.board, startPosition);
+        Collection<ChessMove> newLegalMoves = new ArrayList<>();
+
+        if (observedPiece.getPieceType() == null) {
+            return null;
+        }else if (observedPiece.getPieceType() == ChessPiece.PieceType.KING){
+            for (ChessMove move : legalMoves) {
+
+            }
+            return newLegalMoves;
+
+        return legalMoves;
     }
 
     /**
@@ -66,7 +89,16 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        ChessGame.TeamColor oppositeTeamColor = TeamColor teamColor;
+        }
+        for (ChessPiece checker : this.board.)
+    }
+
+        /**
+         * finds the position of the king of the given teamColor
+         */
+    public static void findKing(TeamColor teamColor) {
+        for ()
     }
 
     /**
@@ -96,7 +128,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        this.board = board;
     }
 
     /**
@@ -105,6 +137,27 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+        return this.board;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessGame chessGame = (ChessGame) o;
+        return turnColor == chessGame.turnColor && Objects.equals(board, chessGame.board);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(turnColor, board);
+    }
+
+    @Override
+    public String toString() {
+        return "ChessGame{" +
+                "turnColor=" + turnColor +
+                ", board=" + board +
+                '}';
     }
 }
