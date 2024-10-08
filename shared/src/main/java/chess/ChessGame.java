@@ -93,7 +93,13 @@ public class ChessGame {
 
     public ChessBoard copyBoard(ChessBoard board) {
         ChessBoard boardCopy = new ChessBoard();
-        boardCopy = board;
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                ChessPosition position = new ChessPosition(row+1, col+1);
+                ChessPiece piece = board.getPiece(position);
+                boardCopy.addPiece(position, piece);
+            }
+        }
         return boardCopy;
     }
 
@@ -104,7 +110,36 @@ public class ChessGame {
          * @throws InvalidMoveException if move is invalid
          */
         public void makeMove (ChessMove move) throws InvalidMoveException {
-            throw new RuntimeException("Not implemented");
+            Collection<ChessMove> legalMoves = this.validMoves(move.getStartPosition());
+            ChessPiece observedPiece = this.board.getPiece(move.getStartPosition());
+
+            if (legalMoves.isEmpty()) {
+                throw new InvalidMoveException("Legal moves are empty");
+            }
+
+            if (legalMoves.contains(move) && observedPiece.getTeamColor() == this.turnColor) {
+                this.board.addPiece(move.getStartPosition(), null);
+                if (move.getPromotionPiece() == null) {
+                    this.board.addPiece(move.getEndPosition(), observedPiece);
+                } else { //promotion step
+                    ChessPiece promotionPiece = new ChessPiece(observedPiece.getTeamColor(), move.getPromotionPiece());
+                    this.board.addPiece(move.getEndPosition(), promotionPiece);
+                }
+                changeTurn();
+            }else{
+                throw new InvalidMoveException("Illegal moves.");
+            }
+        }
+
+    /**
+     * changes turn
+     */
+    public  void changeTurn(){
+            if (this.turnColor == TeamColor.WHITE) {
+                this.turnColor = TeamColor.BLACK;
+            }else{
+                this.turnColor = TeamColor.WHITE;
+            }
         }
 
         /**
@@ -120,6 +155,10 @@ public class ChessGame {
                  for (int col = 0; col < 8; col++) {
                      ChessPosition observedPosition = new ChessPosition(row+1, col+1);
                      ChessPiece observedPiece = observedBoard.getPiece(observedPosition);
+                     //to avoid null error
+                     if(observedPiece == null){
+                         continue;
+                     }
                      if (observedPiece.getTeamColor() != teamColor) {
                          Collection<ChessMove> enemyMoves = observedPiece.pieceMoves(this.board, observedPosition);
                          for (ChessMove move : enemyMoves){
@@ -144,6 +183,10 @@ public class ChessGame {
                 for (int col = 0; col < 8; col++) {
                     ChessPosition observedPosition = new ChessPosition(row+1, col+1);
                     ChessPiece observedPiece = this.board.getPiece(observedPosition);
+                    //if so skip next one to avoid error
+                    if (observedPiece == null) {
+                        continue;
+                    }
                     if (observedPiece.getPieceType() == ChessPiece.PieceType.KING && observedPiece.getTeamColor() == teamColor) {
                         return observedPosition;
                     }
@@ -165,14 +208,16 @@ public class ChessGame {
                 for (int row = 0; row < 8; row++) {
                     for (int col = 0; col < 8; col++) {
                         ChessPosition observedPosition = new ChessPosition(row+1, col+1);
-                        ChessPiece chessPiece = this.board.getPiece(observedPosition);
-                        try{
-                            legalMoves = validMoves(observedPosition);
-                            if (!legalMoves.isEmpty()) {
-                                return false;
+                        ChessPiece observedPiece = this.board.getPiece(observedPosition);
+                        if (observedPiece != null && observedPiece.getTeamColor() == teamColor) {
+                            try {
+                                legalMoves = validMoves(observedPosition);
+                                if (!legalMoves.isEmpty()) {
+                                    return false;
+                                }
+                            } catch (RuntimeException e) {
+                                System.err.println("Illegal move.");
                             }
-                        }catch (RuntimeException e){
-                            System.err.println("Illegal move.");
                         }
                     }
                 }
