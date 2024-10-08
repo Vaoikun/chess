@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -17,6 +18,12 @@ public class ChessGame {
     public ChessGame() {
         this.turnColor = TeamColor.WHITE;
         this.board.resetBoard();
+    }
+
+    //for update
+    public ChessGame(ChessGame.TeamColor turnColor, ChessBoard board) {
+        this.turnColor = turnColor;
+        this.board = board;
     }
 
     /**
@@ -61,19 +68,36 @@ public class ChessGame {
         Collection<ChessMove> legalMoves = observedPiece.pieceMoves(this.board, startPosition);
         Collection<ChessMove> newLegalMoves = new ArrayList<>();
 
-        if (observedPiece.getPieceType() == null) {
-            return null;
-        } else if (observedPiece.getPieceType() == ChessPiece.PieceType.KING) {
-            for (ChessMove move : legalMoves) {
-                if move.getEndPosition()
-            }
-            return newLegalMoves;
+        if (observedPiece.getPieceType() == null) {return null;}
+        //else if (observedPiece.getPieceType() == ChessPiece.PieceType.KING) {
+            //for (ChessMove move : legalMoves) {
+                //if move.getEndPosition(){//return newLegalMoves; return legalMoves;}
+        for (ChessMove move : legalMoves) {
+            ChessBoard boardCopy = copyBoard(this.board);
+            boardCopy.addPiece(move.getStartPosition(), null);
+            boardCopy.addPiece(move.getEndPosition(), observedPiece);
+            ChessGame upDatedGame = new ChessGame(this.turnColor, boardCopy);
 
-            return legalMoves;
+            if (!upDatedGame.isInCheck(observedPiece.getTeamColor())){
+                newLegalMoves.add(move);
+            }
         }
+        return newLegalMoves;
     }
 
-        /**
+    //for safe cloning
+    //@Override
+    //protected Object clone() throws CloneNotSupportedException {
+        //return super.clone();
+    //}
+
+    public ChessBoard copyBoard(ChessBoard board) {
+        ChessBoard boardCopy = new ChessBoard();
+        boardCopy = board;
+        return boardCopy;
+    }
+
+    /**
          * Makes a move in a chess game
          *
          * @param move chess move to preform
@@ -193,5 +217,18 @@ public class ChessGame {
                 "turnColor=" + turnColor +
                 ", board=" + board +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessGame chessGame = (ChessGame) o;
+        return turnColor == chessGame.turnColor && Objects.equals(board, chessGame.board);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(turnColor, board);
     }
 }
