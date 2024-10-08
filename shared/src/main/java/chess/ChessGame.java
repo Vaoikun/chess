@@ -2,8 +2,6 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -92,15 +90,42 @@ public class ChessGame {
          * @return True if the specified team is in check
          */
         public boolean isInCheck (TeamColor teamColor){
-            TeamColor oppositeTeamColor = teamColor;
-
+             ChessBoard observedBoard = this.board;
+             ChessPosition kingsThrone = findKing(teamColor);
+             for (int row = 0; row < 8; row++) {
+                 for (int col = 0; col < 8; col++) {
+                     ChessPosition observedPosition = new ChessPosition(row+1, col+1);
+                     ChessPiece observedPiece = observedBoard.getPiece(observedPosition);
+                     if (observedPiece.getTeamColor() != teamColor) {
+                         Collection<ChessMove> enemyMoves = observedPiece.pieceMoves(this.board, observedPosition);
+                         for (ChessMove move : enemyMoves){
+                             if (move.getEndPosition() == kingsThrone) {
+                                 return true;
+                             }
+                         }
+                     }
+                 }
+             }
+             return false;
         }
 
         /**
          * finds the position of the king of the given teamColor
+         *
+         * @return
          */
-        public static void findKing (TeamColor teamColor){
-            for (ChessPosition position : board.)
+
+        public ChessPosition findKing (TeamColor teamColor){
+            for (int row = 0; row < 8; row++) {
+                for (int col = 0; col < 8; col++) {
+                    ChessPosition observedPosition = new ChessPosition(row+1, col+1);
+                    ChessPiece observedPiece = this.board.getPiece(observedPosition);
+                    if (observedPiece.getPieceType() == ChessPiece.PieceType.KING && observedPiece.getTeamColor() == teamColor) {
+                        return observedPosition;
+                    }
+                }
+            }
+            return null;
         }
 
         /**
