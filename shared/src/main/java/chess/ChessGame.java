@@ -65,10 +65,11 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece observedPiece = this.board.getPiece(startPosition);
+        //inserted here to avoid null error
+        if (observedPiece == null) {return null;}
         Collection<ChessMove> legalMoves = observedPiece.pieceMoves(this.board, startPosition);
         Collection<ChessMove> newLegalMoves = new ArrayList<>();
 
-        if (observedPiece.getPieceType() == null) {return null;}
         //else if (observedPiece.getPieceType() == ChessPiece.PieceType.KING) {
             //for (ChessMove move : legalMoves) {
                 //if move.getEndPosition(){//return newLegalMoves; return legalMoves;}
@@ -112,9 +113,9 @@ public class ChessGame {
         public void makeMove (ChessMove move) throws InvalidMoveException {
             Collection<ChessMove> legalMoves = this.validMoves(move.getStartPosition());
             ChessPiece observedPiece = this.board.getPiece(move.getStartPosition());
-
-            if (legalMoves.isEmpty()) {
-                throw new InvalidMoveException("Legal moves are empty");
+            // legalMoves can be null. (not empty)
+            if (legalMoves == null) {
+                throw new InvalidMoveException("Legal moves are null.");
             }
 
             if (legalMoves.contains(move) && observedPiece.getTeamColor() == this.turnColor) {
@@ -160,9 +161,9 @@ public class ChessGame {
                          continue;
                      }
                      if (observedPiece.getTeamColor() != teamColor) {
-                         Collection<ChessMove> enemyMoves = observedPiece.pieceMoves(this.board, observedPosition);
+                         Collection<ChessMove> enemyMoves = observedPiece.pieceMoves(observedBoard, observedPosition);
                          for (ChessMove move : enemyMoves){
-                             if (move.getEndPosition() == kingsThrone) {
+                             if (move.getEndPosition().equals(kingsThrone)) {
                                  return true;
                              }
                          }
