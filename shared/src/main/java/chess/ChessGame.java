@@ -34,11 +34,13 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        if (team == TeamColor.WHITE) {
-            this.turnColor = TeamColor.BLACK;
-        } else {
-            this.turnColor = TeamColor.WHITE;
-        }
+        //if (team == TeamColor.WHITE) {
+           // this.turnColor = TeamColor.BLACK;
+        //} else {
+            //this.turnColor = TeamColor.WHITE;
+        //}
+
+        this.turnColor = team;
     }
 
     /**
@@ -71,6 +73,7 @@ public class ChessGame {
 
             return legalMoves;
         }
+    }
 
         /**
          * Makes a move in a chess game
@@ -106,8 +109,28 @@ public class ChessGame {
          * @param teamColor which team to check for checkmate
          * @return True if the specified team is in checkmate
          */
-        public boolean isInCheckmate (TeamColor teamColor){
-            throw new RuntimeException("Not implemented");
+        public boolean isInCheckmate (TeamColor teamColor) {
+            Collection<ChessMove> legalMoves;
+
+            if(isInCheck(teamColor)){
+                for (int row = 0; row < 8; row++) {
+                    for (int col = 0; col < 8; col++) {
+                        ChessPosition observedPosition = new ChessPosition(row+1, col+1);
+                        ChessPiece chessPiece = this.board.getPiece(observedPosition);
+                        try{
+                            legalMoves = validMoves(observedPosition);
+                            if (!legalMoves.isEmpty()) {
+                                return false;
+                            }
+                        }catch (RuntimeException e){
+                            System.err.println("Illegal move.");
+                        }
+                    }
+                }
+                return true;
+            }else{
+                return false;
+            }
         }
 
         /**
@@ -126,7 +149,7 @@ public class ChessGame {
          *
          * @param board the new board to use
          */
-        public void setBoard (ChessBoard board){
+        public void setBoard(ChessBoard board){
             this.board = board;
         }
 
@@ -139,5 +162,11 @@ public class ChessGame {
             return this.board;
         }
 
+    @Override
+    public String toString() {
+        return "ChessGame{" +
+                "turnColor=" + turnColor +
+                ", board=" + board +
+                '}';
     }
 }
