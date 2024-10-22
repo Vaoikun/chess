@@ -9,7 +9,7 @@ public class HashedPassword {
     }
 
     public static boolean checkPassword(String password, String username) throws DataAccessException {
-        SQLUser sqlUser = new SQLUser();
+        SQLUserDAO sqlUser = new SQLUserDAO();
         String hashedPassword = sqlUser.getUser(username).password();
         return BCrypt.checkpw(password, hashedPassword);
     }
