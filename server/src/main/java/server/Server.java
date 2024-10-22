@@ -1,6 +1,7 @@
 package server;
 
 import spark.*;
+import dataaccess.DataAccessException;
 
 public class Server {
 
