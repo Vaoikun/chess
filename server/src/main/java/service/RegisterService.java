@@ -1,30 +1,41 @@
 package service;
 
-import dataaccess.*;
 import httprequest.RegisterRequest;
-import httpresult.RegisterResult;
+import httpresponse.RegisterResponse;
 import model.UserData;
+import dataaccess.*;
 
-public class RegisterService {
-    private final SQLUserDAO userDB = new SQLUserDAO();
-    private final SQLAuthDAO authDB = new SQLAuthDAO();
+public class RegisterService
+{
+    private final SQLUser userDB = new SQLUser();
+    private final SQLAuth authDB = new SQLAuth();
 
-    public RegisterService() throws DataAccessException {}
+    public RegisterService() throws DataAccessException {
+    }
 
-    public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException, ClientException, ServerException {
-        SQLUserDAO.createUserTable();
-        SQLAuthDAO.createAuthTable();
+    public  RegisterResponse register(RegisterRequest registerRequest) throws DataAccessException, ClientException, ServerException{
+        SQLUser.createUserTable();
+        SQLAuth.createAuthTable();
         UserData userData = userDB.getUser(registerRequest.username());
-        if (userData != null) {
+        if (userData != null)
+        {
             throw new DataAccessException("Error: already taken");
         }
-        if (registerRequest.password() == null){
+        if (registerRequest.password() == null)
+        {
             throw new ClientException("Error: bad request");
-        }else{ // create one
-            UserData newData = new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email());
-            userDB.createUser(newData);
-            String newAuth = authDB.createAuth(registerRequest.username());
-            return new RegisterResult(registerRequest.username(), newAuth);
         }
+        else // else the userDate is not in db
+        {
+            // CREATE one
+            UserData createdData = new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email());
+            userDB.createUser(createdData);
+            // create Auth for the user
+            String returnedAuthToken = authDB.createAuth(registerRequest.username());
+
+            // get the RegisterResponse by the returned authToken and return to handler
+            return new RegisterResponse(registerRequest.username(), returnedAuthToken);
+        }
+
     }
 }

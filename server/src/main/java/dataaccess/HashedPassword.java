@@ -1,19 +1,20 @@
 package dataaccess;
-
 import org.mindrot.jbcrypt.BCrypt;
+public class HashedPassword
+{
+    private static String normalPassword;
 
-public class HashedPassword {
-    private static String password;
-    public static String hashPassword(String password) {
-        return BCrypt.hashpw(password, BCrypt.gensalt());
+    public static String hashPassword(String normalPassword)
+    {
+        return BCrypt.hashpw(normalPassword, BCrypt.gensalt());
     }
 
-    public static boolean checkPassword(String password, String username) throws DataAccessException {
-        SQLUserDAO sqlUser = new SQLUserDAO();
-        String hashedPassword = sqlUser.getUser(username).password();
-        return BCrypt.checkpw(password, hashedPassword);
+    public static boolean checkPassWord(String normalPassword, String usernameInDB) throws DataAccessException {
+        SQLUser sqlUserRefer = new SQLUser();
+        String hashedPasswordInDB = sqlUserRefer.getUser(usernameInDB).password();
+        return BCrypt.checkpw(normalPassword,hashedPasswordInDB);
+
+
     }
-
-
 
 }

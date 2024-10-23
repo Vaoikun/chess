@@ -2,16 +2,17 @@ package websocket.commands.websocketrequests;
 
 import websocket.commands.UserGameCommand;
 
-public class Leave extends UserGameCommand {
+public class ConnectPlayer extends UserGameCommand {
+
     private int gameID;
-    public Leave(String authToken, int gameID) {
+
+    public ConnectPlayer(String authToken, int gameID) {
         super(authToken);
         this.gameID = gameID;
-        this.commandType = CommandType.LEAVE;
+        this.commandType = CommandType.CONNECT;
     }
 
     public int getGameID() {
         return gameID;
     }
-
 }
