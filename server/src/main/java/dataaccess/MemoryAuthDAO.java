@@ -5,44 +5,39 @@ import model.AuthData;
 import java.util.HashSet;
 import java.util.UUID;
 
-public class MemoryAuthDAO implements AuthDAO
-{
+public class MemoryAuthDAO implements AuthDAO {
     private static final HashSet<AuthData> AUTH_DATA_IN_MEMORY = new HashSet<>();
     @Override
     public String createAuth(String username) throws DataAccessException {
-        String newAuthToken = UUID.randomUUID().toString(); // get the new AuthToken
-        AuthData newAuthData = new AuthData(newAuthToken, username); // create a new AuthData
-        AUTH_DATA_IN_MEMORY.add(newAuthData); // put this new authData into authDataInMemory
-        return newAuthData.authToken();
+        String authToken = UUID.randomUUID().toString();
+        AuthData authData = new AuthData(authToken, username);
+        AUTH_DATA_IN_MEMORY.add(authData);
+        return authData.authToken();
     }
 
     @Override
-    public String getAuth(String authToken) throws DataAccessException
-    {
-        for (AuthData singleAuthMemory : AUTH_DATA_IN_MEMORY)
-        {
-            if (singleAuthMemory.authToken().equals(authToken))
-            {
-                return singleAuthMemory.username();
+    public String getAuth(String username) throws DataAccessException {
+        for (AuthData authData : AUTH_DATA_IN_MEMORY) {
+            if (authData.authToken().equals(username)) {
+                return authData.authToken();
             }
         }
-        return null; // does not find the auth.
+        return null;
     }
 
-    /**
-     * @param authToken
-     * @throws DataAccessException
-     */
-    @Override
     public void deleteAuth(String authToken) throws DataAccessException {
-        // if the authToken in a singleAuth, just remove that singleAuthMemory
-        AUTH_DATA_IN_MEMORY.removeIf(singleAuthMemory -> singleAuthMemory.authToken().equals(authToken));
+        // Better code
+        AUTH_DATA_IN_MEMORY.removeIf(authData -> authData.authToken().equals(authToken));
+
+//        for (AuthData authData : AUTH_DATA_IN_MEMORY) {
+//            if (authData.authToken().equals(authToken)) {
+//                AUTH_DATA_IN_MEMORY.remove(authData);
+//            }
+//        }
+//        return null;
+//    }
     }
 
-    /**
-     * @throws DataAccessException
-     */
-    @Override
     public void clear() throws DataAccessException {
         AUTH_DATA_IN_MEMORY.clear();
     }

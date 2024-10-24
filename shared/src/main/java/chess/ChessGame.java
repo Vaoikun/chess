@@ -11,8 +11,8 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessGame {
-
-    private ChessGame.TeamColor turnColor;
+    public boolean isResigned = false;
+    public ChessGame.TeamColor turnColor;
     private ChessBoard board = new ChessBoard();
 
     public ChessGame() {

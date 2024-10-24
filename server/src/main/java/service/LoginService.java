@@ -2,38 +2,30 @@ package service;
 
 import dataaccess.*;
 import httprequest.LoginRequest;
-import httpresponse.LoginResponse;
+import httpresult.LoginResult;
 import model.UserData;
 
-public class LoginService
-{
-    private final SQLUser userDB = new SQLUser();
-    private final SQLAuth  authDB = new SQLAuth();
+import javax.xml.crypto.Data;
 
-    public LoginService() throws DataAccessException {
-    }
+public class LoginService {
+    private final MemoryUserDAO userDB = new MemoryUserDAO();
+    private final MemoryAuthDAO authDB = new MemoryAuthDAO();
 
-    public LoginResponse login(LoginRequest loginRequest) throws DataAccessException, ServerException {
-        // create the table first
+    public LoginService() throws DataAccessException {}
 
+    public LoginResult login(LoginRequest loginRequest) throws DataAccessException, ServerException {
         UserData userData = userDB.getUser(loginRequest.username());
-        if (userData == null)
-        {
+        if (userData == null) {
             throw new DataAccessException("Error: unauthorized");
         }
-        if (loginRequest.password() == null)
-        {
+        if (loginRequest.password() == null) {
             throw new DataAccessException("Error: unauthorized");
         }
-        if (!HashedPassword.checkPassWord(loginRequest.password(), userData.username()))
-        {
+        if (!HashedPassword.checkPassword(loginRequest.password(), userData.username())) {
             throw new DataAccessException("Error: unauthorized");
-        }
-        else
-        {
+        }else{
             String authToken = authDB.createAuth(userData.username());
-            return new LoginResponse(userData.username(), authToken);
+            return new LoginResult(userData.username(), authToken);
         }
     }
-
 }

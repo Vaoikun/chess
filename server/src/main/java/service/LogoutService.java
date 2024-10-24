@@ -1,28 +1,18 @@
 package service;
 
-import dataaccess.DataAccessException;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.ServerException;
-import dataaccess.SQLAuth;
+import dataaccess.*;
 
-public class LogoutService
-{
-    SQLAuth authDB = new SQLAuth();
+public class LogoutService {
+    MemoryAuthDAO authDB = new MemoryAuthDAO();
 
-    public LogoutService() throws DataAccessException {
+    public LogoutService() throws DataAccessException {}
+
+    public void logout(String authToken) throws DataAccessException, ServerException {
+        String username = authDB.getAuth(authToken);
+        if (username == null) {
+            throw new DataAccessException("Error: unauthorized");
+        }else{
+            authDB.deleteAuth(username);
+        }
     }
-
-
-    public void logout (String authToken) throws DataAccessException, ServerException {
-       String username = authDB.getAuth(authToken);
-       if (username == null)
-       {
-           throw new DataAccessException("Error: unauthorized");
-       }
-       else
-       {
-           authDB.deleteAuth(authToken);
-       }
-    }
-
 }

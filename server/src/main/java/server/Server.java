@@ -1,35 +1,28 @@
 package server;
 
-import dataaccess.DataAccessException;
-import dataaccess.DatabaseManager;
-import handlers.*;
+
+import org.eclipse.jetty.websocket.server.WebSocketHandler;
 import spark.*;
-
-
-import static dataaccess.DatabaseManager.createDatabase;
+import handler.*;
 
 public class Server {
-    public int run(int desiredPort){
+
+    public int run(int desiredPort) {
         Spark.port(desiredPort);
-
         Spark.staticFiles.location("web");
-        Spark.webSocket("/ws", WebsocketHandler.class); // we are going to create a websocket handler to handle it?
         // Register your endpoints and handle exceptions here.
-        Spark.post("/user", (req, res) -> new RegisterHandler(req, res).httpHandlerRequest(req, res));
-        Spark.post("/session", (req, res) -> new LoginHandler(req, res).httpHandlerRequest(req, res));
-        Spark.delete("/session", (req, res) -> new LogoutHandler(req, res).httpHandlerRequest(req, res));
-        Spark.get("/game", (req, res) -> new ListGamesHandler(req, res).httpHandlerRequest(req, res));
-        Spark.post("/game", (req, res) -> new CreateGameHandler(req, res).httpHandlerRequest(req, res));
-        Spark.put("/game", (req, res) -> new JoinGameHandler(req, res).httpHandlerRequest(req, res));
-        Spark.delete("/db", (req, res) -> new ClearHandler(req, res).httpHandlerRequest(req, res));
-        Spark.awaitInitialization();
+        Spark.post("/user", (reqest, response) -> new RegisterHandler(reqest, response).httpHandlerRequest(reqest, response));
+        Spark.post("/session", (reqest, response) -> new LoginHandler(reqest, response).httpHandlerRequest(reqest, response));
+        Spark.delete("/session", (reqest, response) -> new LogoutHandler(reqest, response).httpHandlerRequest(reqest, response));
+        Spark.get("/game", (reqest, response) -> new ListGamesHandler(reqest, response).httpHandlerRequest(reqest, response));
+        Spark.post("/game", (reqest, response) -> new CreateGameHandler(reqest, response).httpHandlerRequest(reqest, response));
+        Spark.put("/game", (reqest, response) -> new JoinGameHandler(reqest, response).httpHandlerRequest(reqest, response));
+        Spark.delete("/db", (reqest, response) -> new ClearHandler(reqest, response).httpHandlerRequest(reqest, response));
 
-        try
-        {
-            DatabaseManager.createDatabase();
-        } catch (DataAccessException e) {
-            throw new RuntimeException(e);
-        }
+        //This line initializes the server and can be removed once you have a functioning endpoint 
+        //Spark.init();
+
+        Spark.awaitInitialization();
 
         return Spark.port();
     }
