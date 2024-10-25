@@ -19,7 +19,7 @@ public class MemoryGameDAO implements GameDAO {
     public int createGame(String gameName) throws DataAccessException {
         Random random = new Random();
         int newGameID = random.nextInt(10000);
-        GameData newGame = new GameData(newGameID, null, null, gameName, new ChessGame(ChessGame.TeamColor.WHITE, new ChessBoard()));
+        GameData newGame = new GameData(newGameID, gameName, null, null, new ChessGame(ChessGame.TeamColor.WHITE, new ChessBoard()));
         GAME_DATA_MEMORY.add(newGame);
         return newGameID;
     }
@@ -43,12 +43,12 @@ public class MemoryGameDAO implements GameDAO {
     public void updateGame(String username, ChessGame.TeamColor playerColor, GameData requestedGame) throws DataAccessException {
         GameData updatedGame;
         if (playerColor == ChessGame.TeamColor.WHITE) {
-            updatedGame = new GameData(currentGame.gameID(), username, currentGame.blackUsername(), currentGame.gameName(), currentGame.game());
+            updatedGame = new GameData(currentGame.gameID(), currentGame.gameName(), username, currentGame.blackUsername(), currentGame.game());
             requestedGame = updatedGame;
             GAME_DATA_MEMORY.add(requestedGame);
         }
         else if (playerColor == ChessGame.TeamColor.BLACK) {
-            updatedGame = new GameData(currentGame.gameID(), username, currentGame.whiteUsername(), currentGame.gameName(), currentGame.game());
+            updatedGame = new GameData(currentGame.gameID(), currentGame.gameName(), currentGame.whiteUsername(), username, currentGame.game());
             requestedGame = updatedGame;
             GAME_DATA_MEMORY.add(requestedGame);
         }
