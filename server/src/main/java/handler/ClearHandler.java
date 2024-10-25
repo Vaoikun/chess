@@ -14,6 +14,11 @@ public class ClearHandler extends BaseHandler {
         super(request, response);
     }
 
+    /**
+     * @param request;
+     * @param response;
+     * @return String body
+     */
     @Override
     public Object httpHandlerRequest(Request request, Response response) {
         Gson gson = new Gson();

@@ -2,6 +2,9 @@ package dataaccess;
 
 import java.sql.SQLException;
 
+/**
+ * Interface side
+ */
 public interface AuthDAO {
     public String createAuth(String username) throws DataAccessException, SQLException;
 

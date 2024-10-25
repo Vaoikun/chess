@@ -15,6 +15,11 @@ public class MemoryGameDAO implements GameDAO {
 
     private GameData currentGame;
 
+    /**
+     * @param gameName
+     * @return new game ID
+     * @throws DataAccessException
+     */
     @Override
     public int createGame(String gameName) throws DataAccessException {
         Random random = new Random();
@@ -24,6 +29,11 @@ public class MemoryGameDAO implements GameDAO {
         return newGameID;
     }
 
+    /**
+     * @param gameID;
+     * @return gameData
+     * @throws DataAccessException;
+     */
     @Override
     public GameData getGame(int gameID) throws DataAccessException {
         for (GameData gameData : GAME_DATA_MEMORY) {
@@ -34,11 +44,22 @@ public class MemoryGameDAO implements GameDAO {
         return null;
     }
 
+    /**
+     * @param authToken;
+     * @return ArrayList of GAME_DATA_MEMORY
+     * @throws DataAccessException;
+     */
     @Override
     public ArrayList<GameData> listGames(String authToken) throws DataAccessException {
         return new ArrayList<>(GAME_DATA_MEMORY);
     }
 
+    /**
+     * @param username;
+     * @param playerColor;
+     * @param requestedGame;
+     * @throws DataAccessException;
+     */
     @Override
     public void updateGame(String username, ChessGame.TeamColor playerColor, GameData requestedGame) throws DataAccessException {
         GameData updatedGame;
@@ -54,6 +75,12 @@ public class MemoryGameDAO implements GameDAO {
         }
     }
 
+    /**
+     * @param gameID;
+     * @param playerColor;
+     * @param username;
+     * @throws DataAccessException;
+     */
     @Override
     public void joinGame(int gameID, ChessGame.TeamColor playerColor, String username) throws DataAccessException {
         GameData game = getGame(gameID);
@@ -62,6 +89,9 @@ public class MemoryGameDAO implements GameDAO {
         updateGame(username, playerColor, game);
     }
 
+    /**
+     * @throws DataAccessException;
+     */
     @Override
     public void clear() throws DataAccessException {
         GAME_DATA_MEMORY.clear();

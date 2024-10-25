@@ -14,6 +14,11 @@ public class ListGamesHandler extends BaseHandler{
         super(request, response);
     }
 
+    /**
+     * @param request;
+     * @param response;
+     * @return jsonResult
+     */
     @Override
     public Object httpHandlerRequest(Request request, Response response) {
         String jsonResult;

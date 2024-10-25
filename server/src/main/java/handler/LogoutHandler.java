@@ -13,6 +13,11 @@ public class LogoutHandler extends BaseHandler{
         super(request, response);
     }
 
+    /**
+     * @param request;
+     * @param response;
+     * @return jsonResult
+     */
     @Override
     public Object httpHandlerRequest(Request request, Response response) {
         Gson gson = new Gson();

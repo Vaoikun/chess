@@ -11,6 +11,14 @@ public class JoinGameService {
 
     public JoinGameService() throws DataAccessException {}
 
+    /**
+     * @param request;
+     * @param authToken;
+     * @throws DataAccessException;
+     * @throws ClientException;
+     * @throws ServerException;
+     * @throws AlreadyTakenException;
+     */
     public void joinGame (JoinGameRequest request, String authToken) throws DataAccessException, ServerException, ClientException, AlreadyTakenException {
         String username = authDB.getUsername(authToken);
         if (username == null) {

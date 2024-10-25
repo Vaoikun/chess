@@ -5,6 +5,9 @@ import chess.ChessGame;
 
 import java.util.ArrayList;
 
+/**
+ * Interface side
+ */
 public interface GameDAO {
     public default int createGame(String gameName) throws DataAccessException {
         return 1;

@@ -11,6 +11,13 @@ public class RegisterService {
 
     public RegisterService() throws DataAccessException {}
 
+    /**
+     * @param registerRequest;
+     * @return new RegisterResult;
+     * @throws DataAccessException;
+     * @throws ClientException;
+     * @throws ServerException;
+     */
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException, ClientException, ServerException {
         UserData userData = userDB.getUser(registerRequest.username());
         if (userData != null) {

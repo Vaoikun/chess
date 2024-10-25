@@ -11,6 +11,12 @@ public class ListGamesService {
 
     public ListGamesService() throws DataAccessException {}
 
+    /**
+     * @param authToken;
+     * @return new ListGameResult;
+     * @throws DataAccessException;
+     * @throws ServerException;
+     */
     public ListGameResult listGame(String authToken) throws DataAccessException, ServerException {
         String username = authDB.getAuth(authToken);
         if (username == null) {

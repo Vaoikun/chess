@@ -13,6 +13,12 @@ public class LoginService {
 
     public LoginService() throws DataAccessException {}
 
+    /**
+     * @param loginRequest;
+     * @return new LoginResult;
+     * @throws DataAccessException;
+     * @throws ServerException;
+     */
     public LoginResult login(LoginRequest loginRequest) throws DataAccessException, ServerException {
         UserData userData = userDB.getUser(loginRequest.username());
         if (userData == null) {
