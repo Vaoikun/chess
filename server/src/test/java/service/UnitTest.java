@@ -108,7 +108,7 @@ public class UnitTest
         RegisterResult registerResult = registerServiceTest.register(registerRequestKai);
         String authToken = registerResult.authToken();
         ListGameResult listGameResultRob = listGamesServiceTest.listGame(authToken);
-        ArrayList<GameData> games = listGameResultRob.gameData();
+        ArrayList<GameData> games = listGameResultRob.games();
         assertEquals(0, games.size());
     }
 

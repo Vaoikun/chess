@@ -12,7 +12,7 @@ public class JoinGameService {
     public JoinGameService() throws DataAccessException {}
 
     public void joinGame (JoinGameRequest request, String authToken) throws DataAccessException, ServerException, ClientException, AlreadyTakenException {
-        String username = authDB.getAuth(authToken);
+        String username = authDB.getUsername(authToken);
         if (username == null) {
             throw new DataAccessException("Error: unauthorized");
         }
