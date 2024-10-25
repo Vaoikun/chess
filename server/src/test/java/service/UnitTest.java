@@ -93,7 +93,8 @@ public class UnitTest
     @Test
     @Order(7)
     public void createGameFailed() {
-        DataAccessException daException = assertThrows(DataAccessException.class, () ->  createGameServiceTest.createGame(createGameRequestTest2, null));
+        DataAccessException daException = assertThrows(DataAccessException.class,
+                () ->  createGameServiceTest.createGame(createGameRequestTest2, null));
         assertEquals(daException.getMessage(), "Error: unauthorized");
     }
 

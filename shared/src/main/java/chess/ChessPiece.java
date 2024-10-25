@@ -98,23 +98,23 @@ public class ChessPiece {
 
 // Right
         for (int j = col + 1; j <= 8; j++) {
-            if (addCheck(board, currentTeamColor, startPosition, legalMoves, row, j)) break;
-            if(currentPieceType == PieceType.KING) break;
+            if (addCheck(board, currentTeamColor, startPosition, legalMoves, row, j)) {break;}
+            if(currentPieceType == PieceType.KING) {break;}
         }
 // Left
         for (int j = col - 1; j >= 1; j--) {
-            if (addCheck(board, currentTeamColor, startPosition, legalMoves, row, j)) break;
-            if(currentPieceType == PieceType.KING) break;
+            if (addCheck(board, currentTeamColor, startPosition, legalMoves, row, j)) {break;}
+            if(currentPieceType == PieceType.KING) {break;}
         }
 // Up
         for (int i = row + 1; i <= 8; i++) {
-            if (addCheck(board, currentTeamColor, startPosition, legalMoves, i, col)) break;
-            if(currentPieceType == PieceType.KING) break;
+            if (addCheck(board, currentTeamColor, startPosition, legalMoves, i, col)) {break;}
+            if(currentPieceType == PieceType.KING) {break;}
         }
 // Down
         for (int i = row - 1; i >= 1; i--) {
-            if (addCheck(board, currentTeamColor, startPosition, legalMoves, i, col)) break;
-            if(currentPieceType == PieceType.KING) break;
+            if (addCheck(board, currentTeamColor, startPosition, legalMoves, i, col)) {break;}
+            if(currentPieceType == PieceType.KING) {break;}
         }
         return legalMoves;
     }
@@ -124,30 +124,31 @@ public class ChessPiece {
         List<ChessMove> legalMoves = new ArrayList<>();
 // Right down
         for (int i = row - 1, j = col + 1; i >= 1 && j <= 8; i--, j++) {
-            if (addCheck(board, currentTeamColor, startPosition, legalMoves, i, j)) break;
-            if(currentPieceType == PieceType.KING) break;
+            if (addCheck(board, currentTeamColor, startPosition, legalMoves, i, j)) {break;}
+            if(currentPieceType == PieceType.KING) {break;}
         }
 // Right up
         for (int i = row + 1, j = col + 1; i <= 8 && j <= 8; i++, j++) {
-            if (addCheck(board, currentTeamColor, startPosition, legalMoves, i, j)) break;
-            if(currentPieceType == PieceType.KING) break;
+            if (addCheck(board, currentTeamColor, startPosition, legalMoves, i, j)) {break;}
+            if(currentPieceType == PieceType.KING) {break;}
         }
 
 // Left down
         for (int i = row - 1, j = col - 1; i >= 1 && j >= 1; i--, j--) {
-            if (addCheck(board, currentTeamColor, startPosition, legalMoves, i, j)) break;
-            if(currentPieceType == PieceType.KING) break;
+            if (addCheck(board, currentTeamColor, startPosition, legalMoves, i, j)) {break;}
+            if(currentPieceType == PieceType.KING) {break;}
         }
 // Left up
         for (int i = row + 1, j = col - 1; i <= 8 && j >= 1; i++, j--) {
-            if (addCheck(board, currentTeamColor, startPosition, legalMoves, i, j)) break;
-            if(currentPieceType == PieceType.KING) break;
+            if (addCheck(board, currentTeamColor, startPosition, legalMoves, i, j)) {break;}
+            if(currentPieceType == PieceType.KING) {break;}
         }
 
         return legalMoves;
     }
 
-    public static List<ChessMove> knightMoves(ChessBoard board, int row, int col, ChessGame.TeamColor currentTeamColor, PieceType currentPieceType) {
+    public static List<ChessMove> knightMoves(ChessBoard board, int row, int col,
+                                              ChessGame.TeamColor currentTeamColor, PieceType currentPieceType) {
         ChessPosition startPosition = new ChessPosition(row, col);
         List<ChessMove> legalMoves = new ArrayList<>();
 
@@ -249,7 +250,8 @@ public class ChessPiece {
         return legalMoves;
     }
 
-    private static void pawnDiagonal(ChessBoard board, ChessGame.TeamColor currentTeamColor, int nextRow, int nextCol, List<ChessMove> legalMoves, ChessPosition startPosition) {
+    private static void pawnDiagonal(ChessBoard board, ChessGame.TeamColor currentTeamColor, int nextRow, int nextCol,
+                                     List<ChessMove> legalMoves, ChessPosition startPosition) {
         ChessPiece observedPiece;
         if(inbounds(nextRow, nextCol)){
             observedPiece = board.getPiece(new ChessPosition(nextRow, nextCol));
@@ -268,7 +270,8 @@ public class ChessPiece {
         }
     }
 
-    private static boolean addCheck(ChessBoard board, ChessGame.TeamColor currentTeamColor, ChessPosition startPosition, List<ChessMove> legalMoves, int i, int j) {
+    private static boolean addCheck(ChessBoard board, ChessGame.TeamColor currentTeamColor, ChessPosition startPosition,
+                                    List<ChessMove> legalMoves, int i, int j) {
         ChessPiece observedPiece = board.getPiece(new ChessPosition(i, j));
         if (observedPiece != null) {
             if(observedPiece.teamColor == currentTeamColor) {
@@ -282,14 +285,13 @@ public class ChessPiece {
     }
 
     private static boolean inbounds(int row, int col) {
-        if(row <= 8 && col <= 8 && row >= 1 && col>=1){ return true;}
-        else{ return false;}
-    };
+        return row <= 8 && col <= 8 && row >= 1 && col >= 1;
+    }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {return true;}
+        if (o == null || getClass() != o.getClass()) {return false;}
         ChessPiece that = (ChessPiece) o;
         return teamColor == that.teamColor && type == that.type;
     }

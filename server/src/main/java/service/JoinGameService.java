@@ -19,7 +19,8 @@ public class JoinGameService {
      * @throws ServerException;
      * @throws AlreadyTakenException;
      */
-    public void joinGame (JoinGameRequest request, String authToken) throws DataAccessException, ServerException, ClientException, AlreadyTakenException {
+    public void joinGame (JoinGameRequest request, String authToken)
+            throws DataAccessException, ServerException, ClientException, AlreadyTakenException {
         String username = authDB.getUsername(authToken);
         if (username == null) {
             throw new DataAccessException("Error: unauthorized");
@@ -29,7 +30,8 @@ public class JoinGameService {
         }else{
             GameData availableGame = gameDB.getGame(request.gameID());
             if (availableGame != null) {
-                if (request.playerColor() == ChessGame.TeamColor.WHITE && availableGame.whiteUsername() != null || request.playerColor() == ChessGame.TeamColor.BLACK && availableGame.blackUsername() != null) {
+                if (request.playerColor() == ChessGame.TeamColor.WHITE && availableGame.whiteUsername() != null
+                        || request.playerColor() == ChessGame.TeamColor.BLACK && availableGame.blackUsername() != null) {
                     throw new AlreadyTakenException("Error: Already Taken");
                 }else{
                     // joinGame will call updateGame in it.
