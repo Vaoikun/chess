@@ -39,26 +39,6 @@ public class ChessBoard {
     }
 
     /**
-     * Gets positions all existing pieces of a team
-     * @param teamColor The color of a team to get the positions of
-     * @return pieces The list of positions of all pieces
-     */
-    public List<ChessPiece> getAllPieces(ChessGame.TeamColor teamColor) {
-        List<ChessPiece> pieces = new ArrayList<>();
-
-        for (int row = 0; row < 8; row++) {
-            for (int col = 0; col < 8; col++) {
-                // Get new position at all positions
-                ChessPiece piece = this.checkers[row][col];
-                if (piece != null && piece.getTeamColor() == teamColor) {
-                    pieces.add(piece);
-                }
-            }
-        }
-        return pieces;
-    }
-
-    /**
      * Sets the board to the default starting board
      * (How the game of chess normally starts)
      */

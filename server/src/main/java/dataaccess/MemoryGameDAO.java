@@ -16,9 +16,9 @@ public class MemoryGameDAO implements GameDAO {
     private GameData currentGame;
 
     /**
-     * @param gameName
+     * @param gameName;
      * @return new game ID
-     * @throws DataAccessException
+     * @throws DataAccessException;
      */
     @Override
     public int createGame(String gameName) throws DataAccessException {

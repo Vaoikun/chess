@@ -20,13 +20,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class UnitTest
 {
-    private String authToken_aoi;
-    private String authToken_vaoi;
+    private String authTokenAoi;
     private final CreateGameRequest createGameRequestTest = new CreateGameRequest("Game1");
     private final CreateGameRequest createGameRequestTest2 = new CreateGameRequest("Game2");
     private final LoginRequest loginRequest = new LoginRequest("aoi", "aoi123");
-    private final MemoryAuthDAO authDAO = new MemoryAuthDAO();
-    private final MemoryUserDAO userDAO = new MemoryUserDAO();
     private final MemoryGameDAO gameDAO = new MemoryGameDAO();
     private final RegisterService registerServiceTest = new RegisterService();
     private final LoginService loginServiceTest = new LoginService();
@@ -54,7 +51,7 @@ public class UnitTest
         RegisterResult registerResultTest = registerServiceTest.register(registerRequestTest);
         String username = registerResultTest.username();
         assertEquals(registerResultTest.username(), username);
-        authToken_aoi = registerResultTest.authToken();
+        authTokenAoi = registerResultTest.authToken();
     }
 
     @Test
