@@ -4,8 +4,7 @@ import model.UserData;
 
 import java.sql.SQLException;
 
-public class SQLUserDAO implements UserDAO
-{
+public class SQLUserDAO implements UserDAO {
     /**
      * @param u
      * @throws DataAccessException
