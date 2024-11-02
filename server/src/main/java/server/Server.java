@@ -1,9 +1,14 @@
 package server;
 
 
+import dataaccess.DataAccessException;
+import dataaccess.DatabaseManager;
 import org.eclipse.jetty.websocket.server.WebSocketHandler;
 import spark.*;
 import handler.*;
+
+import javax.xml.crypto.Data;
+import static dataaccess.DatabaseManager.createDatabase;
 
 public class Server {
 
@@ -21,6 +26,12 @@ public class Server {
 
         //This line initializes the server and can be removed once you have a functioning endpoint 
         //Spark.init();
+
+        try{
+            DatabaseManager.createDatabase();
+        } catch (DataAccessException e){
+            throw new RuntimeException(e);
+        }
 
         Spark.awaitInitialization();
 

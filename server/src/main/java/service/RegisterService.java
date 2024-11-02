@@ -19,6 +19,8 @@ public class RegisterService {
      * @throws ServerException;
      */
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException, ClientException, ServerException {
+        SQLUserDAO.createUserTable();
+        SQLAuthDAO.createAuthTable();
         UserData userData = userDB.getUser(registerRequest.username());
         if (userData != null) {
             throw new DataAccessException("Error: already taken");
