@@ -6,8 +6,8 @@ import httpresult.RegisterResult;
 import httprequest.RegisterRequest;
 
 public class RegisterService {
-    private final MemoryUserDAO userDB = new MemoryUserDAO();
-    private final MemoryAuthDAO authDB = new MemoryAuthDAO();
+    private final SQLUserDAO userDB = new SQLUserDAO();
+    private final SQLAuthDAO authDB = new SQLAuthDAO();
 
     public RegisterService() throws DataAccessException {}
 

@@ -5,8 +5,8 @@ import httpresult.CreateGameResult;
 import dataaccess.*;
 
 public class CreateGameService {
-    private final MemoryGameDAO gameDB = new MemoryGameDAO();
-    private final MemoryAuthDAO authDB = new MemoryAuthDAO();
+    private final SQLGameDAO gameDB = new SQLGameDAO();
+    private final SQLAuthDAO authDB = new SQLAuthDAO();
 
     public CreateGameService() throws DataAccessException {}
 

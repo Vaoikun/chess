@@ -3,7 +3,7 @@ package service;
 import dataaccess.*;
 
 public class LogoutService {
-    MemoryAuthDAO authDB = new MemoryAuthDAO();
+    SQLAuthDAO authDB = new SQLAuthDAO();
 
     public LogoutService() throws DataAccessException {}
 

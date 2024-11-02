@@ -6,8 +6,8 @@ import chess.ChessGame;
 import dataaccess.*;
 
 public class JoinGameService {
-    MemoryAuthDAO authDB = new MemoryAuthDAO();
-    MemoryGameDAO gameDB = new MemoryGameDAO();
+    SQLAuthDAO authDB = new SQLAuthDAO();
+    SQLGameDAO gameDB = new SQLGameDAO();
 
     public JoinGameService() throws DataAccessException {}
 
@@ -21,7 +21,7 @@ public class JoinGameService {
      */
     public void joinGame (JoinGameRequest request, String authToken)
             throws DataAccessException, ServerException, ClientException, AlreadyTakenException {
-        String username = authDB.getUsername(authToken);
+        String username = authDB.getAuth(authToken);
         if (username == null) {
             throw new DataAccessException("Error: unauthorized");
         }

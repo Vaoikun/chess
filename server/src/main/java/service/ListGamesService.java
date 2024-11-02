@@ -6,8 +6,8 @@ import model.GameData;
 import java.util.ArrayList;
 
 public class ListGamesService {
-    private final MemoryAuthDAO authDB = new MemoryAuthDAO();
-    private final MemoryGameDAO gameDB = new MemoryGameDAO();
+    private final SQLAuthDAO authDB = new SQLAuthDAO();
+    private final SQLGameDAO gameDB = new SQLGameDAO();
 
     public ListGamesService() throws DataAccessException {}
 

@@ -8,8 +8,8 @@ import model.UserData;
 import javax.xml.crypto.Data;
 
 public class LoginService {
-    private final MemoryUserDAO userDB = new MemoryUserDAO();
-    private final MemoryAuthDAO authDB = new MemoryAuthDAO();
+    private final SQLUserDAO userDB = new SQLUserDAO();
+    private final SQLAuthDAO authDB = new SQLAuthDAO();
 
     public LoginService() throws DataAccessException {}
 
