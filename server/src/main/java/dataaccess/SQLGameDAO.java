@@ -168,7 +168,7 @@ public class SQLGameDAO implements GameDAO
         {
             if (playerColor == ChessGame.TeamColor.WHITE)
             {
-                try (var preparedStatement = conn.prepareStatement("UPDATE Games SET whiteUserNameCol = ? WHERE gameIDCol = ?;"))
+                try (var preparedStatement = connect.prepareStatement("UPDATE Games SET whiteUserNameCol = ? WHERE gameIDCol = ?;"))
                 {
                     preparedStatement.setString(1, username);
                     preparedStatement.setInt(2, gameID);
@@ -180,7 +180,7 @@ public class SQLGameDAO implements GameDAO
             }
             else
             {
-                try (var preparedStatement = conn.prepareStatement("UPDATE Games SET blackUserNameCol = ? WHERE gameIDCol = ?;"))
+                try (var preparedStatement = connect.prepareStatement("UPDATE Games SET blackUserNameCol = ? WHERE gameIDCol = ?;"))
                 {
                     preparedStatement.setString(1, username);
                     preparedStatement.setInt(2, gameID);
