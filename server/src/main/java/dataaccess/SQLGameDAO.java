@@ -52,7 +52,7 @@ public class SQLGameDAO implements GameDAO
                 ChessGame newGame = new ChessGame();
                 String jsonGame = gson.toJson(newGame);
                 Random random = new Random();
-                int randomInt = random.nextInt(10000); // get the random number between 0 - 10000
+                int randomInt = random.nextInt(10000);
                 preparedStatement.setInt(1, randomInt);
                 preparedStatement.setString(2, gameName);
                 preparedStatement.setString(3, null);
@@ -106,14 +106,14 @@ public class SQLGameDAO implements GameDAO
         if (authToken == null) {
             throw new DataAccessException("AuthToken is null");
         }
-        String whiteUserName, blackUserName, gameName, chessGame;
+        String gameName, whiteUserName, blackUserName, chessGame;
         int gameID;
         Gson gson = new Gson();
         ArrayList<GameData> returnedGames =new ArrayList<>();
         try (var connect = DatabaseManager.getConnection()) {
             try (var preparedStatement = connect.prepareStatement("SELECT * FROM Games;")) {
                 try (var rs = preparedStatement.executeQuery()) {
-                    if (rs.next()) {
+                    while (rs.next()) {
                         gameID = rs.getInt("gameIDCol");
                         gameName = rs.getString("gameNameCol");
                         whiteUserName = rs.getString("whiteUserNameCol");
@@ -168,21 +168,6 @@ public class SQLGameDAO implements GameDAO
         }
     }
 
-    public void updateChessGame(ChessGame chessGame, int gameID) {
-        Gson gson = new Gson();
-        String jsonChessGame = gson.toJson(chessGame);
-        try (var connect = DatabaseManager.getConnection()) {
-            try (var preparedStatement = connect.prepareStatement("UPDATE Games SET ChessGameCol = ? WHERE gameIDCol = ?")) {
-                preparedStatement.setString(1, jsonChessGame);
-                preparedStatement.setInt(2, gameID);
-                preparedStatement.executeUpdate();
-            } catch (SQLException e) {
-                throw new DataAccessException(e.getMessage());
-            }
-        } catch (SQLException | DataAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }
     /**
      * @param gameID
      * @param playerColor
