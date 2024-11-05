@@ -86,13 +86,13 @@ public class SQLAuthDAO implements AuthDAO {
     }
 
     @Override
-    public void deleteAuth(String username) throws DataAccessException {
-        if (username == null) {
-            throw new DataAccessException("username is null");
+    public void deleteAuth(String authToken) throws DataAccessException {
+        if (authToken == null) {
+            throw new DataAccessException("authToken is null");
         }try (var connect = DatabaseManager.getConnection()) {
             // delete the row that matches the authToken
-            try (var prepStatement = connect.prepareStatement("DELETE FROM Auths WHERE userNameCol = ?;")) {
-                prepStatement.setString(1, username);
+            try (var prepStatement = connect.prepareStatement("DELETE FROM Auths WHERE authTokenCol = ?;")) {
+                prepStatement.setString(1, authToken);
                 prepStatement.executeUpdate();
             }
         }
