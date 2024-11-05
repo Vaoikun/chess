@@ -24,7 +24,7 @@ public class UnitTest
     private final CreateGameRequest createGameRequestTest = new CreateGameRequest("Game1");
     private final CreateGameRequest createGameRequestTest2 = new CreateGameRequest("Game2");
     private final LoginRequest loginRequest = new LoginRequest("aoi", "aoi123");
-    private final MemoryGameDAO gameDAO = new MemoryGameDAO();
+    private final SQLGameDAO gameDAO = new SQLGameDAO();
     private final RegisterService registerServiceTest = new RegisterService();
     private final LoginService loginServiceTest = new LoginService();
     private final CreateGameService createGameServiceTest = new CreateGameService();
