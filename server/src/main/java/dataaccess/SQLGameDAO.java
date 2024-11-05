@@ -48,7 +48,8 @@ public class SQLGameDAO implements GameDAO
         }
         Gson gson = new Gson();
         try (var connect = DatabaseManager.getConnection()) {
-            try (var preparedStatement = connect.prepareStatement("INSERT INTO Games(gameIDCol, gameNameCol, whiteUserNameCol, blackUserNameCol, ChessGameCol) VALUES (?,?,?,?,?);")) {
+            try (var preparedStatement = connect.prepareStatement("INSERT INTO Games(gameIDCol, gameNameCol, " +
+                    "whiteUserNameCol, blackUserNameCol, ChessGameCol) VALUES (?,?,?,?,?);")) {
                 ChessGame newGame = new ChessGame();
                 String jsonGame = gson.toJson(newGame);
                 Random random = new Random();
@@ -76,7 +77,8 @@ public class SQLGameDAO implements GameDAO
         Gson gson = new Gson();
         GameData getGameData;
         try (var connect = DatabaseManager.getConnection()) {
-            try (var preparedStatement = connect.prepareStatement("SELECT gameIDCol, whiteUserNameCol, blackUserNameCol, gameNameCol, ChessGameCol FROM Games WHERE gameIDCol = ?;")) {
+            try (var preparedStatement = connect.prepareStatement("SELECT gameIDCol, " +
+                    "whiteUserNameCol, blackUserNameCol, gameNameCol, ChessGameCol FROM Games WHERE gameIDCol = ?;")) {
                 preparedStatement.setInt(1, gameID);
                 try (var rs = preparedStatement.executeQuery()) {
                     if (rs.next()) {

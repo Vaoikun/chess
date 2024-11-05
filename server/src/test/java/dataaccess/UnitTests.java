@@ -119,7 +119,8 @@ public class UnitTests {
         sqlUserRefer.createUser(userData);
         UserData returnedUserData = sqlUserRefer.getUser(userData.username());
         int gameID = sqlGameRefer.createGame("game1");
-        DataAccessException dataAccessException =  assertThrows(DataAccessException.class, () -> sqlGameRefer.joinGame(gameID, ChessGame.TeamColor.WHITE, null));
+        DataAccessException dataAccessException =  assertThrows(DataAccessException.class,
+                () -> sqlGameRefer.joinGame(gameID, ChessGame.TeamColor.WHITE, null));
         assertEquals("Your username is null", dataAccessException.getMessage());
     }
 
@@ -138,7 +139,7 @@ public class UnitTests {
     public void logoutFailed()
     {
         DataAccessException dataAccessException = assertThrows(DataAccessException.class, () -> sqlAuthRefer.deleteAuth(null));
-        assertEquals("AuthToken is null", dataAccessException.getMessage());
+        assertEquals("authToken is null", dataAccessException.getMessage());
     }
 
     @Test
