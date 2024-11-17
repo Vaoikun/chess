@@ -19,6 +19,7 @@ public class JoinGameService {
      * @throws ServerException;
      * @throws AlreadyTakenException;
      */
+    
     public void joinGame (JoinGameRequest request, String authToken)
             throws DataAccessException, ServerException, ClientException, AlreadyTakenException {
         String username = authDB.getAuth(authToken);
