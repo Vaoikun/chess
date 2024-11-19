@@ -1,7 +1,6 @@
 package ui;
 
 import chess.*;
-import dataaccess.*;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -123,10 +122,10 @@ public class GameplayUI
 
     public void redraw() {
         try {
-            SQLAuthDAO sqlAuth = new SQLAuthDAO();
+//            SQLAuthDAO sqlAuth = new SQLAuthDAO();
 //            ChessGame chessGameRecord = webSocketFacade.chessGame;
-//            ChessBoard chessBoard = chessGameRecord.getBoard();
-            String username = sqlAuth.getAuth(this.authToken);
+////            ChessBoard chessBoard = chessGameRecord.getBoard();
+//            String username = sqlAuth.getAuth(this.authToken);
             ChessGame chessGame1 = new ChessGame();
             ChessBoard chessBoard = chessGame1.getBoard();
             if (color == ChessGame.TeamColor.BLACK) {
