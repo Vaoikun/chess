@@ -76,7 +76,8 @@ public class BoardUI {
         }
     }
 
-    private static void putPieceOnWhiteSpot(int squareRow, int boardCol, int prefixLength, PrintStream out, ChessBoard board, Collection<ChessMove> validMoves) {
+    private static void putPieceOnWhiteSpot(int squareRow, int boardCol, int prefixLength, PrintStream out,
+                                            ChessBoard board, Collection<ChessMove> validMoves) {
         boardCol--;
         setWhite(out);
         out.print(EMPTY.repeat(prefixLength));
@@ -94,7 +95,8 @@ public class BoardUI {
         }
     }
 
-    private static void putPieceOnBlackSpot(int squareRow, int boardCol, int prefixLength, PrintStream out, ChessBoard board, Collection<ChessMove> validMoves) {
+    private static void putPieceOnBlackSpot(int squareRow, int boardCol, int prefixLength, PrintStream out,
+                                            ChessBoard board, Collection<ChessMove> validMoves) {
         boardCol--;
         setBlack(out);
         out.print(EMPTY.repeat(prefixLength));
@@ -113,7 +115,8 @@ public class BoardUI {
         }
     }
 
-    private static void checkValidMoves(Collection<ChessMove> validMoves, int squareRow, int boardCol, PrintStream out) {
+    private static void checkValidMoves(Collection<ChessMove> validMoves, int squareRow, int boardCol,
+                                        PrintStream out) {
         if (validMoves != null) {
             for (ChessMove eachMove : validMoves) {
                 if (eachMove.getEndPosition().equals(new ChessPosition(squareRow + 1, boardCol + 1))) {
@@ -124,7 +127,8 @@ public class BoardUI {
         }
     }
 
-    private static String switchTypeToGetPieceBLACK(ChessPiece targetPiece, String pieceOnUIBoard, PrintStream out) {
+    private static String switchTypeToGetPieceBLACK(ChessPiece targetPiece, String pieceOnUIBoard,
+                                                    PrintStream out) {
         switch (targetPiece.getPieceType()) {
             case PAWN -> pieceOnUIBoard = BLACK_PAWN;
             case KNIGHT -> pieceOnUIBoard = BLACK_KNIGHT;
@@ -137,7 +141,8 @@ public class BoardUI {
         return pieceOnUIBoard;
     }
 
-    private static String switchTypeToGetPieceWHITE(ChessPiece targetPiece, String pieceOnUIBoard, PrintStream out) {
+    private static String switchTypeToGetPieceWHITE(ChessPiece targetPiece, String pieceOnUIBoard,
+                                                    PrintStream out) {
         switch (targetPiece.getPieceType()) {
             case PAWN -> pieceOnUIBoard = WHITE_PAWN;
             case KNIGHT -> pieceOnUIBoard = WHITE_KNIGHT;
@@ -157,7 +162,8 @@ public class BoardUI {
             return switchTypeToGetPieceWHITE(targetPiece, pieceOnUIBoard, out);
         }
     }
-    private static void drawEachRow(PrintStream out, int boardRow, int startRowNumber, ChessBoard board, Collection<ChessMove> validMoves) {
+    private static void drawEachRow(PrintStream out, int boardRow, int startRowNumber, ChessBoard board,
+                                    Collection<ChessMove> validMoves) {
         int prefixLength = (COLUMNS /16);
         out.print(SET_TEXT_COLOR_BLACK);
         out.print(EMPTY.repeat(prefixLength));
@@ -175,7 +181,7 @@ public class BoardUI {
             if (boardRow % 2 == 0) {
                 for (int boardCol = 1; boardCol <= COLUMNS; boardCol++) {
                     if (boardCol % 2 != 0) {
-                        putPieceOnWhiteSpot(boardRow, boardCol, prefixLength, out, board, validMoves); // the null is current pieceOnUIBoard, it will be update
+                        putPieceOnWhiteSpot(boardRow, boardCol, prefixLength, out, board, validMoves);
                     } else {
                         putPieceOnBlackSpot(boardRow, boardCol, prefixLength, out, board, validMoves);
                     }
@@ -183,7 +189,7 @@ public class BoardUI {
             } else {
                 for (int boardCol = 1; boardCol <= COLUMNS; boardCol++) {
                     if (boardCol % 2 != 0) {
-                        putPieceOnBlackSpot(boardRow, boardCol, prefixLength, out, board, validMoves); // the null is current pieceOnUIBoard, it will be updated
+                        putPieceOnBlackSpot(boardRow, boardCol, prefixLength, out, board, validMoves);
                     } else {
                         putPieceOnWhiteSpot(boardRow, boardCol, prefixLength, out, board, validMoves);
                     }
@@ -205,7 +211,7 @@ public class BoardUI {
                     int copyCol = boardCol;
                     copyCol--;
                     if (copyCol % 2 != 0) {
-                        putPieceOnBlackSpot(boardRow, boardCol, prefixLength, out, board, validMoves); // the null is current pieceOnUIBoard, it will be updated
+                        putPieceOnBlackSpot(boardRow, boardCol, prefixLength, out, board, validMoves);
                     } else {
                         putPieceOnWhiteSpot(boardRow, boardCol, prefixLength, out, board, validMoves);
                     }

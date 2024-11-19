@@ -171,7 +171,8 @@ public class PostloginUI {
             if (!gamesNumber.contains(listG.gameID())) {
                 gamesNumber.add(listG.gameID());
             }
-            String listGameStr = "Game Name: " + listG.gameName() + ". Game number: " + length + ". White user: " + listG.whiteUsername() + ". Black user: " + listG.blackUsername();
+            String listGameStr = "Game Name: " + listG.gameName() + ". Game number: " + length
+                    + ". White user: " + listG.whiteUsername() + ". Black user: " + listG.blackUsername();
             OUT.println(listGameStr);
             length++;
             OUT.println();
