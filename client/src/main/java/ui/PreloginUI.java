@@ -98,7 +98,7 @@ public class PreloginUI {
                 Register <USERNAME> <PASSWORD> <EMAIL> -- To create an account
                 Login <USERNAME> <PASSWORD> -- To play chess game.
                 Help -- with possible commands.
-                Quit -- Exits your chess game.
+                Quit -- Exit your chess game.
                 """;
     }
 

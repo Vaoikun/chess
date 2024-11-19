@@ -64,10 +64,10 @@ public class PostloginUI {
         return """
                Create a Game <Name> -- Create a new chess game.
                List Games -- List all the games.
-               Join a Game <GameID> <UR PlayerColor> -- Join a current game.
+               Join a Game <GameID> <PlayerColor> -- Join a current game.
                Observe <GameID> -- Observe a current game.
                Log out -- Logout your account.
-               Quit -- Exits your chess game.
+               Quit -- Exit your chess game.
                Help - With possible commands.
                """;
     }
