@@ -34,9 +34,11 @@ public class PostloginUI {
 
     public void run(){
         OUT.println();
-        OUT.println("Welcome to the chess server! What would you like to do?");
+        OUT.println("Welcome to the server!");
         OUT.println();
-        OUT.println("help()");
+        OUT.println(help());
+        OUT.println();
+        OUT.println("What would you like to do?");
         String input = SCANNER.nextLine();
         while (!Objects.equals(input, "Quit")){
             this.eval(input);
@@ -60,9 +62,9 @@ public class PostloginUI {
     public static String help()
     {
         return """
-               Create Game <Name> -- Create a new chess game.
+               Create a Game <Name> -- Create a new chess game.
                List Games -- List all the games.
-               Join Game <GameID> <UR PlayerColor> -- Join a current game.
+               Join a Game <GameID> <UR PlayerColor> -- Join a current game.
                Observe <GameID> -- Observe a current game.
                Log out -- Logout your account.
                Quit -- Exits your chess game.
