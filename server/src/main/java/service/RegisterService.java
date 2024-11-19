@@ -11,13 +11,6 @@ public class RegisterService {
 
     public RegisterService() throws DataAccessException {}
 
-    /**
-     * @param registerRequest;
-     * @return new RegisterResult;
-     * @throws DataAccessException;
-     * @throws ClientException;
-     * @throws ServerException;
-     */
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException, ClientException, ServerException {
         SQLUserDAO.createUserTable();
         SQLAuthDAO.createAuthTable();

@@ -82,19 +82,12 @@ public class BoardUI {
         out.print(EMPTY.repeat(prefixLength));
         ChessPiece targetPiece = board.getPiece(new ChessPosition(squareRow + 1, boardCol + 1));
 
-        if (validMoves != null) {
-            for (ChessMove eachMove : validMoves) {
-                if (eachMove.getEndPosition().equals(new ChessPosition(squareRow + 1, boardCol + 1))) {
-                    out.print(SET_BG_COLOR_GREEN);
-                    out.print(SET_TEXT_COLOR_RED);
-                }
-            }
-        }
+        checkValidMoves(validMoves, squareRow, boardCol, out);
 
         if (targetPiece != null) {
             String returnedPiece = pickPiece(targetPiece, null, out);
             out.print(returnedPiece);
-            out.print(EMPTY.repeat(prefixLength)); // should I still put this here?
+            out.print(EMPTY.repeat(prefixLength));
         } else {
             out.print(EMPTY);
             out.print(EMPTY.repeat(prefixLength));
@@ -107,14 +100,7 @@ public class BoardUI {
         out.print(EMPTY.repeat(prefixLength));
         ChessPiece targetPiece = board.getPiece(new ChessPosition(squareRow + 1, boardCol + 1));
 
-        if (validMoves != null) {
-            for (ChessMove eachMove : validMoves) {
-                if (eachMove.getEndPosition().equals(new ChessPosition(squareRow + 1, boardCol + 1))) {
-                    out.print(SET_BG_COLOR_GREEN);
-                    out.print(SET_TEXT_COLOR_RED);
-                }
-            }
-        }
+        checkValidMoves(validMoves, squareRow, boardCol, out);
 
         if (targetPiece != null) {
             String returnedPiece = pickPiece(targetPiece, null, out);
@@ -124,6 +110,17 @@ public class BoardUI {
         } else {
             out.print(EMPTY);
             out.print(EMPTY.repeat(prefixLength));
+        }
+    }
+
+    private static void checkValidMoves(Collection<ChessMove> validMoves, int squareRow, int boardCol, PrintStream out) {
+        if (validMoves != null) {
+            for (ChessMove eachMove : validMoves) {
+                if (eachMove.getEndPosition().equals(new ChessPosition(squareRow + 1, boardCol + 1))) {
+                    out.print(SET_BG_COLOR_GREEN);
+                    out.print(SET_TEXT_COLOR_RED);
+                }
+            }
         }
     }
 

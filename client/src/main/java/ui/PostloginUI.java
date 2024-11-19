@@ -110,8 +110,7 @@ public class PostloginUI {
         }
     }
 
-    public void playGame()
-    {
+    public void playGame() {
         OUT.println(RESET_BG_COLOR);
         OUT.println(RESET_TEXT_COLOR);
 
@@ -131,16 +130,6 @@ public class PostloginUI {
                     OUT.println(messageResponseJoinGame.message());
                 }else{
                     OUT.println("You successfully joined the game");
-//                    if (playerColorChanged == ChessGame.TeamColor.BLACK) {
-//                        webSocketFacade.setColor(ChessGame.TeamColor.BLACK);
-//                        webSocketFacade.connectPlayer(authToken, gamesNumber.get(gameID-1));
-//                    }
-//                    else
-//                    {
-//                        webSocketFacade.setColor(ChessGame.TeamColor.WHITE);
-//                        webSocketFacade.connectPlayer(authToken, gamesNumber.get(gameID-1));
-//                    }
-//
                     GameplayUI gamePlayUI = new GameplayUI("http://localhost:8080", authToken, playerColorChanged, gamesNumber.get(gameID-1) );
                     gamePlayUI.run();
                     OUT.println(RESET_BG_COLOR);
@@ -154,8 +143,7 @@ public class PostloginUI {
         }
     }
 
-    public void listGames()
-    {
+    public void listGames() {
         OUT.println(RESET_BG_COLOR);
         OUT.println(RESET_TEXT_COLOR);
         int length = 1;
@@ -166,16 +154,7 @@ public class PostloginUI {
                 if (listGames.isEmpty()) {
                     OUT.println("No games in server");
                 }else{
-                    for (GameData listG : listGames) {
-                        if (!gamesNumber.contains(listG.gameID())) {
-                            gamesNumber.add(listG.gameID());
-                        }
-                        String listGameStr = "Game Name: " + listG.gameName() + ". Game number: " + length + ". White user: " + listG.whiteUsername() + ". Black user: " + listG.blackUsername();
-                        OUT.println(listGameStr);
-                        length++;
-                        OUT.println();
-                        OUT.println();
-                    }
+                    gameLister(listGames, length);
                 }
             }else{
                 MessageResult messageResponse = (MessageResult) listGameReturn;
@@ -184,6 +163,19 @@ public class PostloginUI {
             OUT.println("What would you like to do?");
         }catch (Exception E){
             OUT.println(E.getMessage());
+        }
+    }
+
+    public void gameLister(ArrayList<GameData> listGames, int length){
+        for (GameData listG : listGames) {
+            if (!gamesNumber.contains(listG.gameID())) {
+                gamesNumber.add(listG.gameID());
+            }
+            String listGameStr = "Game Name: " + listG.gameName() + ". Game number: " + length + ". White user: " + listG.whiteUsername() + ". Black user: " + listG.blackUsername();
+            OUT.println(listGameStr);
+            length++;
+            OUT.println();
+            OUT.println();
         }
     }
 
@@ -203,8 +195,6 @@ public class PostloginUI {
                 String gameIdStr = SCANNER.nextLine();
                 int gameID = Integer.parseInt(gameIdStr);
                 OUT.println("You are observing the game");
-//                webSocketFacade.setColor(ChessGame.TeamColor.WHITE);
-//                webSocketFacade.connectPlayer(authToken,  gamesNumber.get(gameID-1));
                 GameplayUI gamePlayUI = new GameplayUI("http://localhost:8080", authToken, ChessGame.TeamColor.WHITE, gamesNumber.get(gameID-1) );
                 gamePlayUI.run();
             }

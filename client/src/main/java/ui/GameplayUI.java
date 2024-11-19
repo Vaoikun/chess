@@ -55,10 +55,7 @@ public class GameplayUI
     public void eval(String input) {
         switch (input) {
             case "Redraw Chess Board" -> redraw();
-//            case "Leave" -> leave();
-//            case "Make a Move" -> makeMove();
             case "Resign" -> resign();
-//            case "Highlight Legal Moves" ->highLight();
             case "Help" -> OUT.println(help());
             default -> OUT.println(help());
         }
@@ -74,31 +71,6 @@ public class GameplayUI
                Help - With possible commands.
                """;
     }
-
-//    public void leave() {
-//        // just in case
-//        OUT.println(RESET_BG_COLOR);
-//        OUT.println(RESET_TEXT_COLOR);
-//
-//        Gson gson = new Gson();
-//        try {
-//            OUT.println("Enter the gameID of the game you would like to leave.");
-//            String gameIdStr = SCANNER.nextLine();
-//            int gameID = Integer.parseInt(gameIdStr);
-//            OUT.println("Are you sure you want to leave? YES / NO");
-//            String answer = SCANNER.nextLine();
-//            if (Objects.equals(answer, "YES")) {
-//                webSocketFacade.leave(authToken, PostloginUI.gamesNumber.get(gameID - 1));
-//                System.out.println(PostloginUI.gamesNumber);
-//                PostloginUI postlogin = new PostloginUI("http://localhost:8080", authToken);
-//                postlogin.run();
-//            } else {
-//                System.out.println("You are still in the game.");
-//            }
-//        } catch (Exception E) {
-//            System.out.println(E.getMessage());
-//        }
-//    }
 
     public  void resign() {
         Gson gson = new Gson();
@@ -122,10 +94,6 @@ public class GameplayUI
 
     public void redraw() {
         try {
-//            SQLAuthDAO sqlAuth = new SQLAuthDAO();
-//            ChessGame chessGameRecord = webSocketFacade.chessGame;
-////            ChessBoard chessBoard = chessGameRecord.getBoard();
-//            String username = sqlAuth.getAuth(this.authToken);
             ChessGame chessGame1 = new ChessGame();
             ChessBoard chessBoard = chessGame1.getBoard();
             if (color == ChessGame.TeamColor.BLACK) {
@@ -140,50 +108,4 @@ public class GameplayUI
         }
     }
 
-//    public  void makeMove() {
-//        try {
-//            OUT.println("Please tell me which position you want to make ?");
-//            int row = SCANNER.nextInt();
-//            int column = SCANNER.nextInt();
-//            ChessPosition chessPosition = new ChessPosition(row, column);
-//            OUT.println("Please tell me which position you want to go ?");
-//            int rowDes = SCANNER.nextInt();
-//            int colDes = SCANNER.nextInt();
-//            ChessPosition chessPositionDes = new ChessPosition(rowDes, colDes);
-//            ChessGame chessGameRecord = webSocketFacade.chessGame;
-//            ChessBoard board = chessGameRecord.getBoard();
-//            ChessPiece targetPiece = board.getPiece(chessPositionDes);
-//            ChessPiece startPiece = board.getPiece(chessPosition);
-////        if (startPiece.getPieceType() == ChessPiece.PieceType.PAWN)
-////        {
-////            if (chessPositionDes.getRow() == 7 || chessPositionDes.getRow() == 8) // pawn promote // do we need to care about the promote situation?
-////            {
-////                ChessMove theMove = new ChessMove(chessPosition, chessPositionDes, );
-////            }
-////        }
-//            ChessMove theMove = new ChessMove(chessPosition, chessPositionDes, null);
-//            chessGameRecord.makeMove(theMove);
-//            webSocketFacade.makeMove(authToken, gameID, theMove);
-//        } catch (Exception e) {
-//            OUT.println(e.getMessage());
-//        }
-//    }
-//
-//    public void highLight() {
-//        OUT.println("Please tell me which piece you would like to move.");
-//        int row = SCANNER.nextInt(); // if the perspective changes, the row and column are not the same.
-//        int column = SCANNER.nextInt();
-//        ChessPosition chessPosition = new ChessPosition(row, column);
-//        ChessGame chessGameRecord = webSocketFacade.chessGame;
-//        ChessBoard board = chessGameRecord.getBoard();
-//        ChessPiece targetPiece = board.getPiece(chessPosition);
-//        Collection<ChessMove> potentialMoves = chessGameRecord.validMoves(chessPosition);
-//        if (color == ChessGame.TeamColor.BLACK) {
-//            BoardUI.callBlackBoard(OUT, board, potentialMoves);
-//        } else if (color == ChessGame.TeamColor.WHITE) {
-//            BoardUI.callWhiteBoard(OUT, board, potentialMoves);
-//        } else {
-//            BoardUI.callWhiteBoard(OUT, board, potentialMoves);
-//        }
-//    }
 }

@@ -80,7 +80,6 @@ public class PreloginUI {
                 LoginResult loginResponseReturn = (LoginResult)loginReturn;
                 String authToken = loginResponseReturn.authToken();
                 OUT.println("You successfully logged in to the account.");
-                // turn to postLogin. do this later
                 PostloginUI postLogin = new PostloginUI("http://localhost:8080", authToken);
                 postLogin.run();
             } else {
