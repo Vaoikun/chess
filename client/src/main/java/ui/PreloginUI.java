@@ -21,29 +21,25 @@ public class PreloginUI {
     }
 
     public void run(){
-        OUT.println("Welcome to the Chess Game. Type Here to get started.");
+        OUT.println("Welcome to the Chess Game server.");
         OUT.println();
         OUT.println(help());
-        OUT.println("Make your choice.");
+        OUT.println("What would you like to do?");
         String input = SCANNER.nextLine();
-        while (!Objects.equals(input, "QUIT"))
-        {
+        while (!Objects.equals(input, "QUIT")) {
             this.eval(input);
             input = SCANNER.nextLine();
         }
     }
 
-    public void eval(String input)
-    {
-        switch (input)
-        {
+    public void eval(String input) {
+        switch (input) {
             case "Register" -> register();
             case "Login" -> login();
             case "Help" -> OUT.println(help());
             case "Quit" -> quit();
             default -> OUT.println(help());
         }
-
     }
 
     public static void register() {
@@ -57,11 +53,11 @@ public class PreloginUI {
         try {
             Object registerReturn = ServerFacade.register(username, password, email);
             if (registerReturn instanceof RegisterResult) {
-                OUT.println("You successfully register the account.");
+                OUT.println("You successfully registered the account.");
                 RegisterResult registerResponseReturned = (RegisterResult) registerReturn;
                 String authToken = registerResponseReturned.authToken();
                 OUT.println();
-                PostLogin postlogin = new PostLogin("http://localhost:8080", authToken);
+                PostloginUI postlogin = new PostloginUI("http://localhost:8080", authToken);
                 postlogin.run();
             } else {
                 MessageResult messageResponseRegister = (MessageResult) registerReturn;
@@ -73,40 +69,31 @@ public class PreloginUI {
         }
     }
 
-    public static void login()
-    {
+    public static void login() {
         OUT.println("Please type your username.");
         String username = SCANNER.nextLine();
         OUT.println("Please type your password");
         String password = SCANNER.nextLine();
-
-        try
-        {
+        try {
             Object loginReturn = ServerFacade.login(username, password);
-            if (loginReturn instanceof LoginResult)
-            {
+            if (loginReturn instanceof LoginResult) {
                 LoginResult loginResponseReturn = (LoginResult)loginReturn;
                 String authToken = loginResponseReturn.authToken();
-                OUT.println("You successfully login the account.");
+                OUT.println("You successfully logged in to the account.");
                 // turn to postLogin. do this later
-                PostLogin postLogin = new PostLogin("http://localhost:8080", authToken);
+                PostloginUI postLogin = new PostloginUI("http://localhost:8080", authToken);
                 postLogin.run();
-            }
-            else
-            {
+            } else {
                 MessageResult messageResponse = (MessageResult) loginReturn;
                 OUT.println(messageResponse.message());
             }
             OUT.println(help());
-        }
-        catch (IOException E)
-        {
+        } catch (IOException E) {
             OUT.println(E.getMessage());
         }
     }
 
-    public static String help()
-    {
+    public static String help() {
         return """
                 Register <USERNAME> <PASSWORD> <EMAIL> -- To create an account
                 Login <USERNAME> <PASSWORD> -- To play chess game.
@@ -115,8 +102,7 @@ public class PreloginUI {
                 """;
     }
 
-    public void quit()
-    {
+    public void quit() {
         OUT.println("Your game is exit."); // the print is not showing up in console.
         System.exit(0);
     }
