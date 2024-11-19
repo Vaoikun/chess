@@ -36,7 +36,7 @@ public class PostloginUI {
         OUT.println();
         OUT.println("Welcome to the server!");
         OUT.println();
-        OUT.println("Help() for more commands.");
+        OUT.println("Type Help for more commands.");
         OUT.println();
         OUT.println("What would you like to do?");
         String input = SCANNER.nextLine();
@@ -55,7 +55,7 @@ public class PostloginUI {
             case "Observe" -> observeGame();
             case "Log Out" -> logOut();
             case "Quit" -> quit();
-            default -> OUT.println(help());
+            default -> OUT.println("What would you like to do?");
         }
     }
 
@@ -112,7 +112,7 @@ public class PostloginUI {
         OUT.println(RESET_TEXT_COLOR);
 
         Gson gson = new Gson();
-        OUT.println("Enter the name of the game you would like to join.");
+        OUT.println("Enter the gameID of the game you would like to join.");
         String gameIdStr = SCANNER.nextLine();
         int gameID = Integer.parseInt(gameIdStr);
         OUT.println("Choose your team color.");
