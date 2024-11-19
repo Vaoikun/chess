@@ -50,7 +50,7 @@ public class PostloginUI {
         switch (input){
             case "Help" -> OUT.println(help());
             case "Create a Game" -> createGame();
-            case "Join a Game" -> joinGame();
+            case "Play a Game" -> playGame();
             case "List Games" -> listGames();
             case "Observe" -> observeGame();
             case "Log Out" -> logOut();
@@ -63,12 +63,14 @@ public class PostloginUI {
     {
         return """
                Create a Game <Name> -- Create a new chess game.
+               Play a Game <GameID> -- Join a chess game.
                List Games -- List all the games.
-               Join a Game <GameID> <PlayerColor> -- Join a current game.
-               Observe <GameID> -- Observe a current game.
+               Observe <GameID> -- Observe a game.
                Log out -- Logout your account.
                Quit -- Exit your chess game.
                Help - With possible commands.
+               
+               What would you like to do?
                """;
     }
 
@@ -101,12 +103,14 @@ public class PostloginUI {
                 MessageResult messageResult = (MessageResult) createGameReturn;
                 OUT.println(messageResult.message());
             }
+            OUT.println();
+            OUT.println("What would you like to do?");
         }catch (Exception e) {
             OUT.println(e.getMessage());
         }
     }
 
-    public void joinGame()
+    public void playGame()
     {
         OUT.println(RESET_BG_COLOR);
         OUT.println(RESET_TEXT_COLOR);
@@ -130,7 +134,6 @@ public class PostloginUI {
 //                    if (playerColorChanged == ChessGame.TeamColor.BLACK) {
 //                        webSocketFacade.setColor(ChessGame.TeamColor.BLACK);
 //                        webSocketFacade.connectPlayer(authToken, gamesNumber.get(gameID-1));
-//                        // go to gameUI
 //                    }
 //                    else
 //                    {
@@ -178,7 +181,7 @@ public class PostloginUI {
                 MessageResult messageResponse = (MessageResult) listGameReturn;
                 OUT.println(messageResponse.message());
             }
-            OUT.println(help());
+            OUT.println("What would you like to do?");
         }catch (Exception E){
             OUT.println(E.getMessage());
         }
