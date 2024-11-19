@@ -45,7 +45,7 @@ public class ServerFacade {
         String method = "DELETE";
         HttpURLConnection http = sendRequest(url, null, method, authToken);
 
-        return (MessageResult) getResultFromHandlers(http, LoginResult.class);
+        return (MessageResult) getResultFromHandlers(http, MessageResult.class);
     }
 
     public static MessageResult clear() throws IOException {
@@ -93,46 +93,36 @@ public class ServerFacade {
             http.addRequestProperty("authorization", authToken);
         }
         if (requestBody != null) {
-            String jsonRequestBody = gson.toJson(requestBody); // make it as json before putting into body
+            String jsonRequestBody = gson.toJson(requestBody);
             writeRequestBody(jsonRequestBody, http);
         }
         http.connect();
-        return http; // return the http that already had the request
+        return http;
     }
 
     private static void writeRequestBody(String jsonRequestBody, HttpURLConnection http) throws IOException {
-        // I think I also need to set the authToken into Body right? But authToken should be set in header.
-        if (!jsonRequestBody.isEmpty())
-        {
+        if (!jsonRequestBody.isEmpty()) {
 //            http.addRequestProperty("content");
-            http.setDoOutput(true); // I can write request into body
-            try (var outputStream = http.getOutputStream())
-            {
-                outputStream.write(jsonRequestBody.getBytes()); // put it into body
+            http.setDoOutput(true);
+            try (var outputStream = http.getOutputStream()) {
+                outputStream.write(jsonRequestBody.getBytes());
             }
         }
     }
 
-    private static Object getResultFromHandlers(HttpURLConnection http, Type type) throws IOException
-    {
+    private static Object getResultFromHandlers(HttpURLConnection http, Type type) throws IOException {
         Object responseBody;
         Gson gson = new Gson();
-        if (http.getResponseCode() == 200)
-        {
-            try (InputStream respBody = http.getInputStream())
-            {
+        if (http.getResponseCode() == 200) {
+            try (InputStream respBody = http.getInputStream()) {
                 InputStreamReader inputStreamReader = new InputStreamReader(respBody);
                 responseBody = gson.fromJson(inputStreamReader, type);
             }
-        }
-        else
-        {
-            try(InputStream respBody = http.getErrorStream())
-            {
+        } else {
+            try(InputStream respBody = http.getErrorStream()) {
                 InputStreamReader inputStreamReader = new InputStreamReader(respBody);
                 responseBody = gson.fromJson(inputStreamReader, MessageResult.class);
             }
-
         }
         return responseBody;
     }
