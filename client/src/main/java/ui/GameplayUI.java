@@ -108,7 +108,9 @@ public class GameplayUI
             OUT.println("Are you sure you want to leave? YES / NO");
             String answer = SCANNER.nextLine();
             if (Objects.equals(answer, "YES")) {
-                postLogin.run();
+                System.out.println(PostloginUI.gamesNumber);
+                PostloginUI postlogin = new PostloginUI("http://localhost:8080", authToken);
+                postlogin.run();
             } else {
                 System.out.println("You are still in the game.");
             }
