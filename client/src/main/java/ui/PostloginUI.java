@@ -141,7 +141,7 @@ public class PostloginUI {
 //                        webSocketFacade.connectPlayer(authToken, gamesNumber.get(gameID-1));
 //                    }
 //
-                    GameplayUI gamePlayUI = new GameplayUI("http://localhost:8080", authToken, playerColorChanged,gamesNumber.get(gameID-1) );
+                    GameplayUI gamePlayUI = new GameplayUI("http://localhost:8080", authToken, playerColorChanged, gamesNumber.get(gameID-1) );
                     gamePlayUI.run();
                     OUT.println(RESET_BG_COLOR);
                     OUT.println(RESET_TEXT_COLOR);

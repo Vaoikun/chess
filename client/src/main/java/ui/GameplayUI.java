@@ -43,7 +43,9 @@ public class GameplayUI
         OUT.println();
         OUT.println("Welcome to your game!");
         OUT.println();
-        OUT.println(help());
+        redraw();
+        OUT.println();
+        OUT.println("What would you like to do?");
         String input = SCANNER.nextLine();
         while (!Objects.equals(input, "Quit")) {
             this.eval(input);
@@ -128,7 +130,7 @@ public class GameplayUI
             ChessGame chessGame1 = new ChessGame();
             ChessBoard chessBoard = chessGame1.getBoard();
             if (color == ChessGame.TeamColor.BLACK) {
-                BoardUI.callWhiteBoard(OUT, chessBoard, null);
+                BoardUI.callBlackBoard(OUT, chessBoard, null);
             } else if (color == ChessGame.TeamColor.WHITE) {
                 BoardUI.callWhiteBoard(OUT, chessBoard, null);
             } else {
