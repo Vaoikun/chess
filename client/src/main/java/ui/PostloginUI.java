@@ -36,7 +36,7 @@ public class PostloginUI {
         OUT.println();
         OUT.println("Welcome to the server!");
         OUT.println();
-        OUT.println(help());
+        OUT.println("Help() for more commands.");
         OUT.println();
         OUT.println("What would you like to do?");
         String input = SCANNER.nextLine();
