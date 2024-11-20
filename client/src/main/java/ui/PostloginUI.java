@@ -53,7 +53,7 @@ public class PostloginUI {
             case "Play a Game" -> playGame();
             case "List Games" -> listGames();
             case "Observe" -> observeGame();
-            case "Log Out" -> logOut();
+            case "Log out" -> logOut();
             case "Quit" -> quit();
             default -> OUT.println("What would you like to do?");
         }
@@ -117,29 +117,31 @@ public class PostloginUI {
         Gson gson = new Gson();
         OUT.println("Enter the gameID of the game you would like to join.");
         String gameIdStr = SCANNER.nextLine();
-        int gameID = Integer.parseInt(gameIdStr);
-        OUT.println("Choose your team color.");
-        String playerColor = SCANNER.nextLine();
-        if (!Objects.equals(playerColor, "WHITE") && !playerColor.equals("BLACK")) {
-            OUT.println("Bad Request. Color should be all uppercase.");
-        }else{
-            ChessGame.TeamColor playerColorChanged = gson.fromJson(playerColor, ChessGame.TeamColor.class);
-            try {
-                MessageResult messageResponseJoinGame = ServerFacade.joinGame(playerColorChanged,  gamesNumber.get(gameID-1), authToken);
-                if (!Objects.equals(messageResponseJoinGame.message(), "")) {
-                    OUT.println(messageResponseJoinGame.message());
-                }else{
-                    OUT.println("You successfully joined the game");
-                    GameplayUI gamePlayUI = new GameplayUI("http://localhost:8080", authToken, playerColorChanged, gamesNumber.get(gameID-1) );
-                    gamePlayUI.run();
-                    OUT.println(RESET_BG_COLOR);
-                    OUT.println(RESET_TEXT_COLOR);
+        try {
+            int gameID = Integer.parseInt(gameIdStr);
+            OUT.println("Choose your team color.");
+            String playerColor = SCANNER.nextLine();
+            if (!Objects.equals(playerColor, "WHITE") && !playerColor.equals("BLACK")) {
+                OUT.println("Bad Request. Color should be all uppercase.");
+            } else {
+                ChessGame.TeamColor playerColorChanged = gson.fromJson(playerColor, ChessGame.TeamColor.class);
+                try {
+                    MessageResult messageResponseJoinGame = ServerFacade.joinGame(playerColorChanged, gamesNumber.get(gameID - 1), authToken);
+                    if (!Objects.equals(messageResponseJoinGame.message(), "")) {
+                        OUT.println(messageResponseJoinGame.message());
+                    } else {
+                        OUT.println("You successfully joined the game");
+                        GameplayUI gamePlayUI = new GameplayUI("http://localhost:8080", authToken, playerColorChanged, gamesNumber.get(gameID - 1));
+                        gamePlayUI.run();
+                        OUT.println(RESET_BG_COLOR);
+                        OUT.println(RESET_TEXT_COLOR);
+                    }
+                } catch (Exception e) {
+                    OUT.println("Error Joining Game. Please check the game list.");
                 }
             }
-            catch (Exception e)
-            {
-                OUT.println(e.getMessage());
-            }
+        }catch (Exception e) {
+            OUT.println("Must enter a valid number.");
         }
     }
 
@@ -194,10 +196,14 @@ public class PostloginUI {
                 System.err.println();
                 OUT.println("Which game you would like to observe.");
                 String gameIdStr = SCANNER.nextLine();
-                int gameID = Integer.parseInt(gameIdStr);
-                OUT.println("You are observing the game");
-                GameplayUI gamePlayUI = new GameplayUI("http://localhost:8080", authToken, ChessGame.TeamColor.WHITE, gamesNumber.get(gameID-1) );
-                gamePlayUI.run();
+                try {
+                    int gameID = Integer.parseInt(gameIdStr);
+                    GameplayUI gamePlayUI = new GameplayUI("http://localhost:8080", authToken, ChessGame.TeamColor.WHITE, gamesNumber.get(gameID - 1));
+                    gamePlayUI.run();
+                    OUT.println("You are observing the game");
+                }catch (Exception e) {
+                    OUT.println("Must enter a valid number.");
+                }
             }
             OUT.println(RESET_BG_COLOR);
             OUT.println(RESET_TEXT_COLOR);

@@ -56,6 +56,7 @@ public class GameplayUI
         switch (input) {
             case "Redraw Chess Board" -> redraw();
             case "Resign" -> resign();
+            case "Leave" -> leave();
             case "Help" -> OUT.println(help());
             default -> OUT.println(help());
         }
@@ -78,6 +79,22 @@ public class GameplayUI
             OUT.print("Which game you would like to resign from?");
             String gameIDStr = SCANNER.nextLine();
             int gameID = Integer.parseInt(gameIDStr);
+            OUT.println("Are you sure you want to leave? YES / NO");
+            String answer = SCANNER.nextLine();
+            if (Objects.equals(answer, "YES")) {
+                System.out.println(PostloginUI.gamesNumber);
+                PostloginUI postlogin = new PostloginUI("http://localhost:8080", authToken);
+                postlogin.run();
+            } else {
+                System.out.println("You are still in the game.");
+            }
+        } catch (Exception E) {
+            System.out.println(E.getMessage());
+        }
+    }
+
+    public void leave() {
+        try {
             OUT.println("Are you sure you want to leave? YES / NO");
             String answer = SCANNER.nextLine();
             if (Objects.equals(answer, "YES")) {

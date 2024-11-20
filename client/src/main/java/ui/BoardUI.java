@@ -29,6 +29,8 @@ public class BoardUI {
         color = WHITE;
         int startRowNumberWhite = 1;
         String[] lettersInHeaderWhite = {"a", "b", "c", "d", "e", "f", "g", "h"};
+        setGray(out);
+        out.print(" ");
         drawHeaders(out, lettersInHeaderWhite);
         drawBoard(out, startRowNumberWhite, board, validMoves);
         out.println(RESET_BG_COLOR);
@@ -39,6 +41,8 @@ public class BoardUI {
         color = BLACK;
         int startRowNumberBlack = 8;
         String[] lettersInHeaderBlack = {"h", "g", "f", "e", "d", "c", "b", "a"};
+        setGray(out);
+        out.print(" ");
         drawHeaders(out, lettersInHeaderBlack);
         drawBoard(out, startRowNumberBlack, board, validMoves);
         out.println(RESET_BG_COLOR);
@@ -46,9 +50,12 @@ public class BoardUI {
     }
     private static void drawHeaders(PrintStream out, String[] lettersInHeader) {
         setGray(out);
+        out.print(" ");
         for(int column = 0; column < COLUMNS; column++) {
             drawHeader(out, lettersInHeader[column]);
         }
+        out.print("    ");
+        setBlank(out);
         out.println();
     }
 
@@ -61,16 +68,15 @@ public class BoardUI {
         //out.print(SET_BG_COLOR_LIGHT_GREY);
         out.print(SET_TEXT_COLOR_BLACK);
         out.print(letter);
-        setGray(out);
     }
 
     private static void drawBoard(PrintStream out, int startRowNumber, ChessBoard board, Collection<ChessMove> validMoves) {
         if (color == WHITE) {
-            for (int boardRow = 0; boardRow < ROWS; boardRow++) {
+            for (int boardRow = 7; boardRow > -1; boardRow--) {
                 drawEachRow(out, boardRow, startRowNumber, board, validMoves);
             }
         } else {
-            for (int boardRow = 7; boardRow > -1; boardRow--) {
+            for (int boardRow = 0; boardRow < ROWS; boardRow++) {
                 drawEachRow(out, boardRow, startRowNumber, board, validMoves);
             }
         }
@@ -165,17 +171,22 @@ public class BoardUI {
     private static void drawEachRow(PrintStream out, int boardRow, int startRowNumber, ChessBoard board,
                                     Collection<ChessMove> validMoves) {
         int prefixLength = (COLUMNS /16);
+        setGray(out);
         out.print(SET_TEXT_COLOR_BLACK);
         out.print(EMPTY.repeat(prefixLength));
-        if (color == WHITE) {
+        if (color == BLACK) {
             int copyWhite = boardRow;
             copyWhite++;
+            out.print(" ");
             out.print(String.valueOf(copyWhite));
+            out.print(" ");
             out.print(EMPTY.repeat(prefixLength));}
         else {
             int copyRowBlack = boardRow;
             copyRowBlack++;
+            out.print(" ");
             out.print(String.valueOf(copyRowBlack));
+            out.print(" ");
             out.print(EMPTY.repeat(prefixLength));}
         if (color == WHITE) {
             if (boardRow % 2 == 0) {
@@ -221,22 +232,29 @@ public class BoardUI {
         setGray(out);
         out.print(EMPTY.repeat(prefixLength));
         out.print(SET_TEXT_COLOR_BLACK);
-        if (color == WHITE) {
+        if (color == BLACK) {
             int copyRowWhite = boardRow + 1;
+            out.print(" ");
             out.print(String.valueOf(copyRowWhite));
+            out.print(" ");
             out.print(EMPTY.repeat(prefixLength));
         } else {
             int copyRowBlack = boardRow;
             copyRowBlack++;
+            out.print(" ");
             out.print(String.valueOf(copyRowBlack));
+            out.print(" ");
         }
+        setBlank(out);
         out.print(EMPTY.repeat(prefixLength));
         out.println();
-        if (boardRow == 7 && color == WHITE) {
-            setGray(out); // make the next line gray
+        if (boardRow == 0 && color == WHITE) {
+            setGray(out);
+            out.print(" ");
             String[] lettersInHeaderWhite = {"a", "b", "c", "d", "e", "f", "g", "h"};
             drawHeaders(out, lettersInHeaderWhite);
-        } else if (boardRow == 0 && color == BLACK) {
+        } else if (boardRow == 7 && color == BLACK) {
+            out.print(" ");
             String[] lettersInHeaderBlack = {"h", "g", "f", "e", "d", "c", "b", "a"};
             drawHeaders(out, lettersInHeaderBlack);
         }
@@ -255,5 +273,9 @@ public class BoardUI {
     private static void setBlack(PrintStream out) {
         out.print(SET_BG_COLOR_BLACK);
         out.print(SET_TEXT_COLOR_BLACK);
+    }
+
+    private static void setBlank(PrintStream out) {
+        out.print(RESET_BG_COLOR);
     }
 }
