@@ -198,7 +198,8 @@ public class PostloginUI {
                 String gameIdStr = SCANNER.nextLine();
                 try {
                     int gameID = Integer.parseInt(gameIdStr);
-                    GameplayUI gamePlayUI = new GameplayUI("http://localhost:8080", authToken, ChessGame.TeamColor.WHITE, gamesNumber.get(gameID - 1));
+                    GameplayUI gamePlayUI = new GameplayUI("http://localhost:8080", authToken,
+                            ChessGame.TeamColor.WHITE, gamesNumber.get(gameID - 1));
                     gamePlayUI.run();
                     OUT.println("You are observing the game");
                 }catch (Exception e) {

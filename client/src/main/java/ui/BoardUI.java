@@ -135,29 +135,27 @@ public class BoardUI {
 
     private static String switchTypeToGetPieceBLACK(ChessPiece targetPiece, String pieceOnUIBoard,
                                                     PrintStream out) {
-        switch (targetPiece.getPieceType()) {
-            case PAWN -> pieceOnUIBoard = BLACK_PAWN;
-            case KNIGHT -> pieceOnUIBoard = BLACK_KNIGHT;
-            case ROOK -> pieceOnUIBoard = BLACK_ROOK;
-            case QUEEN -> pieceOnUIBoard = BLACK_QUEEN;
-            case KING -> pieceOnUIBoard = BLACK_KING;
-            case BISHOP -> pieceOnUIBoard = BLACK_BISHOP;
-        }
-        out.print(SET_TEXT_COLOR_RED);
-        return pieceOnUIBoard;
+        return switchPieceType(targetPiece, pieceOnUIBoard, out,
+                BLACK_PAWN, BLACK_KNIGHT, BLACK_ROOK, BLACK_QUEEN, BLACK_KING, BLACK_BISHOP, SET_TEXT_COLOR_RED);
     }
 
     private static String switchTypeToGetPieceWHITE(ChessPiece targetPiece, String pieceOnUIBoard,
                                                     PrintStream out) {
+        return switchPieceType(targetPiece, pieceOnUIBoard, out,
+                WHITE_PAWN, WHITE_KNIGHT, WHITE_ROOK, WHITE_QUEEN, WHITE_KING, WHITE_BISHOP, SET_TEXT_COLOR_BLUE);
+    }
+
+    private static String switchPieceType(ChessPiece targetPiece, String pieceOnUIBoard, PrintStream out,
+                                          String newPawn, String newKnight, String newRook, String newQueen, String newKing, String newBishop, String setTextColorBlue) {
         switch (targetPiece.getPieceType()) {
-            case PAWN -> pieceOnUIBoard = WHITE_PAWN;
-            case KNIGHT -> pieceOnUIBoard = WHITE_KNIGHT;
-            case ROOK -> pieceOnUIBoard = WHITE_ROOK;
-            case QUEEN -> pieceOnUIBoard = WHITE_QUEEN;
-            case KING -> pieceOnUIBoard = WHITE_KING;
-            case BISHOP -> pieceOnUIBoard = WHITE_BISHOP;
+            case PAWN -> pieceOnUIBoard = newPawn;
+            case KNIGHT -> pieceOnUIBoard = newKnight;
+            case ROOK -> pieceOnUIBoard = newRook;
+            case QUEEN -> pieceOnUIBoard = newQueen;
+            case KING -> pieceOnUIBoard = newKing;
+            case BISHOP -> pieceOnUIBoard = newBishop;
         }
-        out.print(SET_TEXT_COLOR_BLUE);
+        out.print(setTextColorBlue);
         return pieceOnUIBoard;
     }
 
