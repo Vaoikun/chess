@@ -146,7 +146,8 @@ public class BoardUI {
     }
 
     private static String switchPieceType(ChessPiece targetPiece, String pieceOnUIBoard, PrintStream out,
-                                          String newPawn, String newKnight, String newRook, String newQueen, String newKing, String newBishop, String setTextColorBlue) {
+                                          String newPawn, String newKnight, String newRook, String newQueen,
+                                          String newKing, String newBishop, String setTextColorBlue) {
         switch (targetPiece.getPieceType()) {
             case PAWN -> pieceOnUIBoard = newPawn;
             case KNIGHT -> pieceOnUIBoard = newKnight;
