@@ -190,7 +190,7 @@ public class BoardUI {
         if (color == WHITE) {
             if (boardRow % 2 == 0) {
                 for (int boardCol = 1; boardCol <= COLUMNS; boardCol++) {
-                    if (boardCol % 2 != 0) {
+                    if (boardCol % 2 == 0) {
                         putPieceOnWhiteSpot(boardRow, boardCol, prefixLength, out, board, validMoves);
                     } else {
                         putPieceOnBlackSpot(boardRow, boardCol, prefixLength, out, board, validMoves);
@@ -198,7 +198,7 @@ public class BoardUI {
                 }
             } else {
                 for (int boardCol = 1; boardCol <= COLUMNS; boardCol++) {
-                    if (boardCol % 2 != 0) {
+                    if (boardCol % 2 == 0) {
                         putPieceOnBlackSpot(boardRow, boardCol, prefixLength, out, board, validMoves);
                     } else {
                         putPieceOnWhiteSpot(boardRow, boardCol, prefixLength, out, board, validMoves);
@@ -210,7 +210,7 @@ public class BoardUI {
             copyRow++;
             if (copyRow % 2 == 0) {
                 for (int boardCol = 8; boardCol > 0; boardCol--) {
-                    if (boardCol % 2 == 0) {
+                    if (boardCol % 2 != 0) {
                         putPieceOnWhiteSpot(boardRow, boardCol, prefixLength, out, board, validMoves);
                     } else {
                         putPieceOnBlackSpot(boardRow, boardCol, prefixLength, out, board, validMoves);
@@ -220,7 +220,7 @@ public class BoardUI {
                 for (int boardCol = 8; boardCol > 0; boardCol--) {
                     int copyCol = boardCol;
                     copyCol--;
-                    if (copyCol % 2 != 0) {
+                    if (copyCol % 2 == 0) {
                         putPieceOnBlackSpot(boardRow, boardCol, prefixLength, out, board, validMoves);
                     } else {
                         putPieceOnWhiteSpot(boardRow, boardCol, prefixLength, out, board, validMoves);

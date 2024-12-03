@@ -80,7 +80,6 @@ public class PostloginUI {
 
         OUT.println("Give a name for the game.");
         String gameName = SCANNER.nextLine();
-        int number = 1;
         try {
             Object createGameReturn = ServerFacade.createGame(gameName, authToken);
             Object listGameObject = ServerFacade.listGame(authToken);
@@ -95,10 +94,7 @@ public class PostloginUI {
             if (createGameReturn instanceof CreateGameResult){
                 CreateGameResult createGameResultReturn = (CreateGameResult) createGameReturn;
                 gamesNumber.add(createGameResultReturn.gameID());
-                Object listGameReturn = ServerFacade.listGame(authToken);
-                ListGameResult listGameRet = (ListGameResult) listGameReturn;
-                ArrayList<GameData> games = listGameRet.games();
-                OUT.println("You have successfully created a new game. Game ID is: " + listGames.size());
+                OUT.println("You have successfully created a new game. Game ID is: " + createGameResultReturn.gameID());
             }else{
                 MessageResult messageResult = (MessageResult) createGameReturn;
                 OUT.println(messageResult.message());
@@ -148,7 +144,6 @@ public class PostloginUI {
     public void listGames() {
         OUT.println(RESET_BG_COLOR);
         OUT.println(RESET_TEXT_COLOR);
-        int length = 1;
         try {
             Object listGameReturn = ServerFacade.listGame(authToken);
             if (listGameReturn instanceof ListGameResult lIstGameResponseReturn) {
@@ -156,7 +151,7 @@ public class PostloginUI {
                 if (listGames.isEmpty()) {
                     OUT.println("No games in server");
                 }else{
-                    gameLister(listGames, length);
+                    gameLister(listGames);
                 }
             }else{
                 MessageResult messageResponse = (MessageResult) listGameReturn;
@@ -168,15 +163,14 @@ public class PostloginUI {
         }
     }
 
-    public void gameLister(ArrayList<GameData> listGames, int length){
+    public void gameLister(ArrayList<GameData> listGames){
         for (GameData listG : listGames) {
             if (!gamesNumber.contains(listG.gameID())) {
                 gamesNumber.add(listG.gameID());
             }
-            String listGameStr = "Game Name: " + listG.gameName() + ". Game number: " + length
+            String listGameStr = "Game Name: " + listG.gameName() + ". Game number: " + listG.gameID()
                     + ". White user: " + listG.whiteUsername() + ". Black user: " + listG.blackUsername();
             OUT.println(listGameStr);
-            length++;
             OUT.println();
             OUT.println();
         }
