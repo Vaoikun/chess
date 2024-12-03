@@ -31,11 +31,13 @@ public class WebSocketHandler {
         }
     }
 
-    public static void observeOrJoin{};
+    public static void observeOrJoin(){
+        Gson gson = new Gson();
+    };
 
-    public static void leave{return;}
+    public static void leave(){return;}
 
-    public static void movePiece{return leave;}
+    public static void movePiece(){return;}
 
-    public static void resign{return;}
+    public static void resign(){return;}
 }
