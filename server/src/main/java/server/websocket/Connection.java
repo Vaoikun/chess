@@ -6,7 +6,6 @@ import java.io.IOException;
 
 public class Connection {
     public Session session;
-
     public String authToken;
 
     public Connection(String authToken, Session session) {
