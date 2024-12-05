@@ -17,20 +17,12 @@ import static ui.EscapeSequences.*;
 public class GameplayUI {
 
     private static final PrintStream OUT = new PrintStream(System.out, true, StandardCharsets.UTF_8);
-
     private static final Scanner SCANNER = new Scanner(System.in);
-
     private WebSocketFacade webSocketFacade;
-
-    private PostloginUI postLogin;
-
-    public ChessGame chessGame = null;
-
     private String authToken;
-
     private ChessGame.TeamColor color;
-
     private int gameID;
+
     public GameplayUI(String serverUrl, String authToken, WebSocketFacade webSocketFacade, ChessGame.TeamColor color, int gameID) {
         ServerFacade serverfacade = new ServerFacade(serverUrl);
         this.authToken = authToken;
