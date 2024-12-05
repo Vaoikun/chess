@@ -56,8 +56,10 @@ public class GameplayUI {
     public void eval(String input) {
         switch (input) {
             case "Redraw Chess Board" -> redraw();
-            case "Resign" -> resign();
+            case "Make a Move" -> makeMove();
+            case "Highlight Legal Moves" -> highLight();
             case "Leave" -> leave();
+            case "Resign" -> resign();
             case "Help" -> OUT.println(help());
             default -> OUT.println(help());
         }
@@ -65,11 +67,11 @@ public class GameplayUI {
 
     public static String help() {
         return """
-               Redraw Chess Board -- (out of service)Redraws the chess board.
-               Leave -- (out of service)Removes the user from the game. You will be sent back to the Post-Login page.
-               Make a Move -- (out of service)Select a piece and type in the destination coordinates.
+               Redraw Chess Board -- Redraws the chess board.
+               Make a Move -- Select a piece and type in the destination coordinates.
+               Highlight Legal Moves -- Highlights the legal moves in a chess board.
+               Leave -- Removes the user from the game. You will be sent back to the Post-Login page.
                Resign -- Resign from the game.
-               Highlight Legal Moves -- (out of service)Highlights the legal moves in a chess board.
                Help - With possible commands.
                """;
     }
