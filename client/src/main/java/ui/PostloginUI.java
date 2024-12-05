@@ -6,7 +6,6 @@ import com.google.gson.Gson;
 import httpresult.CreateGameResult;
 import httpresult.ListGameResult;
 import httpresult.MessageResult;
-import websocket.*;
 import model.GameData;
 
 import java.io.IOException;
