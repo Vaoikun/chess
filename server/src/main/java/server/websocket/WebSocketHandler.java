@@ -27,7 +27,6 @@ public class WebSocketHandler {
             case UserGameCommand.CommandType.LEAVE -> leave(message, session);
             case UserGameCommand.CommandType.MAKE_MOVE -> movePiece(message, session);
             case UserGameCommand.CommandType.RESIGN -> resign(message, session);
-            // how about the check and checkmate?
         }
     }
 
