@@ -1,9 +1,9 @@
 package server.websocket;
 
-import com.mysql.cj.exceptions.CJOperationNotSupportedException;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 
+import javax.management.Notification;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Vector;
