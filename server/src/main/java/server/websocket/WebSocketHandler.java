@@ -230,6 +230,13 @@ public class WebSocketHandler {
         sendingErrorMessage(session, errorJson);
     }
 
+    public static void sendNotification(String username, int gameID, String message, Gson gson, ChessGame.TeamColor color) throws IOException {
+        Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username, color);
+        notification.setMessage(message);
+        String messageJson = gson.toJson(notification);
+        CONNECTION_MANAGER.broadcast(gameID, null, messageJson);
+    }
+
     public static void blackCheckmateStalemateChecker(ChessGame chessGame, ChessMove chessMove, SQLGameDAO sqlGame,
                                                  int gameID, GameData currentGame, String username, String authToken, Gson gson, Session session) throws IOException, InvalidMoveException {
 
@@ -237,11 +244,13 @@ public class WebSocketHandler {
             if (!chessGame.isInCheckmate(ChessGame.TeamColor.BLACK) && !chessGame.isInStalemate(ChessGame.TeamColor.BLACK) && !chessGame.isResigned) {
                 chessGame.makeMove(chessMove);
                 sqlGame.updateChessGame(chessGame, gameID);
-                chessGame.turnColor = ChessGame.TeamColor.WHITE;
-                if (chessGame.isInCheckmate(ChessGame.TeamColor.WHITE)) {
-                    Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username, ChessGame.TeamColor.BLACK);
-                    notification.setMessage(currentGame.whiteUsername() + " is in checkmate.");
-                    String messageJson = gson.toJson(notification);CONNECTION_MANAGER.broadcast(gameID, null, messageJson);
+                if (chessGame.isInStalemate(ChessGame.TeamColor.WHITE)) {
+                    sendNotification(username, gameID, currentGame.whiteUsername() + " is in stalemate.", gson, ChessGame.TeamColor.BLACK);
+                    LoadGame loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, chessGame);
+                    sendingLoadGame(authToken, loadGame, gameID);
+                    sendingLoadGameToAllOthers(authToken, loadGame , gameID);
+                } else if (chessGame.isInCheckmate(ChessGame.TeamColor.WHITE)) {
+                    sendNotification(username, gameID, currentGame.whiteUsername() + " is in checkmate.", gson, ChessGame.TeamColor.BLACK);
                     LoadGame loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, chessGame);
                     sendingLoadGame(authToken, loadGame, gameID);
                     sendingLoadGameToAllOthers(authToken, loadGame , gameID);
@@ -252,20 +261,13 @@ public class WebSocketHandler {
                     LoadGame loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, chessGame);
                     sendingLoadGame(authToken, loadGame, gameID);
                     sendingLoadGameToAllOthers(authToken, loadGame , gameID);
-                } else if (chessGame.isInStalemate(ChessGame.TeamColor.WHITE)) {
-                    Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username, ChessGame.TeamColor.BLACK);
-                    notification.setMessage(currentGame.whiteUsername() + " is in stalemate.");
-                    String messageJson = gson.toJson(notification);
-                    CONNECTION_MANAGER.broadcast(gameID, null, messageJson);
-                    LoadGame loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, chessGame);
-                    sendingLoadGame(authToken, loadGame, gameID);
-                    sendingLoadGameToAllOthers(authToken, loadGame , gameID);
                 } else {
                     Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username, ChessGame.TeamColor.BLACK);
                     notification.setMessage(username + " is making move from " + chessMove.getStartPosition() + " to " + chessMove.getEndPosition());
                     String messageJson = gson.toJson(notification);CONNECTION_MANAGER.broadcast(gameID, session, messageJson);
                     LoadGame loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, chessGame);
-                    sendingLoadGame(authToken, loadGame, gameID);sendingLoadGameToAllOthers(authToken, loadGame, gameID);
+                    sendingLoadGame(authToken, loadGame, gameID);
+                    sendingLoadGameToAllOthers(authToken, loadGame, gameID);
                 }
             } else {
                 sendError("You cannot make move after the game is over.", session, gson);
@@ -279,11 +281,11 @@ public class WebSocketHandler {
                                                       int gameID, GameData currentGame, String username, String authToken, Gson gson, Session session) throws IOException, InvalidMoveException {
         if (chessGame.turnColor == ChessGame.TeamColor.WHITE) {
             if (!chessGame.isInCheckmate(ChessGame.TeamColor.WHITE) && !chessGame.isInStalemate(ChessGame.TeamColor.WHITE) && !chessGame.isResigned) {
-                chessGame.makeMove(chessMove);sqlGame.updateChessGame(chessGame, gameID);
-                chessGame.turnColor = ChessGame.TeamColor.BLACK;
-                if (chessGame.isInCheck(ChessGame.TeamColor.BLACK)) {
+                chessGame.makeMove(chessMove);
+                sqlGame.updateChessGame(chessGame, gameID);
+                if (chessGame.isInStalemate(ChessGame.TeamColor.BLACK)) {
                     Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username, ChessGame.TeamColor.WHITE);
-                    notification.setMessage(currentGame.blackUsername() + " is in check.");
+                    notification.setMessage(currentGame.blackUsername() + " is in stalemate.");
                     String messageJson = gson.toJson(notification);
                     CONNECTION_MANAGER.broadcast(gameID, session, messageJson);
                     Connection connectionMover = new Connection(authToken, session);
@@ -305,9 +307,9 @@ public class WebSocketHandler {
                     LoadGame loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, chessGame);
                     sendingLoadGame(authToken, loadGame, gameID);
                     sendingLoadGameToAllOthers(authToken, loadGame , gameID);
-                } else if (chessGame.isInStalemate(ChessGame.TeamColor.BLACK)) {
+                } else if (chessGame.isInCheck(ChessGame.TeamColor.BLACK)) {
                     Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username, ChessGame.TeamColor.WHITE);
-                    notification.setMessage(currentGame.blackUsername() + " is in stalemate.");
+                    notification.setMessage(currentGame.blackUsername() + " is in check.");
                     String messageJson = gson.toJson(notification);
                     CONNECTION_MANAGER.broadcast(gameID, session, messageJson);
                     Connection connectionMover = new Connection(authToken, session);

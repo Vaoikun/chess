@@ -222,6 +222,7 @@ public class ChessGame {
             boolean isInStalemate = true;
 
             if(isInCheckmate(teamColor)){return false;}
+            ChessGame.TeamColor originalTeamColor = teamColor;
             if(this.turnColor != teamColor){
                 changeTurn();
             }
@@ -235,6 +236,9 @@ public class ChessGame {
                         changeTurn();
                     }
                 }
+            }
+            if(this.turnColor != originalTeamColor){
+                changeTurn();
             }
             return isInStalemate;
         }
