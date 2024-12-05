@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import httpresult.CreateGameResult;
 import httpresult.ListGameResult;
 import httpresult.MessageResult;
+import websocket.*;
 import model.GameData;
 
 import java.io.IOException;
@@ -26,6 +27,8 @@ public class PostloginUI {
     private PreloginUI preLogin;
     private final String authToken;
     public static ArrayList<Integer> gamesNumber = new ArrayList<>();
+
+    private final WebSocketFacade webSocketFacade = new WebSocketFacade("http://localhost:8080", ChessGame.TeamColor.WHITE, null);
 
     public PostloginUI(String serverUrl, String authToken){
         ServerFacade serverFacade = new ServerFacade(serverUrl);
@@ -118,26 +121,37 @@ public class PostloginUI {
             OUT.println("Choose your team color.");
             String playerColor = SCANNER.nextLine();
             if (!Objects.equals(playerColor, "WHITE") && !playerColor.equals("BLACK")) {
-                OUT.println("Bad Request. Color should be all uppercase.");
+                OUT.println("Bad Request. The color must be BLACK or WHITE.");
             } else {
                 ChessGame.TeamColor playerColorChanged = gson.fromJson(playerColor, ChessGame.TeamColor.class);
-                try {
-                    MessageResult messageResponseJoinGame = ServerFacade.joinGame(playerColorChanged, gamesNumber.get(gameID - 1), authToken);
-                    if (!Objects.equals(messageResponseJoinGame.message(), "")) {
-                        OUT.println(messageResponseJoinGame.message());
-                    } else {
-                        OUT.println("You successfully joined the game");
-                        GameplayUI gamePlayUI = new GameplayUI("http://localhost:8080", authToken, playerColorChanged, gamesNumber.get(gameID - 1));
-                        gamePlayUI.run();
-                        OUT.println(RESET_BG_COLOR);
-                        OUT.println(RESET_TEXT_COLOR);
-                    }
-                } catch (Exception e) {
-                    OUT.println("Error Joining Game. Please check the game list.");
-                }
+                joinGame(playerColorChanged, gameID);
             }
         }catch (Exception e) {
             OUT.println("Must enter a valid number.");
+        }
+    }
+
+    private void joinGame(ChessGame.TeamColor playerColorChanged, int gameID) {
+        try {
+            MessageResult messageResponseJoinGame = ServerFacade.joinGame(playerColorChanged, gamesNumber.get(gameID - 1), authToken);
+            if (!Objects.equals(messageResponseJoinGame.message(), "")) {
+                OUT.println(messageResponseJoinGame.message());
+            } else {
+                OUT.println("You successfully joined the game");
+                if (playerColorChanged == ChessGame.TeamColor.BLACK) {
+                    webSocketFacade.setColor(ChessGame.TeamColor.BLACK);
+                    webSocketFacade.connectPlayer(authToken, gamesNumber.get(gameID - 1));
+                }else{
+                    webSocketFacade.setColor(ChessGame.TeamColor.WHITE);
+                    webSocketFacade.connectPlayer(authToken, gamesNumber.get(gameID - 1));
+                }
+                GameplayUI gamePlayUI = new GameplayUI("http://localhost:8080", authToken, webSocketFacade, playerColorChanged, gamesNumber.get(gameID - 1));
+                gamePlayUI.run();
+                OUT.println(RESET_BG_COLOR);
+                OUT.println(RESET_TEXT_COLOR);
+            }
+        } catch (Exception e) {
+            OUT.println("Error Joining Game. Please check the game list.");
         }
     }
 
@@ -179,11 +193,10 @@ public class PostloginUI {
     public void observeGame() {
         OUT.println(RESET_BG_COLOR);
         OUT.println(RESET_TEXT_COLOR);
-
         try {
             Object listGameObj = ServerFacade.listGame(authToken);
-            ListGameResult lIstGameResponse = (ListGameResult) listGameObj;
-            ArrayList<GameData> listGames = lIstGameResponse.games();
+            ListGameResult listGameResult = (ListGameResult) listGameObj;
+            ArrayList<GameData> listGames = listGameResult.games();
             if (listGames.isEmpty()) {
                 OUT.println("No games in server.");
             } else {
@@ -192,18 +205,19 @@ public class PostloginUI {
                 String gameIdStr = SCANNER.nextLine();
                 try {
                     int gameID = Integer.parseInt(gameIdStr);
-                    GameplayUI gamePlayUI = new GameplayUI("http://localhost:8080", authToken,
-                            ChessGame.TeamColor.WHITE, gamesNumber.get(gameID - 1));
+                    webSocketFacade.setColor(ChessGame.TeamColor.WHITE);
+                    webSocketFacade.connectPlayer(authToken, gamesNumber.get(gameID - 1));
+                    GameplayUI gamePlayUI = new GameplayUI("http://localhost:8080", authToken, webSocketFacade,
+                            null, gamesNumber.get(gameID - 1));
                     gamePlayUI.run();
                     OUT.println("You are observing the game");
-                }catch (Exception e) {
+                } catch (Exception e) {
                     OUT.println("Must enter a valid number.");
                 }
             }
             OUT.println(RESET_BG_COLOR);
             OUT.println(RESET_TEXT_COLOR);
-        }
-        catch(IOException e) {
+        } catch(IOException e) {
             OUT.println(e.getMessage());
         }
     }

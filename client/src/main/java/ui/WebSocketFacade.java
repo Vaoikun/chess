@@ -34,7 +34,7 @@ public class WebSocketFacade extends Endpoint {
         return color;
     }
 
-    public  void setColor(ChessGame.TeamColor color) {
+    public void setColor(ChessGame.TeamColor color) {
         WebSocketFacade.color = color;
     }
 

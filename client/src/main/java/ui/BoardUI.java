@@ -15,8 +15,6 @@ public class BoardUI {
     private static final int COLUMNS = 8;
     private static final int ROWS = 8;
 
-    private static int copyRowNumber;
-    private static ChessBoard board = new ChessBoard();
     public static ChessGame.TeamColor color;
 
     public static void main(String[] args) {
