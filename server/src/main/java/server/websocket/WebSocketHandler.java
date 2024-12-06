@@ -64,7 +64,8 @@ public class WebSocketHandler {
         }
     }
 
-    public static void sendingGameSetNotificationToAllObservers(String authToken, int gameID, Notification notification) throws IOException, DataAccessException {
+    public static void sendingGameSetNotificationToAllObservers(String authToken, int gameID, Notification notification)
+            throws IOException, DataAccessException {
         Vector<Connection> smallGame = ConnectionManager.CONNECTION.get(gameID);
         SQLAuthDAO sqlAuth = new SQLAuthDAO();
         SQLGameDAO sqlGame = new SQLGameDAO();
@@ -250,15 +251,9 @@ public class WebSocketHandler {
         sendingErrorMessage(session, errorJson);
     }
 
-    public static void sendNotification(String username, int gameID, String message, Gson gson, ChessGame.TeamColor color) throws IOException {
-        Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username, color);
-        notification.setMessage(message);
-        String messageJson = gson.toJson(notification);
-        CONNECTION_MANAGER.broadcast(gameID, null, messageJson);
-    }
-
-    public static void blackCheckmateStalemateChecker(ChessGame chessGame, ChessMove chessMove, SQLGameDAO sqlGame,
-                                                 int gameID, GameData currentGame, String username, String authToken, Gson gson, Session session) throws IOException, InvalidMoveException, DataAccessException {
+    public static void blackCheckmateStalemateChecker(ChessGame chessGame, ChessMove chessMove, SQLGameDAO sqlGame, int gameID,
+                                                      GameData currentGame, String username, String authToken, Gson gson, Session session)
+            throws IOException, InvalidMoveException, DataAccessException {
 
         if (chessGame.turnColor == ChessGame.TeamColor.BLACK) {
             if (!chessGame.isInCheckmate(ChessGame.TeamColor.BLACK) && !chessGame.isInStalemate(ChessGame.TeamColor.BLACK) && !chessGame.isResigned) {
@@ -308,8 +303,9 @@ public class WebSocketHandler {
         }
     }
 
-    public static void whiteCheckmateStalemateChecker(ChessGame chessGame, ChessMove chessMove, SQLGameDAO sqlGame,
-                                                      int gameID, GameData currentGame, String username, String authToken, Gson gson, Session session) throws IOException, InvalidMoveException {
+    public static void whiteCheckmateStalemateChecker(ChessGame chessGame, ChessMove chessMove, SQLGameDAO sqlGame, int gameID,
+                                                      GameData currentGame, String username, String authToken, Gson gson, Session session)
+            throws IOException, InvalidMoveException {
         if (chessGame.turnColor == ChessGame.TeamColor.WHITE) {
             if (!chessGame.isInCheckmate(ChessGame.TeamColor.WHITE) && !chessGame.isInStalemate(ChessGame.TeamColor.WHITE) && !chessGame.isResigned) {
                 chessGame.makeMove(chessMove);
@@ -354,7 +350,8 @@ public class WebSocketHandler {
                     Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username, ChessGame.TeamColor.WHITE);
                     notification.setMessage(username + " is making move from " + chessMove.getStartPosition() + " to " + chessMove.getEndPosition());
                     String messageJson = gson.toJson(notification);
-                    CONNECTION_MANAGER.broadcast(gameID, session, messageJson);LoadGame loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, chessGame);
+                    CONNECTION_MANAGER.broadcast(gameID, session, messageJson);LoadGame loadGame
+                            = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, chessGame);
                     sendingLoadGame(authToken, loadGame, gameID);
                     sendingLoadGameToAllOthers(authToken, loadGame , gameID);
                 }
@@ -395,37 +392,9 @@ public class WebSocketHandler {
             }
             if (username != null && gameData != null) {
                 if (username.equals(gameData.whiteUsername())) {
-                    if (!chessGame.isResigned) {
-                        Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username, ChessGame.TeamColor.WHITE);
-                        notification.setMessage(username + " resigns the game.");
-                        String messageJson = gson.toJson(notification);
-                        CONNECTION_MANAGER.broadcast(gameID, session, messageJson); // send to everyone else
-                        Connection resignMaker = new Connection(authToken, session);
-                        if (resignMaker.session.isOpen()) {
-                            resignMaker.send(messageJson);
-                        }
-                        chessGame.isResigned = true;
-                        sqlGame.updateChessGame(chessGame, gameID);
-                    } else {
-                        Error error = new Error(ServerMessage.ServerMessageType.ERROR);
-                        error.setErrorMessage("You cannot resign after one player already resigned.");
-                        String errorJson = gson.toJson(error);
-                        sendingErrorMessage(session, errorJson);
-                    }
+                    resignMessage(chessGame, session, authToken, username, gameID, gson, ChessGame.TeamColor.WHITE, sqlGame);
                 } else if (username.equals(gameData.blackUsername())) {
-                    if (!chessGame.isResigned) {
-                        Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username, ChessGame.TeamColor.BLACK);
-                        notification.setMessage(username + " resigns the game.");
-                        String messageJson = gson.toJson(notification);
-                        CONNECTION_MANAGER.broadcast(gameID, null, messageJson);
-                        chessGame.isResigned = true;
-                        sqlGame.updateChessGame(chessGame, gameID);
-                    } else {
-                        Error error = new Error(ServerMessage.ServerMessageType.ERROR);
-                        error.setErrorMessage("You cannot resign after one player already resigned.");
-                        String errorJson = gson.toJson(error);
-                        sendingErrorMessage(session, errorJson);
-                    }
+                    resignMessage(chessGame, session, authToken, username, gameID, gson, ChessGame.TeamColor.BLACK, sqlGame);
                 } else {
                     Error error = new Error(ServerMessage.ServerMessageType.ERROR);
                     error.setErrorMessage("Observer cannot resign.");
@@ -435,6 +404,28 @@ public class WebSocketHandler {
             }
         } catch (DataAccessException | IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private static void resignMessage(ChessGame chessGame, Session session, String authToken, String username,
+                                      int gameID, Gson gson, ChessGame.TeamColor color, SQLGameDAO sqlGame) throws IOException {
+        if (!chessGame.isResigned) {
+            Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION,
+                    username, color);
+            notification.setMessage(username + " resigns the game.");
+            String messageJson = gson.toJson(notification);
+            CONNECTION_MANAGER.broadcast(gameID, session, messageJson); // send to everyone else
+            Connection resignMaker = new Connection(authToken, session);
+            if (resignMaker.session.isOpen()) {
+                resignMaker.send(messageJson);
+            }
+            chessGame.isResigned = true;
+            sqlGame.updateChessGame(chessGame, gameID);
+        } else {
+            Error error = new Error(ServerMessage.ServerMessageType.ERROR);
+            error.setErrorMessage("You cannot resign after one player already resigned.");
+            String errorJson = gson.toJson(error);
+            sendingErrorMessage(session, errorJson);
         }
     }
 }
