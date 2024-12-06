@@ -102,7 +102,7 @@ public class PreloginUI {
     }
 
     public void quit() {
-        OUT.println("Your game is exit."); // the print is not showing up in console.
+        OUT.println("You have exited the game.");
         System.exit(0);
     }
 }
