@@ -71,7 +71,7 @@ public class GameplayUI {
     public void resign() {
         Gson gson = new Gson();
         try {
-            OUT.print("Enter the gameID.");
+            OUT.println("Enter the gameID.");
             String gameIDStr = SCANNER.nextLine();
             int gameID = Integer.parseInt(gameIDStr);
             OUT.println("Are you sure you want to leave? YES / NO");
@@ -174,25 +174,25 @@ public class GameplayUI {
         Integer row = null;
         ArrayList<Integer> coordinate = new ArrayList<>();
         try {
-            col = Integer.parseInt(String.valueOf(ab.charAt(1)));
+            row = Integer.parseInt(String.valueOf(ab.charAt(1)));
         } catch (NumberFormatException e) {
-            System.out.println("Please enter a valid column number.");
+            System.out.println("Please enter a valid row number.");
         }
         try{
-            String rowLetter = String.valueOf(ab.charAt(0));
-            switch (rowLetter) {
-                case "a" -> row = 1;
-                case "b" -> row = 2;
-                case "c" -> row = 3;
-                case "d" -> row = 4;
-                case "e" -> row = 5;
-                case "f" -> row = 6;
-                case "g" -> row = 7;
-                case "h" -> row = 8;
-                default -> row = null;
+            String colLetter = String.valueOf(ab.charAt(0));
+            switch (colLetter) {
+                case "a" -> col = 1;
+                case "b" -> col = 2;
+                case "c" -> col = 3;
+                case "d" -> col = 4;
+                case "e" -> col = 5;
+                case "f" -> col = 6;
+                case "g" -> col = 7;
+                case "h" -> col = 8;
+                default -> col = null;
             }
         } catch (Exception e) {
-            System.out.println("Please enter a valid row coordinate.");
+            System.out.println("Please enter a valid column letter.");
         }
         coordinate.add(col);
         coordinate.add(row);
