@@ -71,7 +71,7 @@ public class GameplayUI {
     public void resign() {
         Gson gson = new Gson();
         try {
-            OUT.print("Which game you would like to resign?");
+            OUT.print("Enter the gameID.");
             String gameIDStr = SCANNER.nextLine();
             int gameID = Integer.parseInt(gameIDStr);
             OUT.println("Are you sure you want to leave? YES / NO");
@@ -90,7 +90,7 @@ public class GameplayUI {
 
     public void leave() {
         try {
-            OUT.println("Which game you would like to leave?");
+            OUT.println("Enter the gameID");
             String gameIDStr = SCANNER.nextLine();
             int gameID = Integer.parseInt(gameIDStr);
             OUT.println("Are you sure you want to leave? YES / NO");
