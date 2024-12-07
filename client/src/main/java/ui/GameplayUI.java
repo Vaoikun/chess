@@ -33,7 +33,7 @@ public class GameplayUI {
 
     public void run() {
         OUT.println();
-        OUT.println("Welcome to your game!");
+        OUT.println("Welcome to the game!");
         OUT.println();
         redraw();
         OUT.println();
@@ -68,7 +68,7 @@ public class GameplayUI {
                """;
     }
 
-    public  void resign() {
+    public void resign() {
         Gson gson = new Gson();
         try {
             OUT.print("Which game you would like to resign?");
@@ -78,7 +78,6 @@ public class GameplayUI {
             String answer = SCANNER.nextLine();
             if (Objects.equals(answer, "YES")) {
                 webSocketFacade.resign(authToken, PostloginUI.gamesNumber.get(gameID - 1));
-                System.out.println(PostloginUI.gamesNumber);
                 PostloginUI postlogin = new PostloginUI("http://localhost:8080", authToken);
                 postlogin.run();
             } else {
@@ -98,7 +97,6 @@ public class GameplayUI {
             String answer = SCANNER.nextLine();
             if (Objects.equals(answer, "YES")) {
                 webSocketFacade.leave(authToken, PostloginUI.gamesNumber.get(gameID - 1));
-                System.out.println(PostloginUI.gamesNumber);
                 PostloginUI postlogin = new PostloginUI("http://localhost:8080", authToken);
                 postlogin.run();
             } else {
@@ -128,12 +126,16 @@ public class GameplayUI {
     public void makeMove(){
         try{
             OUT.println("Which piece would you like to make move? (Enter a coordinate.)");
-            int row = SCANNER.nextInt();
-            int col = SCANNER.nextInt();
+            String pieceCoordinateStr = SCANNER.nextLine();
+            ArrayList<Integer> pieceCoordinate = textConverter(pieceCoordinateStr);
+            int row = pieceCoordinate.get(1);
+            int col = pieceCoordinate.get(0);
             ChessPosition piecePosition = new ChessPosition(row, col);
             OUT.println("Select a position. (Enter a coordinate.)");
-            int rowCoord = SCANNER.nextInt();
-            int colCoord = SCANNER.nextInt();
+            String targetCoordinateStr = SCANNER.nextLine();
+            ArrayList<Integer> targetCoordinate = textConverter(targetCoordinateStr);
+            int rowCoord = targetCoordinate.get(1);
+            int colCoord = targetCoordinate.get(0);
             ChessPosition targetPosition = new ChessPosition(rowCoord, colCoord);
             ChessGame chessGame = webSocketFacade.chessGame;
             ChessBoard chessBoard = chessGame.getBoard();
@@ -149,8 +151,10 @@ public class GameplayUI {
 
     public void highLight(){
         OUT.println("Which piece would you like to highlight the moves?");
-        int row = SCANNER.nextInt();
-        int col = SCANNER.nextInt();
+        String coordinateStr = SCANNER.nextLine();
+        ArrayList<Integer> coordinate = textConverter(coordinateStr);
+        int row = coordinate.get(1);
+        int col = coordinate.get(0);
         ChessPosition piecePosition = new ChessPosition(row, col);
         ChessGame chessGame = webSocketFacade.chessGame;
         ChessBoard chessBoard = chessGame.getBoard();
@@ -163,5 +167,35 @@ public class GameplayUI {
         }else{ // as an Observer
             BoardUI.callWhiteBoard(OUT, chessBoard, possibleMoves);
         }
+    }
+
+    public static ArrayList<Integer> textConverter(String ab){
+        Integer col = null;
+        Integer row = null;
+        ArrayList<Integer> coordinate = new ArrayList<>();
+        try {
+            col = Integer.parseInt(String.valueOf(ab.charAt(1)));
+        } catch (NumberFormatException e) {
+            System.out.println("Please enter a valid column number.");
+        }
+        try{
+            String rowLetter = String.valueOf(ab.charAt(0));
+            switch (rowLetter) {
+                case "a" -> row = 1;
+                case "b" -> row = 2;
+                case "c" -> row = 3;
+                case "d" -> row = 4;
+                case "e" -> row = 5;
+                case "f" -> row = 6;
+                case "g" -> row = 7;
+                case "h" -> row = 8;
+                default -> row = null;
+            }
+        } catch (Exception e) {
+            System.out.println("Please enter a valid row coordinate.");
+        }
+        coordinate.add(col);
+        coordinate.add(row);
+        return coordinate;
     }
 }

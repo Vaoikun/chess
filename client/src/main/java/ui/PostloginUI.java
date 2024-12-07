@@ -13,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.io.PrintStream;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -56,7 +57,6 @@ public class PostloginUI {
             case "List Games" -> listGames();
             case "Observe" -> observeGame();
             case "Log out" -> logOut();
-            case "Quit" -> quit();
             default -> OUT.println("What would you like to do?");
         }
     }
@@ -69,7 +69,6 @@ public class PostloginUI {
                List Games -- List all the games.
                Observe <GameID> -- Observe a game.
                Log out -- Logout your account.
-               Quit -- Exit your chess game.
                Help - With possible commands.
                
                What would you like to do?
@@ -92,11 +91,11 @@ public class PostloginUI {
                     gamesNumber.add(gameData.gameID());
                 }
             }
-
             if (createGameReturn instanceof CreateGameResult){
                 CreateGameResult createGameResultReturn = (CreateGameResult) createGameReturn;
-                gamesNumber.add(createGameResultReturn.gameID());
-                OUT.println("You have successfully created a new game. Game ID is: " + createGameResultReturn.gameID());
+                int gameID = createGameResultReturn.gameID();
+                Collections.sort(gamesNumber);
+                OUT.println("You have successfully created a new game. Game ID is: " + (gamesNumber.indexOf(gameID)+1));
             }else{
                 MessageResult messageResult = (MessageResult) createGameReturn;
                 OUT.println(messageResult.message());
@@ -182,7 +181,7 @@ public class PostloginUI {
             if (!gamesNumber.contains(listG.gameID())) {
                 gamesNumber.add(listG.gameID());
             }
-            String listGameStr = "Game Name: " + listG.gameName() + ". Game number: " + listG.gameID()
+            String listGameStr = "Game Name: " + listG.gameName() + ". Game number: " + (gamesNumber.indexOf(listG.gameID())+1)
                     + ". White user: " + listG.whiteUsername() + ". Black user: " + listG.blackUsername();
             OUT.println(listGameStr);
             OUT.println();
@@ -239,8 +238,4 @@ public class PostloginUI {
         }
     }
 
-    public void quit() {
-        OUT.println("You exited the game.");
-        System.exit(0);
-    }
 }

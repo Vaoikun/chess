@@ -102,7 +102,7 @@ public class PreloginUI {
     }
 
     public void quit() {
-        OUT.println("You have exited the game.");
+        OUT.println("Thank you for playing.");
         System.exit(0);
     }
 }
