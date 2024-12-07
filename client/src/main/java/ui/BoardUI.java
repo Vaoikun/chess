@@ -165,6 +165,7 @@ public class BoardUI {
             return switchTypeToGetPieceWHITE(targetPiece, pieceOnUIBoard, out);
         }
     }
+
     private static void drawEachRow(PrintStream out, int boardRow, int startRowNumber, ChessBoard board,
                                     Collection<ChessMove> validMoves) {
         int prefixLength = (COLUMNS /16);

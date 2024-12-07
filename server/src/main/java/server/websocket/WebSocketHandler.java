@@ -259,6 +259,11 @@ public class WebSocketHandler {
             if (!chessGame.isInCheckmate(ChessGame.TeamColor.BLACK) && !chessGame.isInStalemate(ChessGame.TeamColor.BLACK) && !chessGame.isResigned) {
                 chessGame.makeMove(chessMove);
                 sqlGame.updateChessGame(chessGame, gameID);
+                Notification moveNotification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username, ChessGame.TeamColor.BLACK);
+                moveNotification.setMessage(username + " is made a move from " + chessMove.getStartPosition() + " to " + chessMove.getEndPosition());
+                String moveMessageJson = gson.toJson(moveNotification);
+                CONNECTION_MANAGER.broadcast(gameID, session, moveMessageJson);
+
                 if (chessGame.isInStalemate(ChessGame.TeamColor.WHITE)) {
                     Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username, ChessGame.TeamColor.BLACK);
                     notification.setMessage(currentGame.blackUsername() + " is in stalemate.");
@@ -287,10 +292,6 @@ public class WebSocketHandler {
                     sendingLoadGame(authToken, loadGame, gameID);
                     sendingLoadGameToAllOthers(authToken, loadGame , gameID);
                 } else {
-                    Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username, ChessGame.TeamColor.BLACK);
-                    notification.setMessage(username + " is making move from " + chessMove.getStartPosition() + " to " + chessMove.getEndPosition());
-                    String messageJson = gson.toJson(notification);
-                    CONNECTION_MANAGER.broadcast(gameID, session, messageJson);
                     LoadGame loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, chessGame);
                     sendingLoadGame(authToken, loadGame, gameID);
                     sendingLoadGameToAllOthers(authToken, loadGame, gameID);
