@@ -135,7 +135,6 @@ public class PostloginUI {
             if (!Objects.equals(messageResponseJoinGame.message(), "")) {
                 OUT.println(messageResponseJoinGame.message());
             } else {
-                OUT.println("You successfully joined the game");
                 if (playerColorChanged == ChessGame.TeamColor.BLACK) {
                     webSocketFacade.setColor(ChessGame.TeamColor.BLACK);
                     webSocketFacade.connectPlayer(authToken, gamesNumber.get(gameID - 1));
@@ -145,6 +144,7 @@ public class PostloginUI {
                 }
                 GameplayUI gamePlayUI = new GameplayUI("http://localhost:8080", authToken,
                         webSocketFacade, playerColorChanged, gamesNumber.get(gameID - 1));
+                OUT.println("You successfully joined the game");
                 gamePlayUI.run();
                 OUT.println(RESET_BG_COLOR);
                 OUT.println(RESET_TEXT_COLOR);

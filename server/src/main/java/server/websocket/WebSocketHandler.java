@@ -188,7 +188,7 @@ public class WebSocketHandler {
                     sqlGame.updateGame(null, ChessGame.TeamColor.BLACK, currentGame);
                 } else {
                     Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username, null);
-                    notification.setMessage(username + " is leaving the game as observer.");
+                    notification.setMessage(username + " is leaving the game as an observer.");
                     String messageJson = gson.toJson(notification);
                     CONNECTION_MANAGER.broadcast(gameID, session, messageJson);
                     CONNECTION_MANAGER.remove(gameID, authToken);
@@ -240,7 +240,7 @@ public class WebSocketHandler {
                 }
             }
         } catch (DataAccessException | IOException | InvalidMoveException e) {
-            throw new RuntimeException(e);
+            System.out.println(e.getMessage());
         }
     }
 
