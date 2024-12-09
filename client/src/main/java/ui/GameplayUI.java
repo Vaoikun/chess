@@ -35,7 +35,6 @@ public class GameplayUI {
         OUT.println();
         OUT.println("Welcome to the game!");
         OUT.println();
-        redraw();
         OUT.println();
         OUT.println("What would you like to do?");
         String input = SCANNER.nextLine();
@@ -141,12 +140,37 @@ public class GameplayUI {
             ChessBoard chessBoard = chessGame.getBoard();
             ChessPiece movingPiece = chessBoard.getPiece(piecePosition);
             ChessPiece targetPiece = chessBoard.getPiece(targetPosition);
-            ChessMove move = new ChessMove(piecePosition, targetPosition, null);
+            ChessPiece.PieceType promoteType = null;
+            try {
+                if ((chessBoard.getPiece(piecePosition)).getPieceType() == ChessPiece.PieceType.PAWN && rowCoord == 8) {
+                    OUT.println("Which piece type would you like to promote to? (e.g. QUEEN)");
+                    String promoteTypeInput = SCANNER.nextLine();
+                    promoteType = promoteTypeSetter(promoteTypeInput);
+                }
+            }catch (Exception e){
+                System.out.println("Choose a valid piece type.");
+            }
+            ChessMove move = new ChessMove(piecePosition, targetPosition, promoteType);
             chessGame.makeMove(move);
             webSocketFacade.makeMove(authToken, gameID, move);
+            redraw();
         }catch (Exception e) {
             System.out.println("Invalid positions.");
         }
+    }
+
+    public ChessPiece.PieceType promoteTypeSetter(String promoteType){
+        promoteType = promoteType.toUpperCase();
+        ChessPiece.PieceType properType = null;
+        switch (promoteType){
+            case "QUEEN" ->  properType = ChessPiece.PieceType.QUEEN;
+            case "KING" ->  properType = ChessPiece.PieceType.KING;
+            case "ROOK" ->  properType = ChessPiece.PieceType.ROOK;
+            case "BISHOP" ->  properType = ChessPiece.PieceType.BISHOP;
+            case "KNIGHT" ->  properType = ChessPiece.PieceType.KNIGHT;
+            default -> properType = ChessPiece.PieceType.PAWN;
+        }
+        return properType;
     }
 
     public void highLight(){

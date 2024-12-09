@@ -102,15 +102,19 @@ public class ChessGame {
                 throw new InvalidMoveException("Legal moves are null.");
             }
 
-            if (legalMoves.contains(move) && observedPiece.getTeamColor() == this.turnColor) {
-                this.board.addPiece(move.getStartPosition(), null);
-                if (move.getPromotionPiece() == null) {
-                    this.board.addPiece(move.getEndPosition(), observedPiece);
-                } else { //promotion step
-                    ChessPiece promotionPiece = new ChessPiece(observedPiece.getTeamColor(), move.getPromotionPiece());
-                    this.board.addPiece(move.getEndPosition(), promotionPiece);
+            if (legalMoves.contains(move)) {
+                if (observedPiece.getTeamColor() != this.turnColor) {
+                    throw new InvalidMoveException("It's not turn yet.");
+                }else {
+                    this.board.addPiece(move.getStartPosition(), null);
+                    if (move.getPromotionPiece() == null) {
+                        this.board.addPiece(move.getEndPosition(), observedPiece);
+                    } else { //promotion step
+                        ChessPiece promotionPiece = new ChessPiece(observedPiece.getTeamColor(), move.getPromotionPiece());
+                        this.board.addPiece(move.getEndPosition(), promotionPiece);
+                    }
+                    changeTurn();
                 }
-                changeTurn();
             }else{
                 throw new InvalidMoveException("Illegal moves.");
             }

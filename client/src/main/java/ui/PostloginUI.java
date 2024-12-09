@@ -135,6 +135,14 @@ public class PostloginUI {
             if (!Objects.equals(messageResponseJoinGame.message(), "")) {
                 OUT.println(messageResponseJoinGame.message());
             } else {
+//                Object listGameObject = ServerFacade.listGame(authToken);
+//                ListGameResult listGameResult = (ListGameResult) listGameObject;
+//                ArrayList<GameData> listGames = listGameResult.games();
+//                for(GameData gameData : listGames){
+//                    if (Objects.equals(gamesNumber.get(gameID-1), gameData.gameID())){
+//                        webSocketFacade.chessGame = gameData.game();
+//                    }
+//                }
                 if (playerColorChanged == ChessGame.TeamColor.BLACK) {
                     webSocketFacade.setColor(ChessGame.TeamColor.BLACK);
                     webSocketFacade.connectPlayer(authToken, gamesNumber.get(gameID - 1));
@@ -203,6 +211,11 @@ public class PostloginUI {
                 OUT.println("Which game you would like to observe.");
                 String gameIdStr = SCANNER.nextLine();
                 try {
+//                    for(GameData gameData : listGames){
+//                        if (gamesNumber.get(gameID-1) == (gameData.gameID())){
+//                            webSocketFacade.chessGame = gameData.game();
+//                        }
+//                    }
                     int gameID = Integer.parseInt(gameIdStr);
                     webSocketFacade.setColor(ChessGame.TeamColor.WHITE);
                     webSocketFacade.connectPlayer(authToken, gamesNumber.get(gameID - 1));

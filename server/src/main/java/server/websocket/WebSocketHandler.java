@@ -2,6 +2,7 @@ package server.websocket;
 
 import chess.ChessGame;
 import chess.ChessMove;
+import chess.ChessPosition;
 import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import model.GameData;
@@ -31,14 +32,18 @@ public class WebSocketHandler {
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) {
-        Gson gson = new Gson();
-        UserGameCommand userGameCommand = gson.fromJson(message, UserGameCommand.class);
+        try {
+            Gson gson = new Gson();
+            UserGameCommand userGameCommand = gson.fromJson(message, UserGameCommand.class);
 
-        switch (userGameCommand.getCommandType()) {
-            case UserGameCommand.CommandType.CONNECT -> observeOrJoin(message, session);
-            case UserGameCommand.CommandType.LEAVE -> leave(message, session);
-            case UserGameCommand.CommandType.MAKE_MOVE -> movePiece(message, session);
-            case UserGameCommand.CommandType.RESIGN -> resign(message, session);
+            switch (userGameCommand.getCommandType()) {
+                case UserGameCommand.CommandType.CONNECT -> observeOrJoin(message, session);
+                case UserGameCommand.CommandType.LEAVE -> leave(message, session);
+                case UserGameCommand.CommandType.MAKE_MOVE -> movePiece(message, session);
+                case UserGameCommand.CommandType.RESIGN -> resign(message, session);
+            }
+        }catch (Exception e){
+            System.out.println(e.getMessage());
         }
     }
 
@@ -260,10 +265,9 @@ public class WebSocketHandler {
                 chessGame.makeMove(chessMove);
                 sqlGame.updateChessGame(chessGame, gameID);
                 Notification moveNotification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username, ChessGame.TeamColor.BLACK);
-                moveNotification.setMessage(username + " is made a move from " + chessMove.getStartPosition() + " to " + chessMove.getEndPosition());
+                moveNotification.setMessage(username + " made move from " + coordinateReverter(chessMove.getStartPosition()) + " to " + coordinateReverter(chessMove.getEndPosition()));
                 String moveMessageJson = gson.toJson(moveNotification);
                 CONNECTION_MANAGER.broadcast(gameID, session, moveMessageJson);
-
                 if (chessGame.isInStalemate(ChessGame.TeamColor.WHITE)) {
                     Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username, ChessGame.TeamColor.BLACK);
                     notification.setMessage(currentGame.blackUsername() + " is in stalemate.");
@@ -349,7 +353,7 @@ public class WebSocketHandler {
                     sendingLoadGameToAllOthers(authToken, loadGame , gameID);
                 } else {
                     Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username, ChessGame.TeamColor.WHITE);
-                    notification.setMessage(username + " is making move from " + chessMove.getStartPosition() + " to " + chessMove.getEndPosition());
+                    notification.setMessage(username + " made move from " + coordinateReverter(chessMove.getStartPosition()) + " to " + coordinateReverter(chessMove.getEndPosition()));
                     String messageJson = gson.toJson(notification);
                     CONNECTION_MANAGER.broadcast(gameID, session, messageJson);LoadGame loadGame
                             = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, chessGame);
@@ -362,6 +366,23 @@ public class WebSocketHandler {
         } else {
             sendError("It's not your turn yet. Please wait your opponent to finish the move.", session, gson);
         }
+    }
+
+    private static String coordinateReverter(ChessPosition piecePosition) {
+        String printCoordinate;
+        int col = piecePosition.getColumn();
+        switch (col) {
+            case 1 -> printCoordinate = "a" + piecePosition.getRow();
+            case 2 -> printCoordinate = "b" + piecePosition.getRow();
+            case 3 -> printCoordinate = "c" + piecePosition.getRow();
+            case 4 -> printCoordinate = "d" + piecePosition.getRow();
+            case 5 -> printCoordinate = "e" + piecePosition.getRow();
+            case 6 -> printCoordinate = "f" + piecePosition.getRow();
+            case 7 -> printCoordinate = "g" + piecePosition.getRow();
+            case 8 -> printCoordinate = "h" + piecePosition.getRow();
+            default -> printCoordinate = "";
+        }
+        return printCoordinate;
     }
 
     public static void resign(String message, Session session) {
@@ -415,7 +436,7 @@ public class WebSocketHandler {
                     username, color);
             notification.setMessage(username + " resigns the game.");
             String messageJson = gson.toJson(notification);
-            CONNECTION_MANAGER.broadcast(gameID, session, messageJson); // send to everyone else
+            CONNECTION_MANAGER.broadcast(gameID, session, messageJson);
             Connection resignMaker = new Connection(authToken, session);
             if (resignMaker.session.isOpen()) {
                 resignMaker.send(messageJson);

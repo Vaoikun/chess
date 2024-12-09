@@ -30,14 +30,6 @@ public class WebSocketFacade extends Endpoint {
 
     public GameData gameData;
 
-    public ChessGame.TeamColor getColor() {
-        return color;
-    }
-
-    public void setColor(ChessGame.TeamColor color) {
-        WebSocketFacade.color = color;
-    }
-
     public WebSocketFacade(String url, ChessGame.TeamColor color, ChessGame chessGame) {
         this.chessGame = chessGame;
         this.color = color;
@@ -63,6 +55,18 @@ public class WebSocketFacade extends Endpoint {
         } catch (URISyntaxException | DeploymentException | IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public ChessGame.TeamColor getColor() {
+        return color;
+    }
+
+    public void setColor(ChessGame.TeamColor color) {
+        WebSocketFacade.color = color;
+    }
+
+    public void setChessGame(ChessGame chessGame) {
+        this.chessGame = chessGame;
     }
 
     public void sendingNotificationBack(String message) {
