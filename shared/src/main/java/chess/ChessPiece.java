@@ -124,8 +124,55 @@ public class ChessPiece {
                 break;
             }
         }
+        return legalMoves;
+    }
+
+    public static List<ChessMove> straightLine(ChessBoard board, int row, int col, ChessGame.TeamColor teamColor, PieceType type) {
+        ChessPosition startPosition = new ChessPosition(row, col);
+        List<ChessMove> legalMoves = new ArrayList<>();
+
+        // Up
+        for (int i = row + 1; i <= 8; i++) {
+            if (legalityCheck(board, teamColor, startPosition, legalMoves, i, col)) {
+                break;
+            }
+            if (type == PieceType.KING) {
+                break;
+            }
+        }
+
+        // Down
+        for (int i = row - 1; i >= 1; i--) {
+            if (legalityCheck(board, teamColor, startPosition, legalMoves, i, col)) {
+                break;
+            }
+            if (type == PieceType.KING) {
+                break;
+            }
+        }
+
+        // Right
+        for (int j = col + 1; j <= 8; j++) {
+            if (legalityCheck(board, teamColor, startPosition, legalMoves, row, j)) {
+                break;
+            }
+            if (type == PieceType.KING) {
+                break;
+            }
+        }
+
+        // Left
+        for (int j = col - 1; j >= 1; j--) {
+            if (legalityCheck(board, teamColor, startPosition, legalMoves, row, j)) {
+                break;
+            }
+            if (type == PieceType.KING) {
+                break;
+            }
+        }
 
         return legalMoves;
+
     }
 
     private static boolean legalityCheck(ChessBoard board, ChessGame.TeamColor teamColor, ChessPosition startPosition,
