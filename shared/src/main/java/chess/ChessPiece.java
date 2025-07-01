@@ -64,17 +64,19 @@ public class ChessPiece {
 
         switch (currentPieceType){
             case BISHOP:
-
+                moves.addAll(diagonal(board, row, col, currentTeamColor, currentPieceType));
             case KING:
-
+                moves.addAll(diagonal(board, row, col, currentTeamColor, currentPieceType));
+                moves.addAll(straightLine(board, row, col, currentTeamColor, currentPieceType));
             case KNIGHT:
 
             case PAWN:
 
             case QUEEN:
-
+                moves.addAll(diagonal(board, row, col, currentTeamColor, currentPieceType));
+                moves.addAll(straightLine(board, row, col, currentTeamColor, currentPieceType));
             case ROOK:
-
+                moves.addAll(straightLine(board, row, col, currentTeamColor, currentPieceType));
             default:
                 throw new IllegalArgumentException("Unexpected piece type: " + currentPieceType.toString());
         }
