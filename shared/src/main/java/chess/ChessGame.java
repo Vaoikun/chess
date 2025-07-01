@@ -11,7 +11,6 @@ import java.util.Collection;
 public class ChessGame {
 
     public ChessGame() {
-
     }
 
     /**
