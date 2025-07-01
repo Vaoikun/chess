@@ -261,6 +261,68 @@ public class ChessPiece {
         return row <= 8 & row >= 1 && col <= 8 && col >= 1;
     }
 
+    public static List<ChessMove> pawnMoves(ChessBoard board, int row, int col, ChessGame.TeamColor currentTeamColor, PieceType type) {
+        ChessPosition startPosition = new ChessPosition(row, col);
+        List<ChessMove> legalMoves = new ArrayList<>();
+        int startRow;
+        int upOrDown;
+        if(currentTeamColor == ChessGame.TeamColor.WHITE){
+            startRow = 2;
+            upOrDown = 1;
+        }else{
+            startRow = 7;
+            upOrDown = -1;
+        }
+        int nextRow = row + upOrDown;
+        boolean openAhead = false;
+        if(nextRow >= 1 && nextRow <= 8 && board.getPiece(new ChessPosition(nextRow, col)) == null){
+            if(nextRow == 1 || nextRow == 8){
+                legalMoves.add(new ChessMove(startPosition, new ChessPosition(nextRow, col), PieceType.ROOK));
+                legalMoves.add(new ChessMove(startPosition, new ChessPosition(nextRow, col), PieceType.KNIGHT));
+                legalMoves.add(new ChessMove(startPosition, new ChessPosition(nextRow, col), PieceType.BISHOP));
+                legalMoves.add(new ChessMove(startPosition, new ChessPosition(nextRow, col), PieceType.QUEEN));
+            }else{
+                legalMoves.add(new ChessMove(startPosition, new ChessPosition(nextRow, col), null));
+                openAhead = true;
+            }
+        }
+
+        //next(Up/Down) Right
+        int nextCol = col + 1;
+        ChessPiece observedPiece = null;
+        pawnDiagonal(board, currentTeamColor, nextRow, nextCol, legalMoves, startPosition);
+        //next(Up/Down) Left
+        nextCol -= 2;
+        pawnDiagonal(board, currentTeamColor, nextRow, nextCol, legalMoves, startPosition);
+        //At the starting position
+        if(startRow == row && openAhead){
+            //Check second row
+            nextRow += upOrDown;
+            if(nextRow >= 1 && nextRow <= 8 && board.getPiece(new ChessPosition(nextRow, col)) == null){
+                legalMoves.add(new ChessMove(startPosition, new ChessPosition(nextRow, col), null));
+            }
+        }
+        return legalMoves;
+    }
+
+    private static void pawnDiagonal(ChessBoard board, ChessGame.TeamColor currentTeamColor, int nextRow, int nextCol,
+                                     List<ChessMove> legalMoves, ChessPosition startPosition) {
+        ChessPiece observedPiece;
+        if(boundaryCheck(nextRow, nextCol)){
+            observedPiece = board.getPiece(new ChessPosition(nextRow, nextCol));
+            if(observedPiece != null && observedPiece.getTeamColor() != currentTeamColor){
+                if(nextRow == 1 || nextRow == 8){
+                    legalMoves.add(new ChessMove(startPosition, new ChessPosition(nextRow, nextCol), PieceType.BISHOP));
+                    legalMoves.add(new ChessMove(startPosition, new ChessPosition(nextRow, nextCol), PieceType.QUEEN));
+                    legalMoves.add(new ChessMove(startPosition, new ChessPosition(nextRow, nextCol), PieceType.ROOK));
+                    legalMoves.add(new ChessMove(startPosition, new ChessPosition(nextRow, nextCol), PieceType.KNIGHT));
+                }else{
+                    legalMoves.add(new ChessMove(startPosition, new ChessPosition(nextRow, nextCol), null));
+                }
+            }
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {
