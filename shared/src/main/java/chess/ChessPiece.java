@@ -1,6 +1,8 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -53,7 +55,91 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        ChessPiece currentPiece = board.getPiece(myPosition);
+        PieceType currentPieceType = currentPiece.getPieceType();
+        ChessGame.TeamColor currentTeamColor = currentPiece.getTeamColor();
+        List<ChessMove> moves = new ArrayList<>();
+        int col = myPosition.getColumn();
+        int row = myPosition.getRow();
+
+        switch (currentPieceType){
+            case BISHOP:
+
+            case KING:
+
+            case KNIGHT:
+
+            case PAWN:
+
+            case QUEEN:
+
+            case ROOK:
+
+            default:
+                throw new IllegalArgumentException("Unexpected piece type: " + currentPieceType.toString());
+        }
+
+    }
+
+    public static List<ChessMove> diagonal(ChessBoard board, int row, int col, ChessGame.TeamColor teamColor, PieceType type){
+        ChessPosition startPosition = new ChessPosition(row, col);
+        List<ChessMove> legalMoves = new ArrayList<>();
+
+        // Right up
+        for (int i = row + 1, j = col + 1; i <= 8 && j <= 8; i++, j++){
+            if (legalityCheck(board, teamColor, startPosition, legalMoves, i, j)){
+                break;
+            }
+            if (type == PieceType.KING) {
+                break;
+            }
+        }
+
+        // Right down
+        for (int i = row - 1, j = col + 1; i >= 1 && j <= 8; i--, j++){
+            if (legalityCheck(board, teamColor, startPosition, legalMoves, i, j)){
+                break;
+            }
+            if (type == PieceType.KING) {
+                break;
+            }
+        }
+
+        // Left up
+        for (int i = row + 1, j = col - 1; i <= 8 && j >= 1; i++, j--){
+            if (legalityCheck(board, teamColor, startPosition, legalMoves, i, j)){
+                break;
+            }
+            if (type == PieceType.KING) {
+                break;
+            }
+        }
+
+        // Left down
+        for (int i = row - 1, j = col - 1; i >= 1 && j >= 1; i--, j--){
+            if (legalityCheck(board, teamColor, startPosition, legalMoves, i, j)){
+                break;
+            }
+            if (type == PieceType.KING) {
+                break;
+            }
+        }
+
+        return legalMoves;
+    }
+
+    private static boolean legalityCheck(ChessBoard board, ChessGame.TeamColor teamColor, ChessPosition startPosition,
+                                         List<ChessMove> legalMoves, int row, int col) {
+        ChessPiece currentPiece = board.getPiece(new ChessPosition(row, col));
+        if (currentPiece != null) {
+            if (currentPiece.pieceColor == teamColor) {
+                return true;
+            }
+            legalMoves.add(new ChessMove(startPosition, new ChessPosition(row, col), null));
+            return true;
+        }
+        legalMoves.add(new ChessMove(startPosition, new ChessPosition(row, col), null));
+        return false;
     }
 
     @Override
