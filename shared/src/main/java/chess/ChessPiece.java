@@ -65,22 +65,23 @@ public class ChessPiece {
         switch (currentPieceType){
             case BISHOP:
                 moves.addAll(diagonal(board, row, col, currentTeamColor, currentPieceType));
-            case KING:
+                break;
+            case KING, QUEEN:
                 moves.addAll(diagonal(board, row, col, currentTeamColor, currentPieceType));
                 moves.addAll(straightLine(board, row, col, currentTeamColor, currentPieceType));
+                break;
             case KNIGHT:
-
+                moves.addAll(knightMoves(board, row, col, currentTeamColor, currentPieceType));
+                break;
             case PAWN:
-
-            case QUEEN:
-                moves.addAll(diagonal(board, row, col, currentTeamColor, currentPieceType));
-                moves.addAll(straightLine(board, row, col, currentTeamColor, currentPieceType));
+                break;
             case ROOK:
                 moves.addAll(straightLine(board, row, col, currentTeamColor, currentPieceType));
+                break;
             default:
                 throw new IllegalArgumentException("Unexpected piece type: " + currentPieceType.toString());
         }
-
+        return moves;
     }
 
     public static List<ChessMove> diagonal(ChessBoard board, int row, int col, ChessGame.TeamColor teamColor, PieceType type){
@@ -189,6 +190,75 @@ public class ChessPiece {
         }
         legalMoves.add(new ChessMove(startPosition, new ChessPosition(row, col), null));
         return false;
+    }
+
+    public static List<ChessMove> knightMoves(ChessBoard board, int row, int col, ChessGame.TeamColor currentTeamColor, PieceType type){
+        ChessPosition startPosition = new ChessPosition(row, col);
+        List<ChessMove> legalMoves = new ArrayList<>();
+        int nextRow;
+        int nextCol;
+
+        // U2 R1
+        nextRow = row + 2;
+        nextCol = col + 1;
+        if (boundaryCheck(nextRow, nextCol)){
+            legalityCheck(board, currentTeamColor,startPosition , legalMoves, nextRow, nextCol);
+        }
+
+        // U1 R2
+        nextRow = row + 1;
+        nextCol = col + 2;
+        if (boundaryCheck(nextRow, nextCol)){
+            legalityCheck(board, currentTeamColor,startPosition , legalMoves, nextRow, nextCol);
+        }
+
+        // D1 R2
+        nextRow = row - 1;
+        nextCol = col + 2;
+        if (boundaryCheck(nextRow, nextCol)){
+            legalityCheck(board, currentTeamColor,startPosition , legalMoves, nextRow, nextCol);
+        }
+
+        // D2 R1
+        nextRow = row - 2;
+        nextCol = col + 1;
+        if (boundaryCheck(nextRow, nextCol)){
+            legalityCheck(board, currentTeamColor,startPosition , legalMoves, nextRow, nextCol);
+        }
+
+        // D2 L1
+        nextRow = row - 2;
+        nextCol = col - 1;
+        if (boundaryCheck(nextRow, nextCol)){
+            legalityCheck(board, currentTeamColor,startPosition , legalMoves, nextRow, nextCol);
+        }
+
+        // D1 L2
+        nextRow = row - 1;
+        nextCol = col - 2;
+        if (boundaryCheck(nextRow, nextCol)){
+            legalityCheck(board, currentTeamColor,startPosition , legalMoves, nextRow, nextCol);
+        }
+
+        // U1 L2
+        nextRow = row + 1;
+        nextCol = col - 2;
+        if (boundaryCheck(nextRow, nextCol)){
+            legalityCheck(board, currentTeamColor,startPosition , legalMoves, nextRow, nextCol);
+        }
+
+        // U2 L1
+        nextRow = row + 2;
+        nextCol = col - 1;
+        if (boundaryCheck(nextRow, nextCol)){
+            legalityCheck(board, currentTeamColor,startPosition , legalMoves, nextRow, nextCol);
+        }
+
+        return legalMoves;
+    }
+
+    private static boolean boundaryCheck(int row, int col){
+        return row <= 8 & row >= 1 && col <= 8 && col >= 1;
     }
 
     @Override
