@@ -71,9 +71,10 @@ public class ChessPiece {
                 moves.addAll(straightLine(board, row, col, currentTeamColor, currentPieceType));
                 break;
             case KNIGHT:
-                moves.addAll(knightMoves(board, row, col, currentTeamColor, currentPieceType));
+                moves.addAll(knightMoves(board, row, col, currentTeamColor));
                 break;
             case PAWN:
+                moves.addAll(pawnMoves(board, row, col, currentTeamColor));
                 break;
             case ROOK:
                 moves.addAll(straightLine(board, row, col, currentTeamColor, currentPieceType));
@@ -192,7 +193,7 @@ public class ChessPiece {
         return false;
     }
 
-    public static List<ChessMove> knightMoves(ChessBoard board, int row, int col, ChessGame.TeamColor currentTeamColor, PieceType type){
+    public static List<ChessMove> knightMoves(ChessBoard board, int row, int col, ChessGame.TeamColor currentTeamColor){
         ChessPosition startPosition = new ChessPosition(row, col);
         List<ChessMove> legalMoves = new ArrayList<>();
         int nextRow;
@@ -261,7 +262,7 @@ public class ChessPiece {
         return row <= 8 & row >= 1 && col <= 8 && col >= 1;
     }
 
-    public static List<ChessMove> pawnMoves(ChessBoard board, int row, int col, ChessGame.TeamColor currentTeamColor, PieceType type) {
+    public static List<ChessMove> pawnMoves(ChessBoard board, int row, int col, ChessGame.TeamColor currentTeamColor) {
         ChessPosition startPosition = new ChessPosition(row, col);
         List<ChessMove> legalMoves = new ArrayList<>();
         int startRow;
@@ -287,16 +288,11 @@ public class ChessPiece {
             }
         }
 
-        //next(Up/Down) Right
         int nextCol = col + 1;
-        ChessPiece observedPiece = null;
         pawnDiagonal(board, currentTeamColor, nextRow, nextCol, legalMoves, startPosition);
-        //next(Up/Down) Left
         nextCol -= 2;
         pawnDiagonal(board, currentTeamColor, nextRow, nextCol, legalMoves, startPosition);
-        //At the starting position
         if(startRow == row && openAhead){
-            //Check second row
             nextRow += upOrDown;
             if(nextRow >= 1 && nextRow <= 8 && board.getPiece(new ChessPosition(nextRow, col)) == null){
                 legalMoves.add(new ChessMove(startPosition, new ChessPosition(nextRow, col), null));
