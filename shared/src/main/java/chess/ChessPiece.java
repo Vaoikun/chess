@@ -317,6 +317,7 @@ public class ChessPiece {
                     legalMoves.add(new ChessMove(startPosition, new ChessPosition(nextRow, nextCol), PieceType.ROOK));
                     legalMoves.add(new ChessMove(startPosition, new ChessPosition(nextRow, nextCol), PieceType.KNIGHT));
                 }else{
+
                     legalMoves.add(new ChessMove(startPosition, new ChessPosition(nextRow, nextCol), null));
                 }
             }
