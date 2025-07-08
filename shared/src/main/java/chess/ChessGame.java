@@ -60,16 +60,22 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece currentPiece = this.board.getPiece(startPosition);
+        if (currentPiece == null) {
+            return null;
+        }
         Collection<ChessMove> moveOptions = currentPiece.pieceMoves(this.board, startPosition);
         Collection<ChessMove> legalMoves = new ArrayList<>();
 
-        for (ChessMove move: legalMoves) {
+        for (ChessMove move: moveOptions) {
             ChessBoard newBoard = this.board.copyBoard();
             newBoard.addPiece(move.getStartPosition(), null);
             newBoard.addPiece(move.getStartPosition(), currentPiece);
             ChessGame upDatedGame = new ChessGame(this.teamColor, newBoard);
-        }
 
+            if (!upDatedGame.isInCheck(currentPiece.getTeamColor())){
+                legalMoves.add(move);
+            }
+        }
         return legalMoves;
     }
 
@@ -80,14 +86,21 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessPosition startPosition = move.getStartPosition();
+        Collection<ChessMove> legalMoves = this.validMoves(startPosition);
+        ChessPiece currentPiece = this.board.getPiece(startPosition);
+        if (legalMoves == null){
+            throw new InvalidMoveException("currrentPiece is null");
+        }
+
+
     }
 
     /**
      * Determines if the given team is in check
      *
      * @param teamColor which team to check for check
-     * @return True if the specified team is in check
+     * @return True if the specified team is in check　
      */
     public boolean isInCheck(TeamColor teamColor) {
         throw new RuntimeException("Not implemented");
