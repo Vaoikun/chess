@@ -99,7 +99,6 @@ public class ChessGame {
         } else {
             throw new InvalidMoveException("Illegal moves.");
         }
-
     }
 
     public void changeTurn(){
