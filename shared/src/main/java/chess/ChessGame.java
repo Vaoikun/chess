@@ -87,13 +87,37 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         ChessPosition startPosition = move.getStartPosition();
+        ChessPosition endPosition = move.getEndPosition();
         Collection<ChessMove> legalMoves = this.validMoves(startPosition);
         ChessPiece currentPiece = this.board.getPiece(startPosition);
-        if (legalMoves == null){
+        if (legalMoves == null) {
             throw new InvalidMoveException("currrentPiece is null");
         }
+        if (legalMoves.contains(move)) {
+            moveMaker(move, startPosition, endPosition, currentPiece);
+            changeTurn();
+        } else {
+            throw new InvalidMoveException("Illegal moves.");
+        }
 
+    }
 
+    public void changeTurn(){
+        if (this.teamColor == TeamColor.BLACK){
+            this.teamColor = TeamColor.WHITE;
+        } else {
+            this.teamColor = TeamColor.BLACK;
+        }
+    }
+
+    public void moveMaker(ChessMove move, ChessPosition startPosition, ChessPosition endPosition, ChessPiece currentPiece) {
+        this.board.addPiece(startPosition, null);
+        if (move.getPromotionPiece() == null){
+            this.board.addPiece(endPosition, currentPiece);
+        } else {
+            ChessPiece newPiece = new ChessPiece(this.teamColor, move.getPromotionPiece());
+            this.board.addPiece(endPosition, newPiece);
+        }
     }
 
     /**
