@@ -66,6 +66,18 @@ public class ChessBoard {
         this.checkerboard[7][7] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
     }
 
+    public ChessBoard copyBoard() {
+        ChessBoard copyBoard = new ChessBoard();
+        for (int row = 0; row <= 8; row++){
+            for (int col = 0; col <= 8; col++){
+                ChessPosition currentPosition = new ChessPosition(row + 1, col + 1);
+                ChessPiece currentPiece =  getPiece(currentPosition);
+                copyBoard.addPiece(currentPosition, currentPiece);
+            }
+        }
+        return copyBoard;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {

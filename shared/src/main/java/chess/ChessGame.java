@@ -15,9 +15,16 @@ public class ChessGame {
     private TeamColor teamColor;
     private ChessBoard board = new ChessBoard();
 
+    //default initiation
     public ChessGame() {
         this.teamColor = TeamColor.WHITE;
         this.board.resetBoard();
+    }
+
+    //update
+    public ChessGame(ChessGame.TeamColor newTeamColor, ChessBoard newBoard){
+        this.teamColor = newTeamColor;
+        this.board = newBoard;
     }
 
     /**
@@ -56,7 +63,12 @@ public class ChessGame {
         Collection<ChessMove> moveOptions = currentPiece.pieceMoves(this.board, startPosition);
         Collection<ChessMove> legalMoves = new ArrayList<>();
 
-
+        for (ChessMove move: legalMoves) {
+            ChessBoard newBoard = this.board.copyBoard();
+            newBoard.addPiece(move.getStartPosition(), null);
+            newBoard.addPiece(move.getStartPosition(), currentPiece);
+            ChessGame upDatedGame = new ChessGame(this.teamColor, newBoard);
+        }
 
         return legalMoves;
     }
