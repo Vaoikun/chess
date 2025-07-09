@@ -67,15 +67,15 @@ public class ChessGame {
         Collection<ChessMove> legalMoves = new ArrayList<>();
 
         for (ChessMove move: moveOptions) {
-            ChessBoard newBoard = this.board.copyBoard();
-            newBoard.addPiece(move.getStartPosition(), null);
-            newBoard.addPiece(move.getStartPosition(), currentPiece);
-            ChessGame upDatedGame = new ChessGame(this.teamColor, newBoard);
-
+            ChessBoard testBoard = this.board.copyBoard();
+            testBoard.addPiece(startPosition, null);
+            testBoard.addPiece(move.getEndPosition(), currentPiece);
+            ChessGame upDatedGame = new ChessGame(this.teamColor, testBoard);
             if (!upDatedGame.isInCheck(currentPiece.getTeamColor())){
                 legalMoves.add(move);
             }
         }
+
         return legalMoves;
     }
 
@@ -145,7 +145,7 @@ public class ChessGame {
 
     public boolean checkMove (Collection<ChessMove> moves, ChessPosition kingsPosition) {
         for (ChessMove move : moves) {
-            if (move.getEndPosition() == kingsPosition){
+            if (move.getEndPosition().equals(kingsPosition)){
                 return true;
             }
         }
