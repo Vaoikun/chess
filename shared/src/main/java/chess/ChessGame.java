@@ -94,10 +94,14 @@ public class ChessGame {
             throw new InvalidMoveException("currrentPiece is null");
         }
         if (legalMoves.contains(move)) {
-            moveMaker(move, startPosition, endPosition, currentPiece);
-            changeTurn();
+            if (currentPiece.getTeamColor() == teamColor) {
+                moveMaker(move, startPosition, endPosition, currentPiece);
+                changeTurn();
+            } else {
+                throw new InvalidMoveException("It's not your turn.");
+            }
         } else {
-            throw new InvalidMoveException("Illegal moves.");
+            throw new InvalidMoveException("Illegal moves detected.");
         }
     }
 
