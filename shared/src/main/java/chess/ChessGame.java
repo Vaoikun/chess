@@ -171,6 +171,20 @@ public class ChessGame {
      */
     public boolean isInCheckmate(TeamColor teamColor) {
         Collection<ChessMove> legalMoves = new ArrayList<>();
+        if (!isInCheck(teamColor)){
+            return false;
+        }
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                ChessPosition currentPosition = new ChessPosition(row + 1, col + 1);
+                ChessPiece currentPiece = this.board.getPiece(currentPosition);
+                legalMoves = validMoves(currentPosition);
+                if (currentPiece != null && currentPiece.getTeamColor() == teamColor && !legalMoves.isEmpty()) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /**
