@@ -126,7 +126,7 @@ public class ChessGame {
      * @return True if the specified team is in check　
      */
     public boolean isInCheck(TeamColor teamColor) {
-        Collection<ChessMove> legalMoves;
+        Collection<ChessMove> legalMoves = new ArrayList<>();
         ChessPosition kingsPosition = kingsPosition(teamColor);
         for (int row = 0; row < 8; row++){
             for (int col = 0; col < 8; col++){
@@ -170,7 +170,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        Collection<ChessMove> legalMoves = new ArrayList<>();
     }
 
     /**
