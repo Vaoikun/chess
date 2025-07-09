@@ -131,7 +131,7 @@ public class ChessGame {
         for (int row = 0; row < 8; row++){
             for (int col = 0; col < 8; col++){
                 ChessPosition currentPosition = new ChessPosition(row + 1, col + 1);
-                ChessPiece currentPiece = new this.board.getPiece(currentPosition);
+                ChessPiece currentPiece = this.board.getPiece(currentPosition);
                 if (currentPiece.getTeamColor() != teamColor) {
                     Collection<ChessMove> opponentMoves = currentPiece.pieceMoves(this.board, currentPosition);
                     return checkMove(opponentMoves, kingsPosition);
