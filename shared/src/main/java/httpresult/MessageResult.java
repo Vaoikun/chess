@@ -1,4 +1,4 @@
 package httpresult;
 
-public class MessageResult {
+public record MessageResult(String message) {
 }
