@@ -1,4 +1,4 @@
-package httpresult;
+package httpresponse;
 
-public record CreateGameResult(int gameID) {
+public record CreateGameResponse(int gameID) {
 }

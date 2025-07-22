@@ -1,8 +1,8 @@
-package httpresult;
+package httpresponse;
 
 import model.GameData;
 
 import java.util.ArrayList;
 
-public record ListGameResult(ArrayList<GameData> gameList) {
+public record ListGameResponse(ArrayList<GameData> gameList) {
 }
