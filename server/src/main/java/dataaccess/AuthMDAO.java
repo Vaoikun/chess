@@ -7,6 +7,7 @@ import java.util.HashSet;
 public class AuthMDAO implements AuthDAO {
     private static final HashSet<AuthData> AUTH_DATA_HASH_SET = new HashSet<>();
 
+    @Override
     public void clear() throws DataAccessException {
         AUTH_DATA_HASH_SET.clear();
     }

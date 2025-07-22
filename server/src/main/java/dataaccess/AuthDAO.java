@@ -2,5 +2,5 @@ package dataaccess;
 
 public interface AuthDAO {
 
-    public void clear() throws DataAccessException;
+    default void clear() throws DataAccessException {return;}
 }
