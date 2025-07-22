@@ -1,16 +1,13 @@
 package service;
 
-import dataaccess.AuthDAO;
-import dataaccess.DataAccessException;
-import dataaccess.GameDAO;
-import dataaccess.UserDAO;
+import dataaccess.*;
 import server.ServerException;
 
 public class UserService {
 
-    private final GameDAO gameDB = new GameDAO();
-    private final UserDAO userDB = new UserDAO();
-    private final AuthDAO authDB = new AuthDAO();
+    private final GameMDAO gameDB = new GameMDAO();
+    private final UserMDAO userDB = new UserMDAO();
+    private final AuthMDAO authDB = new AuthMDAO();
 
     public void clear() throws DataAccessException, ServerException {
         gameDB.clear();
