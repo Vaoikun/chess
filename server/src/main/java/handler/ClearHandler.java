@@ -1,7 +1,9 @@
 package handler;
 
+import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import server.ServerException;
+import service.UserService;
 import spark.Request;
 import spark.Response;
 
@@ -13,7 +15,11 @@ public class ClearHandler extends BaseHandler {
 
     @Override
     public Object httpHandlerRequest(Request request, Response response) throws ServerException, DataAccessException {
-        return null;
+        Gson gson = new Gson();
+        String body;
+        try {
+            UserService clearService = new UserService();
+        }
     }
 
 }
