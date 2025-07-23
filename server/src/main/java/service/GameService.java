@@ -36,7 +36,7 @@ public class GameService {
 
     public void joinGame (JoinGameRequest request, String authToken)
         throws DataAccessException, ServerException, ClientException, FullGameException {
-        String username = authDB.getAuth(authToken);
+        String username = authDB.getUsername(authToken);
         if (username == null){
             throw new DataAccessException("Error: unauthorized.");
         }
@@ -45,8 +45,8 @@ public class GameService {
         } else {
             GameData selectedGame = gameDB.getGame(request.gameID());
             if (selectedGame != null) {
-                if (request.teamColor() == ChessGame.TeamColor.WHITE && selectedGame.whiteUsername() != null
-                || request.teamColor() == ChessGame.TeamColor.BLACK && selectedGame.blackUsername() != null) {
+                if ((request.teamColor() == ChessGame.TeamColor.WHITE && selectedGame.whiteUsername() != null)
+                || (request.teamColor() == ChessGame.TeamColor.BLACK && selectedGame.blackUsername() != null)) {
                     throw new FullGameException("Error: spot taken.");
                 } else {
                     gameDB.joinGame(request.gameID(), request.teamColor(), username);
