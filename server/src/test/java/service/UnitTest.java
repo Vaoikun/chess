@@ -2,10 +2,14 @@ package service;
 
 import dataaccess.ClientException;
 import dataaccess.DataAccessException;
+import dataaccess.GameMDAO;
+import httprequest.CreateGameRequest;
 import httprequest.LoginRequest;
 import httprequest.RegisterRequest;
+import httpresponse.CreateGameResponse;
 import httpresponse.LoginResponse;
 import httpresponse.RegisterResponse;
+import model.GameData;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import server.ServerException;
@@ -20,6 +24,12 @@ public class UnitTest {
     private final RegisterRequest registerRequest1 = new RegisterRequest("Mole", "rat", "molerat@email.com");
     private final UserService loginService1 = new UserService();
     private final UserService logoutService1 = new UserService();
+    private final GameService createGameService1 = new GameService();
+    private final GameService joinGameService = new GameService();
+    private final GameService listGameService = new GameService();
+    private final CreateGameRequest createGameRequest = new CreateGameRequest("GameA");
+    private final CreateGameRequest createGameRequestB = new CreateGameRequest("GameB");
+    private final GameMDAO gameDAO = new GameMDAO();
 
     public UnitTest() throws DataAccessException {
     }
@@ -82,5 +92,43 @@ public class UnitTest {
         assertEquals(exception.getMessage(), "unauthorized.");
     }
 
+    @Test
+    @Order(8)
+    public void createGameSuccess()
+            throws ServerException, ClientException, DataAccessException {
+        RegisterResponse registerResponse = registerService1.register(registerRequest1);
+        String authToken = registerResponse.authToken();
+        String gameName = "GameA";
+        CreateGameResponse createGameResponse = createGameService1.createGame(createGameRequest, authToken);
+        GameData gameA = gameDAO.getGame(createGameResponse.gameID());
+        assertEquals(gameName, gameA.gameName());
+    }
 
+    @Test
+    @Order(9)
+    public void createGameFailed()
+            throws ServerException, ClientException, DataAccessException {
+        DataAccessException exception = assertThrows(DataAccessException.class, () -> createGameService1.createGame(createGameRequestB, null));
+        assertEquals(exception.getMessage(), "unauthorized.");
+    }
+
+    @Test
+    @Order(10)
+    public void joinGameSuccess()
+            throws ServerException, ClientException, DataAccessException {}
+
+    @Test
+    @Order(11)
+    public void joinGameFailed()
+            throws ServerException, ClientException, DataAccessException {}
+
+    @Test
+    @Order(12)
+    public void listGamesSuccess()
+            throws ServerException, ClientException, DataAccessException {}
+
+    @Test
+    @Order(13)
+    public void listGamesFailed()
+            throws ServerException, ClientException, DataAccessException {}
 }
