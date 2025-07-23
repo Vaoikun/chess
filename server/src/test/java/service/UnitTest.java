@@ -19,6 +19,7 @@ public class UnitTest {
     private final UserService registerService1 = new UserService();
     private final RegisterRequest registerRequest1 = new RegisterRequest("Mole", "rat", "molerat@email.com");
     private final UserService loginService1 = new UserService();
+    private final UserService logoutService1 = new UserService();
 
     public UnitTest() throws DataAccessException {
     }
@@ -61,6 +62,23 @@ public class UnitTest {
     public void loginFailed() throws ServerException, ClientException, DataAccessException {
         LoginRequest loginRequest = new LoginRequest("King", null);
         DataAccessException exception = assertThrows(DataAccessException.class, () -> loginService1.login(loginRequest));
+        assertEquals(exception.getMessage(), "unauthorized.");
+    }
+
+    @Test
+    @Order(6)
+    public void logoutSuccess() throws ServerException, ClientException, DataAccessException {
+        RegisterRequest registerRequest = new RegisterRequest("Queen", "Neeuq", "queen@email.com");
+        RegisterResponse registerResponse = registerService1.register(registerRequest);
+        String authToken = registerResponse.authToken();
+        LoginResponse loginResponse = loginService1.login(new LoginRequest("Queen", "Neeuq"));
+        assertDoesNotThrow(() -> logoutService1.logout(authToken));
+    }
+
+    @Test
+    @Order(7)
+    public void logoutFailed() throws ServerException, ClientException, DataAccessException {
+        DataAccessException exception = assertThrows(DataAccessException.class, () -> logoutService1.logout(null));
         assertEquals(exception.getMessage(), "unauthorized.");
     }
 

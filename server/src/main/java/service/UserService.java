@@ -8,8 +8,6 @@ import httpresponse.RegisterResponse;
 import model.UserData;
 import server.ServerException;
 
-import javax.xml.crypto.Data;
-
 public class UserService {
 
     private final GameMDAO gameDB = new GameMDAO();
@@ -54,7 +52,7 @@ public class UserService {
     public void logout(String authToken) throws DataAccessException, ServerException {
         String username = authDB.getAuth(authToken);
         if (username == null){
-            throw new DataAccessException("unauthorized");
+            throw new DataAccessException("unauthorized.");
         } else {
             authDB.deleteAuth(authToken);
         }
