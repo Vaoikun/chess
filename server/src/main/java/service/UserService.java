@@ -28,10 +28,10 @@ public class UserService {
             throws DataAccessException, ServerException {
         UserData userData = userDB.getUser(request.username());
         if (userData != null) {
-            throw new DataAccessException("username already taken.");
+            throw new DataAccessException("Error: username already taken.");
         }
         if (request.password() == null) {
-            throw new ClientException("must set the password.");
+            throw new ClientException("Error: must set the password.");
         } else {
             UserData newUser = new UserData(request.username(), request.password(), request.email());
             userDB.createUser(newUser);
@@ -41,10 +41,16 @@ public class UserService {
     }
 
     public LoginResponse login(LoginRequest loginRequest)
-            throws DataAccessException, ServerException {
+            throws DataAccessException, ServerException, ClientException {
         UserData userData = userDB.getUser(loginRequest.username());
-        if (userData == null || loginRequest.password() == null) {
-            throw new DataAccessException("unauthorized.");
+        if (userData == null) {
+            throw new DataAccessException("Error: user doesn't exist.");
+        }
+        if (userData.username() == null || loginRequest.password() == null) {
+            throw new ClientException("Error: bad request.");
+        }
+        if (!loginRequest.password().equals(userData.password())){
+            throw new DataAccessException("Error: unauthorized.");
         } else {
             String authToken = authDB.createAuth(userData.username());
             return new LoginResponse(userData.username(), authToken);
@@ -54,7 +60,7 @@ public class UserService {
     public void logout(String authToken) throws DataAccessException, ServerException {
         String username = authDB.getAuth(authToken);
         if (username == null){
-            throw new DataAccessException("unauthorized.");
+            throw new DataAccessException("Error: unauthorized.");
         } else {
             authDB.deleteAuth(authToken);
         }

@@ -22,9 +22,12 @@ public class GameService {
 
     public CreateGameResponse createGame(CreateGameRequest request, String authToken)
             throws DataAccessException, ServerException, ClientException {
-        String username = authDB.getAuth(authToken);
+        String username = authDB.getUsername(authToken);
+        if (request.gameName() == null) {
+            throw new ClientException("Error: bad request.");
+        }
         if (username == null){
-            throw new DataAccessException("unauthorized.");
+            throw new DataAccessException("Error: unauthorized.");
         } else {
             int gameID = gameDB.createGame(request.gameName());
             return new CreateGameResponse(gameID);
@@ -35,21 +38,21 @@ public class GameService {
         throws DataAccessException, ServerException, ClientException, FullGameException {
         String username = authDB.getAuth(authToken);
         if (username == null){
-            throw new DataAccessException("unauthorized.");
+            throw new DataAccessException("Error: unauthorized.");
         }
         if (request.teamColor() == null || request.gameID() == 0){
-            throw new ClientException("bad request.");
+            throw new ClientException("Error: bad request.");
         } else {
             GameData selectedGame = gameDB.getGame(request.gameID());
             if (selectedGame != null) {
                 if (request.teamColor() == ChessGame.TeamColor.WHITE && selectedGame.whiteUsername() != null
                 || request.teamColor() == ChessGame.TeamColor.BLACK && selectedGame.blackUsername() != null) {
-                    throw new FullGameException("spot taken.");
+                    throw new FullGameException("Error: spot taken.");
                 } else {
                     gameDB.joinGame(request.gameID(), request.teamColor(), username);
                 }
             } else {
-                throw new DataAccessException("null game.");
+                throw new DataAccessException("Error: null game.");
             }
         }
     }

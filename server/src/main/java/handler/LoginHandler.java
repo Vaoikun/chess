@@ -1,6 +1,7 @@
 package handler;
 
 import com.google.gson.Gson;
+import dataaccess.ClientException;
 import dataaccess.DataAccessException;
 import httprequest.LoginRequest;
 import httpresponse.LoginResponse;
@@ -30,6 +31,9 @@ public class LoginHandler extends BaseHandler {
             json = gson.toJson(new MessageResponse(e.getMessage()));
         } catch (DataAccessException e) {
             response.status(401);
+            json = gson.toJson(new MessageResponse(e.getMessage()));
+        }catch (ClientException e) {
+            response.status(400);
             json = gson.toJson(new MessageResponse(e.getMessage()));
         }
         response.type("application/json");
