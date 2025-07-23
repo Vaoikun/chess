@@ -2,7 +2,9 @@ package service;
 
 import dataaccess.ClientException;
 import dataaccess.DataAccessException;
+import httprequest.LoginRequest;
 import httprequest.RegisterRequest;
+import httpresponse.LoginResponse;
 import httpresponse.RegisterResponse;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -16,6 +18,7 @@ public class UnitTest {
     ///test2
     private final UserService registerService1 = new UserService();
     private final RegisterRequest registerRequest1 = new RegisterRequest("Mole", "rat", "molerat@email.com");
+    private final UserService loginService1 = new UserService();
 
     public UnitTest() throws DataAccessException {
     }
@@ -44,7 +47,22 @@ public class UnitTest {
         assertEquals(exception.getMessage(), "must set the password.");
     }
 
+    @Test
+    @Order(4)
+    public void loginSuccess() throws ServerException, ClientException, DataAccessException {
+        RegisterResponse registerResponse = registerService1.register(new RegisterRequest("King", "Gnik", "king@email.com"));
+        LoginResponse loginResponse = loginService1.login(new LoginRequest("King", "Gnik"));
+        String username = registerResponse.username();
+        assertEquals(username, loginResponse.username());
+    }
 
+    @Test
+    @Order(5)
+    public void loginFailed() throws ServerException, ClientException, DataAccessException {
+        LoginRequest loginRequest = new LoginRequest("King", null);
+        DataAccessException exception = assertThrows(DataAccessException.class, () -> loginService1.login(loginRequest));
+        assertEquals(exception.getMessage(), "unauthorized.");
+    }
 
 
 }
