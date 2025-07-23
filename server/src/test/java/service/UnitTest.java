@@ -9,20 +9,24 @@ import httprequest.JoinGameRequest;
 import httprequest.LoginRequest;
 import httprequest.RegisterRequest;
 import httpresponse.CreateGameResponse;
+import httpresponse.ListGameResponse;
 import httpresponse.LoginResponse;
 import httpresponse.RegisterResponse;
 import model.GameData;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import server.ServerException;
 import static org.junit.jupiter.api.Assertions.*;
 
 import javax.xml.crypto.Data;
+import java.util.ArrayList;
 
 public class UnitTest {
     private String authToken;
     ///test2
     private final UserService registerService1 = new UserService();
+    private final UserService registerService2 = new UserService();
     private final RegisterRequest registerRequest1 = new RegisterRequest("Mole", "rat", "molerat@email.com");
     private final RegisterRequest registerRequest2 = new RegisterRequest("Dig", "hole", "dighole@email.com");
     private final UserService loginService1 = new UserService();
@@ -30,11 +34,17 @@ public class UnitTest {
     private final GameService createGameService1 = new GameService();
     private final GameService joinGameService1 = new GameService();
     private final GameService listGameService1 = new GameService();
+    private final GameService listGameService2 = new GameService();
     private final CreateGameRequest createGameRequestA = new CreateGameRequest("GameA");
     private final CreateGameRequest createGameRequestB = new CreateGameRequest("GameB");
     private final GameMDAO gameDAO = new GameMDAO();
 
     public UnitTest() throws DataAccessException {
+    }
+
+    @BeforeEach
+    public void setup() throws DataAccessException {
+        gameDAO.clear();
     }
 
     @Test
@@ -143,10 +153,20 @@ public class UnitTest {
     @Test
     @Order(12)
     public void listGamesSuccess()
-            throws ServerException, ClientException, DataAccessException {}
+            throws ServerException, ClientException, DataAccessException {
+        RegisterRequest registerRequest = new RegisterRequest("Cook", "bake", "chef@email.com");
+        RegisterResponse registerResponse = registerService2.register(registerRequest);
+        String authToken = registerResponse.authToken();
+        ListGameResponse listGameResponse = listGameService2.listGames(authToken);
+        ArrayList<GameData> gameList = listGameResponse.gameList();
+        assertEquals(0, gameList.size());
+    }
 
     @Test
     @Order(13)
     public void listGamesFailed()
-            throws ServerException, ClientException, DataAccessException {}
+            throws ServerException, ClientException, DataAccessException {
+        DataAccessException exception = assertThrows(DataAccessException.class, () -> listGameService1.listGames(null));
+        assertEquals(exception.getMessage(), "unauthorized.");
+    }
 }
