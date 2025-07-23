@@ -1,8 +1,10 @@
 package service;
 
 import dataaccess.*;
+import httprequest.CreateGameRequest;
 import httprequest.LoginRequest;
 import httprequest.RegisterRequest;
+import httpresponse.CreateGameResponse;
 import httpresponse.LoginResponse;
 import httpresponse.RegisterResponse;
 import model.UserData;
@@ -57,5 +59,4 @@ public class UserService {
             authDB.deleteAuth(authToken);
         }
     }
-
 }
