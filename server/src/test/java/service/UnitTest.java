@@ -1,9 +1,11 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.ClientException;
 import dataaccess.DataAccessException;
 import dataaccess.GameMDAO;
 import httprequest.CreateGameRequest;
+import httprequest.JoinGameRequest;
 import httprequest.LoginRequest;
 import httprequest.RegisterRequest;
 import httpresponse.CreateGameResponse;
@@ -22,12 +24,13 @@ public class UnitTest {
     ///test2
     private final UserService registerService1 = new UserService();
     private final RegisterRequest registerRequest1 = new RegisterRequest("Mole", "rat", "molerat@email.com");
+    private final RegisterRequest registerRequest2 = new RegisterRequest("Dig", "hole", "dighole@email.com");
     private final UserService loginService1 = new UserService();
     private final UserService logoutService1 = new UserService();
     private final GameService createGameService1 = new GameService();
-    private final GameService joinGameService = new GameService();
-    private final GameService listGameService = new GameService();
-    private final CreateGameRequest createGameRequest = new CreateGameRequest("GameA");
+    private final GameService joinGameService1 = new GameService();
+    private final GameService listGameService1 = new GameService();
+    private final CreateGameRequest createGameRequestA = new CreateGameRequest("GameA");
     private final CreateGameRequest createGameRequestB = new CreateGameRequest("GameB");
     private final GameMDAO gameDAO = new GameMDAO();
 
@@ -96,10 +99,10 @@ public class UnitTest {
     @Order(8)
     public void createGameSuccess()
             throws ServerException, ClientException, DataAccessException {
-        RegisterResponse registerResponse = registerService1.register(registerRequest1);
+        RegisterResponse registerResponse = registerService1.register(registerRequest2);
         String authToken = registerResponse.authToken();
         String gameName = "GameA";
-        CreateGameResponse createGameResponse = createGameService1.createGame(createGameRequest, authToken);
+        CreateGameResponse createGameResponse = createGameService1.createGame(createGameRequestA, authToken);
         GameData gameA = gameDAO.getGame(createGameResponse.gameID());
         assertEquals(gameName, gameA.gameName());
     }
@@ -115,12 +118,27 @@ public class UnitTest {
     @Test
     @Order(10)
     public void joinGameSuccess()
-            throws ServerException, ClientException, DataAccessException {}
+            throws ServerException, ClientException, DataAccessException {
+        RegisterRequest registerRequest = new RegisterRequest("Dog", "cat", "tomcat@email.com");
+        RegisterResponse registerResponse = registerService1.register(registerRequest);
+        String authToken = registerResponse.authToken();
+        CreateGameRequest createGameRequest = new CreateGameRequest("GameC");
+        CreateGameResponse createGameResponse = createGameService1.createGame(createGameRequest, authToken);
+        JoinGameRequest joinGameRequest = new JoinGameRequest(ChessGame.TeamColor.WHITE, createGameResponse.gameID());
+        assertDoesNotThrow(() -> joinGameService1.joinGame(joinGameRequest, authToken));
+    }
 
     @Test
     @Order(11)
     public void joinGameFailed()
-            throws ServerException, ClientException, DataAccessException {}
+            throws ServerException, ClientException, DataAccessException {
+        RegisterRequest registerRequest = new RegisterRequest("Car", "Train", "transport@email.com");
+        RegisterResponse registerResponse = registerService1.register(registerRequest);
+        String authToken = registerResponse.authToken();
+        JoinGameRequest joinGameRequest = new JoinGameRequest(ChessGame.TeamColor.WHITE, 0);
+        ClientException exception = assertThrows(ClientException.class, () -> joinGameService1.joinGame(joinGameRequest, authToken));
+        assertEquals(exception.getMessage(), "bad request.");
+    }
 
     @Test
     @Order(12)
