@@ -1,7 +1,9 @@
 package service;
 
 import dataaccess.*;
+import httprequest.LoginRequest;
 import httprequest.RegisterRequest;
+import httpresponse.LoginResponse;
 import httpresponse.RegisterResponse;
 import model.UserData;
 import server.ServerException;
@@ -37,4 +39,25 @@ public class UserService {
             return new RegisterResponse(request.username(), newAuth);
         }
     }
+
+    public LoginResponse login(LoginRequest loginRequest)
+            throws DataAccessException, ServerException {
+        UserData userData = userDB.getUser(loginRequest.username());
+        if (userData == null || loginRequest.password() == null) {
+            throw new DataAccessException("unauthorized.");
+        } else {
+            String authToken = authDB.createAuth(userData.username());
+            return new LoginResponse(userData.username(), authToken);
+        }
+    }
+
+    public void logout(String authToken) throws DataAccessException, ServerException {
+        String username = authDB.getAuth(authToken);
+        if (username == null){
+            throw new DataAccessException("unauthorized");
+        } else {
+            authDB.deleteAuth(authToken);
+        }
+    }
+
 }
