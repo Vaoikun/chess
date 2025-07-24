@@ -61,7 +61,7 @@ public class GameService {
             throws DataAccessException, ServerException, ClientException {
         String username = authDB.getUsername(authToken);
         if (username == null) {
-            throw new DataAccessException("unauthorized.");
+            throw new DataAccessException("Error: unauthorized.");
         } else {
             ArrayList<GameData> gameList = gameDB.listGames(authToken);
             return new ListGameResponse(gameList);

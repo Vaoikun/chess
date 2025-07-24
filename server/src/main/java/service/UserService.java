@@ -42,12 +42,12 @@ public class UserService {
 
     public LoginResponse login(LoginRequest loginRequest)
             throws DataAccessException, ServerException, ClientException {
+        if (loginRequest.username() == null || loginRequest.password() == null) {
+            throw new ClientException("Error: bad request.");
+        }
         UserData userData = userDB.getUser(loginRequest.username());
         if (userData == null) {
             throw new DataAccessException("Error: user doesn't exist.");
-        }
-        if (userData.username() == null || loginRequest.password() == null) {
-            throw new ClientException("Error: bad request.");
         }
         if (!loginRequest.password().equals(userData.password())){
             throw new DataAccessException("Error: unauthorized.");

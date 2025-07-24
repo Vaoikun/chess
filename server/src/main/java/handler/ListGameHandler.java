@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import dataaccess.ClientException;
 import dataaccess.DataAccessException;
 import httprequest.JoinGameRequest;
+import httpresponse.ListGameResponse;
 import httpresponse.MessageResponse;
 import server.ServerException;
 import service.FullGameException;
@@ -21,15 +22,11 @@ public class ListGameHandler extends BaseHandler{
         Gson gson = new Gson();
         String json;
         try {
-            GameService joinGameService = new GameService();
+            final GameService listGameService = new GameService();
             String authToken = request.headers("Authorization");
-            JoinGameRequest joinGameRequest = getBody(request, JoinGameRequest.class);
-            joinGameService.joinGame(joinGameRequest, authToken);
-            json = new Gson().toJson(new MessageResponse(""));
+            ListGameResponse listGameResponse = listGameService.listGames(authToken);
+            json = gson.toJson(listGameResponse);
             response.status(200);
-        } catch (ClientException e) {
-            json = gson.toJson(new MessageResponse(e.getMessage()));
-            response.status(400);
         } catch (DataAccessException e) {
             json = gson.toJson(new MessageResponse(e.getMessage()));
             response.status(401);
@@ -40,7 +37,6 @@ public class ListGameHandler extends BaseHandler{
             json = gson.toJson(new MessageResponse(e.getMessage()));
             response.status(403);
         }
-        response.type("application/json");
         return json;
     }
 }
