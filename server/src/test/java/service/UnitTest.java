@@ -68,7 +68,7 @@ public class UnitTest {
     public void registerFailed() throws ServerException, DataAccessException, ClientException {
         RegisterRequest missingPassword = new RegisterRequest("Mike", null, "mike@email.com");
         ClientException exception = assertThrows(ClientException.class, () -> registerService1.register(missingPassword));
-        assertEquals(exception.getMessage(), "must set the password.");
+        assertEquals(exception.getMessage(), "Error: must set the password.");
     }
 
     @Test
@@ -84,8 +84,8 @@ public class UnitTest {
     @Order(5)
     public void loginFailed() throws ServerException, ClientException, DataAccessException {
         LoginRequest loginRequest = new LoginRequest("King", null);
-        DataAccessException exception = assertThrows(DataAccessException.class, () -> loginService1.login(loginRequest));
-        assertEquals(exception.getMessage(), "unauthorized.");
+        ClientException exception = assertThrows(ClientException.class, () -> loginService1.login(loginRequest));
+        assertEquals(exception.getMessage(), "Error: bad request.");
     }
 
     @Test
@@ -102,7 +102,7 @@ public class UnitTest {
     @Order(7)
     public void logoutFailed() throws ServerException, ClientException, DataAccessException {
         DataAccessException exception = assertThrows(DataAccessException.class, () -> logoutService1.logout(null));
-        assertEquals(exception.getMessage(), "unauthorized.");
+        assertEquals(exception.getMessage(), "Error: unauthorized.");
     }
 
     @Test
@@ -122,7 +122,7 @@ public class UnitTest {
     public void createGameFailed()
             throws ServerException, ClientException, DataAccessException {
         DataAccessException exception = assertThrows(DataAccessException.class, () -> createGameService1.createGame(createGameRequestB, null));
-        assertEquals(exception.getMessage(), "unauthorized.");
+        assertEquals(exception.getMessage(), "Error: unauthorized.");
     }
 
     @Test
@@ -147,7 +147,7 @@ public class UnitTest {
         String authToken = registerResponse.authToken();
         JoinGameRequest joinGameRequest = new JoinGameRequest(ChessGame.TeamColor.WHITE, 0);
         ClientException exception = assertThrows(ClientException.class, () -> joinGameService1.joinGame(joinGameRequest, authToken));
-        assertEquals(exception.getMessage(), "bad request.");
+        assertEquals(exception.getMessage(), "Error: bad request.");
     }
 
     @Test
@@ -167,6 +167,6 @@ public class UnitTest {
     public void listGamesFailed()
             throws ServerException, ClientException, DataAccessException {
         DataAccessException exception = assertThrows(DataAccessException.class, () -> listGameService1.listGames(null));
-        assertEquals(exception.getMessage(), "unauthorized.");
+        assertEquals(exception.getMessage(), "Error: unauthorized.");
     }
 }
