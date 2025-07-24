@@ -158,7 +158,7 @@ public class UnitTest {
         RegisterResponse registerResponse = registerService2.register(registerRequest);
         String authToken = registerResponse.authToken();
         ListGameResponse listGameResponse = listGameService2.listGames(authToken);
-        ArrayList<GameData> gameList = listGameResponse.gameList();
+        ArrayList<GameData> gameList = listGameResponse.games();
         assertEquals(0, gameList.size());
     }
 

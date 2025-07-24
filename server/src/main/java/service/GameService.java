@@ -40,16 +40,16 @@ public class GameService {
         if (username == null){
             throw new DataAccessException("Error: unauthorized.");
         }
-        if (request.teamColor() == null || request.gameID() == 0){
+        if (request.playerColor() == null || request.gameID() == 0){
             throw new ClientException("Error: bad request.");
         } else {
             GameData selectedGame = gameDB.getGame(request.gameID());
             if (selectedGame != null) {
-                if ((request.teamColor() == ChessGame.TeamColor.WHITE && selectedGame.whiteUsername() != null)
-                || (request.teamColor() == ChessGame.TeamColor.BLACK && selectedGame.blackUsername() != null)) {
+                if ((request.playerColor() == ChessGame.TeamColor.WHITE && selectedGame.whiteUsername() != null)
+                || (request.playerColor() == ChessGame.TeamColor.BLACK && selectedGame.blackUsername() != null)) {
                     throw new FullGameException("Error: spot taken.");
                 } else {
-                    gameDB.joinGame(request.gameID(), request.teamColor(), username);
+                    gameDB.joinGame(request.gameID(), request.playerColor(), username);
                 }
             } else {
                 throw new DataAccessException("Error: null game.");

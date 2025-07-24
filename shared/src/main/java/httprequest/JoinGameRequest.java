@@ -2,5 +2,5 @@ package httprequest;
 
 import chess.ChessGame;
 
-public record JoinGameRequest(ChessGame.TeamColor teamColor, int gameID) {
+public record JoinGameRequest(ChessGame.TeamColor playerColor, int gameID) {
 }
