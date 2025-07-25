@@ -10,13 +10,15 @@ import httpresponse.RegisterResponse;
 import model.UserData;
 import server.ServerException;
 
+import java.sql.SQLException;
+
 public class UserService {
 
-    private final GameMDAO gameDB = new GameMDAO();
-    private final UserMDAO userDB = new UserMDAO();
+    private final GameDAO gameDB = new GameMDAO();
+    private final SQLUserDAO userDB = new SQLUserDAO();
     private final AuthMDAO authDB = new AuthMDAO();
 
-    public UserService() throws DataAccessException {}
+    public UserService() throws DataAccessException, SQLException {}
 
     public void clear() throws DataAccessException, ServerException {
         gameDB.clear();
@@ -25,7 +27,7 @@ public class UserService {
     }
 
     public RegisterResponse register(RegisterRequest request)
-            throws DataAccessException, ServerException {
+            throws DataAccessException, ServerException, SQLException {
         UserData userData = userDB.getUser(request.username());
         if (userData != null) {
             throw new DataAccessException("Error: username already taken.");
