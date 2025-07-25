@@ -8,6 +8,9 @@ import service.UserService;
 import spark.Request;
 import spark.Response;
 
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+
 public class ClearHandler extends BaseHandler {
 
     public ClearHandler (Request request, Response response) {
@@ -25,9 +28,9 @@ public class ClearHandler extends BaseHandler {
             response.status(200);
         } catch (DataAccessException e) {
             body = gson.toJson(new MessageResponse(e.getMessage()));
-        } catch (ServerException e) {
+        } catch (ServerException | SQLException e) {
             body = new Gson().toJson(new MessageResponse(e.getMessage()));
-            response.status(200);
+            response.status(500);
         }
         response.type("application/type");
         return body;
