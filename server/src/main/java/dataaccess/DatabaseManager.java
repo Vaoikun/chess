@@ -14,6 +14,7 @@ public class DatabaseManager {
      */
     static {
         loadPropertiesFromResources();
+
     }
 
     /**
