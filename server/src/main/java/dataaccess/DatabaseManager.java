@@ -13,23 +13,27 @@ public class DatabaseManager {
      * Load the database information for the db.properties file.
      */
     static {
-        try (var propStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("db.properties")){
-            if (propStream == null) {
-                throw new Exception("Unable to load db.properties");
-            }
-            Properties properties = new Properties();
-            properties.load(propStream);
-            databaseName = properties.getProperty("db.name");
-            dbUsername = properties.getProperty("db.user");
-            dbPassword = properties.getProperty("db.password");
-
-            var host = properties.getProperty("db.host");
-            var port = Integer.parseInt(properties.getProperty("db.port"));
-            connectionUrl = String.format("jdbc:mysql://%s:%d", host, port);
-        } catch (Exception ex){
-            throw new RuntimeException("failed to read db.properties" + ex.getMessage());
-        }
+        loadPropertiesFromResources();
     }
+
+//    static {
+//        try (var propStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("db.properties")){
+//            if (propStream == null) {
+//                throw new Exception("Unable to load db.properties");
+//            }
+//            Properties properties = new Properties();
+//            properties.load(propStream);
+//            databaseName = properties.getProperty("db.name");
+//            dbUsername = properties.getProperty("db.user");
+//            dbPassword = properties.getProperty("db.password");
+//
+//            var host = properties.getProperty("db.host");
+//            var port = Integer.parseInt(properties.getProperty("db.port"));
+//            connectionUrl = String.format("jdbc:mysql://%s:%d", host, port);
+//        } catch (Exception ex){
+//            throw new RuntimeException("failed to read db.properties" + ex.getMessage());
+//        }
+//    }
 
     /**
      * Creates the database if it does not already exist.
