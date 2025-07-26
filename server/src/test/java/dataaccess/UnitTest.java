@@ -21,17 +21,21 @@ public class UnitTest {
     public void createDB() throws DataAccessException {
         DatabaseManager.createDatabase();
         SQLUserDAO.createUserTable();
+        SQLAuthDAO.createAuthTable();
     }
 
     @AfterEach
     public void clear() throws DataAccessException {
         SQLUserDB.clear();
+        SQLAuthDB.clear();
     }
 
     @Test
     @Order(1)
     public void clearTest() throws DataAccessException {
         SQLUserDB.clear();
+        SQLAuthDB.clear();
         assertDoesNotThrow(SQLUserDB::clear);
+        assertDoesNotThrow(SQLAuthDB::clear);
     }
 }

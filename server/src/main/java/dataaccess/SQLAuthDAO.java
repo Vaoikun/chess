@@ -8,7 +8,7 @@ public class SQLAuthDAO implements AuthDAO {
 
     private static final String CREATE_STATEMENT =
             """
-                    CREATE TABLE IF NOT EXIST Auths (
+                    CREATE TABLE IF NOT EXISTS Auths (
                     authTokenCol varchar(255) NOT NULL,
                     usernameCol varchar(255) NOT NULL,
                     PRIMARY KEY (authTokenCol));""";
