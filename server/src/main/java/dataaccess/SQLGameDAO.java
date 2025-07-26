@@ -2,10 +2,12 @@ package dataaccess;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import model.GameData;
 import org.junit.jupiter.api.Order;
 
 import javax.xml.crypto.Data;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Random;
 
 public class SQLGameDAO implements GameDAO {
@@ -80,6 +82,68 @@ public class SQLGameDAO implements GameDAO {
             }
         } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
+        }
+    }
+
+    @Override
+    public GameData getGame(int gameID) throws DataAccessException {
+        String whiteUsername, blackUsername, gameName, game;
+        Gson json = new Gson();
+        GameData gameData;
+        try (var connection = DatabaseManager.getConnection()) {
+            try (var selectStatement = connection.prepareStatement(
+                    "SELECT gameIDCol, whiteUsernameCol, blackUsernameCol, gameNameCol, gameCol " +
+                            "FROM Games WHERE gameIDCol = ?;"
+            )) {
+                selectStatement.setInt(1, gameID);
+                try (var returnedData = selectStatement.executeQuery()) {
+                    if (returnedData.next()) {
+                        whiteUsername = returnedData.getString("whiteUsernameCol");
+                        blackUsername = returnedData.getString("blackUsernameCol");
+                        gameName = returnedData.getString("gameNameCol");
+                        game = returnedData.getString("gameCol");
+                        gameData = new GameData(gameID, whiteUsername, blackUsername, gameName, game);
+                        return gameData;
+                    } else {
+                        throw new DataAccessException("game not found.");
+                    }
+                } catch (SQLException e) {
+                    throw new DataAccessException(e.getMessage());
+                }
+            } catch (SQLException e) {
+                throw new DataAccessException(e.getMessage());
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
+    }
+
+    @Override
+    public ArrayList<GameData> listGames(String authToken) throws DataAccessException {
+        if (authToken == null) {
+            throw new DataAccessException("Error: null authToken.");
+        }
+        String whiteUsername, blackUsername, gameName, game;
+        int gameID;
+        Gson json = new Gson();
+        ArrayList<GameData> gameList = new ArrayList<>();
+        try (var connection = DatabaseManager.getConnection()) {
+            try (var selectStatement = connection.prepareStatement(
+                    "SELECT * FROM Games;"
+            )) {
+                try (var returnedData = selectStatement.executeQuery()) {
+                    while (returnedData.next()) {
+                        gameID = returnedData.getInt("gameIDCol");
+                        whiteUsername = returnedData.getString("whiteUsernameCol");
+                        blackUsername = returnedData.getString("blackUsernameCol");
+                        gameName = returnedData.getString("gameNameCol");
+                        game = returnedData.getString("gameCol");
+                        ChessGame chessGame = json.fromJson(game, chess.ChessGame.class);
+                        gameList.add(new GameData(gameID, whiteUsername, blackUsername, gameName, chessGame));
+
+                    }
+                }
+            }
         }
     }
 
