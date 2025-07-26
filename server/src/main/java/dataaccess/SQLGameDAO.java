@@ -178,4 +178,31 @@ public class SQLGameDAO implements GameDAO {
         }
     }
 
+    @Override
+    public void joinGame(int gameID, ChessGame.TeamColor playerColor, String username) throws DataAccessException {
+        if (username == null) {
+            throw new DataAccessException("Error: null username.");
+        }
+        GameData game = getGame(gameID);
+        updateGame(username, playerColor, game);
+    }
+
+    public void updateGameBoard (ChessGame game, int gameID) throws DataAccessException {
+        Gson gson = new Gson();
+        String json = gson.toJson(game);
+        try (var connection = DatabaseManager.getConnection()) {
+            try (var updateStatement = connection.prepareStatement(
+                    "UPDATE Games SET gameCol = ?, WHERE gameIDCol = ?"
+            )) {
+                updateStatement.setString(1, json);
+                updateStatement.setInt(2, gameID);
+                updateStatement.executeUpdate();
+            } catch (SQLException e) {
+                throw new DataAccessException(e.getMessage());
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
+    }
+
 }
