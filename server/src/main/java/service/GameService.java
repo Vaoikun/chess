@@ -15,8 +15,8 @@ import java.util.ArrayList;
 public class GameService {
 
     private final GameMDAO gameDB = new GameMDAO();
-    private final UserMDAO userDB = new UserMDAO();
-    private final AuthMDAO authDB = new AuthMDAO();
+    private final SQLUserDAO userDB = new SQLUserDAO();
+    private final SQLAuthDAO authDB = new SQLAuthDAO();
 
     public GameService() throws DataAccessException {}
 

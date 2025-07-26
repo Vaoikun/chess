@@ -16,7 +16,7 @@ public class UserService {
 
     private final GameDAO gameDB = new GameMDAO();
     private final SQLUserDAO userDB = new SQLUserDAO();
-    private final AuthMDAO authDB = new AuthMDAO();
+    private final SQLAuthDAO authDB = new SQLAuthDAO();
 
     public UserService() throws DataAccessException, SQLException {}
 
