@@ -2,6 +2,7 @@ package dataaccess;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import com.mysql.cj.x.protobuf.MysqlxCrud;
 import model.GameData;
 import org.junit.jupiter.api.Order;
 
@@ -102,7 +103,8 @@ public class SQLGameDAO implements GameDAO {
                         blackUsername = returnedData.getString("blackUsernameCol");
                         gameName = returnedData.getString("gameNameCol");
                         game = returnedData.getString("gameCol");
-                        gameData = new GameData(gameID, whiteUsername, blackUsername, gameName, game);
+                        ChessGame chessGame = json.fromJson(game, chess.ChessGame.class);
+                        gameData = new GameData(gameID, whiteUsername, blackUsername, gameName, chessGame);
                         return gameData;
                     } else {
                         throw new DataAccessException("game not found.");
@@ -140,10 +142,39 @@ public class SQLGameDAO implements GameDAO {
                         game = returnedData.getString("gameCol");
                         ChessGame chessGame = json.fromJson(game, chess.ChessGame.class);
                         gameList.add(new GameData(gameID, whiteUsername, blackUsername, gameName, chessGame));
-
                     }
+                } catch (SQLException e) {
+                    throw new DataAccessException(e.getMessage());
                 }
+            } catch (SQLException e) {
+                throw new DataAccessException(e.getMessage());
             }
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
+        return gameList;
+    }
+
+    @Override
+    public void updateGame(String username, ChessGame.TeamColor playerColor, GameData gameRequest)
+        throws DataAccessException {
+        int gameID = gameRequest.gameID();
+        String UPDATE_STATEMENT;
+        if (playerColor == ChessGame.TeamColor.WHITE) {
+            UPDATE_STATEMENT = "UPDATE Games SET whiteUsernameCol = ? WHERE gameIDCol = ?;";
+        } else {
+            UPDATE_STATEMENT = "UPDATE Games SET blackUsernameCol = ? WHERE gameIDCol = ?;";
+        }
+        try (var connection = DatabaseManager.getConnection()) {
+            try (var updateStatement = connection.prepareStatement(UPDATE_STATEMENT)) {
+                updateStatement.setString(1, username);
+                updateStatement.setInt(2, gameID);
+                updateStatement.executeUpdate();
+            } catch (SQLException e) {
+                throw new DataAccessException(e.getMessage());
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
         }
     }
 
