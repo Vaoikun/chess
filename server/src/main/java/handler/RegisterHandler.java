@@ -11,6 +11,8 @@ import service.UserService;
 import spark.Request;
 import spark.Response;
 
+import java.sql.SQLException;
+
 public class RegisterHandler extends BaseHandler{
     public RegisterHandler(Request request, Response response) {
         super(request, response);
@@ -26,7 +28,7 @@ public class RegisterHandler extends BaseHandler{
             RegisterResponse registerResponse = registerService.register(body);
             response.status(200);
             jsonResponse = gson.toJson(registerResponse);
-        } catch (DataAccessException e){
+        } catch (DataAccessException | SQLException e){
             response.status(403);
             jsonResponse = gson.toJson(new MessageResponse(e.getMessage()));
         } catch (ClientException e) {

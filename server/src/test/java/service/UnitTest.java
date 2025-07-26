@@ -20,6 +20,7 @@ import server.ServerException;
 import static org.junit.jupiter.api.Assertions.*;
 
 import javax.xml.crypto.Data;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class UnitTest {
@@ -39,24 +40,24 @@ public class UnitTest {
     private final CreateGameRequest createGameRequestB = new CreateGameRequest("GameB");
     private final GameMDAO gameDAO = new GameMDAO();
 
-    public UnitTest() throws DataAccessException {
+    public UnitTest() throws DataAccessException, SQLException {
     }
 
     @BeforeEach
-    public void setup() throws DataAccessException {
+    public void setup() throws DataAccessException, SQLException {
         gameDAO.clear();
     }
 
     @Test
     @Order(1)
-    public void clear() throws ServerException, DataAccessException {
+    public void clear() throws ServerException, DataAccessException, SQLException {
         UserService clearServiceTest = new UserService();
         assertDoesNotThrow(clearServiceTest::clear);
     }
 
     @Test
     @Order(2)
-    public void registerSuccess() throws ServerException, DataAccessException, ClientException {
+    public void registerSuccess() throws ServerException, DataAccessException, ClientException, SQLException {
         RegisterResponse registerResponse = registerService1.register(registerRequest1);
         String username = registerResponse.username();
         assertEquals(registerResponse.username(), username);
@@ -65,7 +66,7 @@ public class UnitTest {
 
     @Test
     @Order(3)
-    public void registerFailed() throws ServerException, DataAccessException, ClientException {
+    public void registerFailed() throws ServerException, DataAccessException, ClientException, SQLException {
         RegisterRequest missingPassword = new RegisterRequest("Mike", null, "mike@email.com");
         ClientException exception = assertThrows(ClientException.class, () -> registerService1.register(missingPassword));
         assertEquals(exception.getMessage(), "Error: must set the password.");
@@ -73,7 +74,7 @@ public class UnitTest {
 
     @Test
     @Order(4)
-    public void loginSuccess() throws ServerException, ClientException, DataAccessException {
+    public void loginSuccess() throws ServerException, ClientException, DataAccessException, SQLException {
         RegisterResponse registerResponse = registerService1.register(new RegisterRequest("King", "Gnik", "king@email.com"));
         LoginResponse loginResponse = loginService1.login(new LoginRequest("King", "Gnik"));
         String username = registerResponse.username();
@@ -82,7 +83,7 @@ public class UnitTest {
 
     @Test
     @Order(5)
-    public void loginFailed() throws ServerException, ClientException, DataAccessException {
+    public void loginFailed() throws ServerException, ClientException, DataAccessException, SQLException {
         LoginRequest loginRequest = new LoginRequest("King", null);
         ClientException exception = assertThrows(ClientException.class, () -> loginService1.login(loginRequest));
         assertEquals(exception.getMessage(), "Error: bad request.");
@@ -90,7 +91,7 @@ public class UnitTest {
 
     @Test
     @Order(6)
-    public void logoutSuccess() throws ServerException, ClientException, DataAccessException {
+    public void logoutSuccess() throws ServerException, ClientException, DataAccessException, SQLException {
         RegisterRequest registerRequest = new RegisterRequest("Queen", "Neeuq", "queen@email.com");
         RegisterResponse registerResponse = registerService1.register(registerRequest);
         String authToken = registerResponse.authToken();
@@ -100,7 +101,7 @@ public class UnitTest {
 
     @Test
     @Order(7)
-    public void logoutFailed() throws ServerException, ClientException, DataAccessException {
+    public void logoutFailed() throws ServerException, ClientException, DataAccessException, SQLException {
         DataAccessException exception = assertThrows(DataAccessException.class, () -> logoutService1.logout(null));
         assertEquals(exception.getMessage(), "Error: unauthorized.");
     }
@@ -108,7 +109,7 @@ public class UnitTest {
     @Test
     @Order(8)
     public void createGameSuccess()
-            throws ServerException, ClientException, DataAccessException {
+            throws ServerException, ClientException, DataAccessException, SQLException {
         RegisterResponse registerResponse = registerService1.register(registerRequest2);
         String authToken = registerResponse.authToken();
         String gameName = "GameA";
@@ -120,7 +121,7 @@ public class UnitTest {
     @Test
     @Order(9)
     public void createGameFailed()
-            throws ServerException, ClientException, DataAccessException {
+            throws ServerException, ClientException, DataAccessException, SQLException {
         DataAccessException exception = assertThrows(DataAccessException.class, () -> createGameService1.createGame(createGameRequestB, null));
         assertEquals(exception.getMessage(), "Error: unauthorized.");
     }
@@ -128,7 +129,7 @@ public class UnitTest {
     @Test
     @Order(10)
     public void joinGameSuccess()
-            throws ServerException, ClientException, DataAccessException {
+            throws ServerException, ClientException, DataAccessException, SQLException {
         RegisterRequest registerRequest = new RegisterRequest("Dog", "cat", "tomcat@email.com");
         RegisterResponse registerResponse = registerService1.register(registerRequest);
         String authToken = registerResponse.authToken();
@@ -141,7 +142,7 @@ public class UnitTest {
     @Test
     @Order(11)
     public void joinGameFailed()
-            throws ServerException, ClientException, DataAccessException {
+            throws ServerException, ClientException, DataAccessException, SQLException {
         RegisterRequest registerRequest = new RegisterRequest("Car", "Train", "transport@email.com");
         RegisterResponse registerResponse = registerService1.register(registerRequest);
         String authToken = registerResponse.authToken();
@@ -153,7 +154,7 @@ public class UnitTest {
     @Test
     @Order(12)
     public void listGamesSuccess()
-            throws ServerException, ClientException, DataAccessException {
+            throws ServerException, ClientException, DataAccessException, SQLException {
         RegisterRequest registerRequest = new RegisterRequest("Cook", "bake", "chef@email.com");
         RegisterResponse registerResponse = registerService2.register(registerRequest);
         String authToken = registerResponse.authToken();
@@ -165,7 +166,7 @@ public class UnitTest {
     @Test
     @Order(13)
     public void listGamesFailed()
-            throws ServerException, ClientException, DataAccessException {
+            throws ServerException, ClientException, DataAccessException, SQLException {
         DataAccessException exception = assertThrows(DataAccessException.class, () -> listGameService1.listGames(null));
         assertEquals(exception.getMessage(), "Error: unauthorized.");
     }

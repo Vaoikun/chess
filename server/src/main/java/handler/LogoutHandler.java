@@ -2,6 +2,7 @@ package handler;
 
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
+import dataaccess.SQLUserDAO;
 import httprequest.LoginRequest;
 import httpresponse.LoginResponse;
 import httpresponse.MessageResponse;
@@ -9,6 +10,8 @@ import server.ServerException;
 import service.UserService;
 import spark.Request;
 import spark.Response;
+
+import java.sql.SQLException;
 
 public class LogoutHandler extends BaseHandler{
     public LogoutHandler(Request request, Response response) throws DataAccessException, ServerException {
@@ -27,7 +30,7 @@ public class LogoutHandler extends BaseHandler{
         } catch (ServerException e) {
             response.status(500);
             json = gson.toJson(new MessageResponse(e.getMessage()));
-        } catch (DataAccessException e) {
+        } catch (DataAccessException | SQLException e) {
             response.status(401);
             json = gson.toJson(new MessageResponse(e.getMessage()));
         }

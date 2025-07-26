@@ -12,6 +12,8 @@ import service.UserService;
 import spark.Request;
 import spark.Response;
 
+import java.sql.SQLException;
+
 public class LoginHandler extends BaseHandler {
     public LoginHandler(Request request, Response response) throws DataAccessException, ServerException {
         super(request, response);
@@ -29,7 +31,7 @@ public class LoginHandler extends BaseHandler {
         } catch (ServerException e) {
             response.status(500);
             json = gson.toJson(new MessageResponse(e.getMessage()));
-        } catch (DataAccessException e) {
+        } catch (DataAccessException | SQLException e) {
             response.status(401);
             json = gson.toJson(new MessageResponse(e.getMessage()));
         }catch (ClientException e) {

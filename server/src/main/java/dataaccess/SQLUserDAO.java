@@ -12,7 +12,7 @@ public class SQLUserDAO implements UserDAO{
                     passwordCol varchar(255) NOT NULL,
                     usernameCol varchar(255) NOT NULL,
                     emailCol varchar(255) NOT NULL,
-                    PRIMARY KEY (usernameCol))
+                    PRIMARY KEY (usernameCol));
                     """;
 
     public SQLUserDAO() throws DataAccessException {
