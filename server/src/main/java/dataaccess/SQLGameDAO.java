@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class SQLGameDAO implements GameDAO {
-    private static final String createTableStatement =
+    private static final String CREATE_STATEMENT =
             """
                     CREATE TABLE IF NOT EXISTS Games(
                     gameIDCol INT NOT NULL,
@@ -22,7 +22,7 @@ public class SQLGameDAO implements GameDAO {
 
     public static void createGamesTable() throws DataAccessException, ServerException {
         try (var connection = DatabaseManager.getConnection()) {
-            try (var createStatement = connection.prepareStatement(createTableStatement)) {
+            try (var createStatement = connection.prepareStatement(CREATE_STATEMENT)) {
                 createStatement.executeUpdate();
             }
         } catch (SQLException e) {
@@ -156,14 +156,14 @@ public class SQLGameDAO implements GameDAO {
     public void updateGame(String username, ChessGame.TeamColor playerColor, GameData gameRequest)
         throws DataAccessException, ServerException {
         int gameID = gameRequest.gameID();
-        final String UPDATE_STATEMENT;
+        String updateSQLStatement;
         if (playerColor == ChessGame.TeamColor.WHITE) {
-            UPDATE_STATEMENT = "UPDATE Games SET whiteUserNameCol = ? WHERE gameIDCol = ?;";
+            updateSQLStatement = "UPDATE Games SET whiteUserNameCol = ? WHERE gameIDCol = ?;";
         } else {
-            UPDATE_STATEMENT = "UPDATE Games SET blackUserNameCol = ? WHERE gameIDCol = ?;";
+            updateSQLStatement = "UPDATE Games SET blackUserNameCol = ? WHERE gameIDCol = ?;";
         }
         try (var connection = DatabaseManager.getConnection()) {
-            try (var updateStatement = connection.prepareStatement(UPDATE_STATEMENT)) {
+            try (var updateStatement = connection.prepareStatement(updateSQLStatement)) {
                 updateStatement.setString(1, username);
                 updateStatement.setInt(2, gameID);
                 updateStatement.executeUpdate();
