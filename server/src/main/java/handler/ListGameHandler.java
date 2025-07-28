@@ -27,7 +27,7 @@ public class ListGameHandler extends BaseHandler{
             ListGameResponse listGameResponse = listGameService.listGames(authToken);
             json = gson.toJson(listGameResponse);
             response.status(200);
-        } catch (DataAccessException e) {
+        } catch (DataAccessException | ClientException e) {
             json = gson.toJson(new MessageResponse(e.getMessage()));
             response.status(401);
         } catch (ServerException e) {

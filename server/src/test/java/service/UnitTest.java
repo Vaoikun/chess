@@ -154,7 +154,7 @@ public class UnitTest {
     @Test
     @Order(12)
     public void listGamesSuccess()
-            throws ServerException, ClientException, DataAccessException, SQLException {
+            throws ServerException, ClientException, DataAccessException, SQLException, FullGameException {
         RegisterRequest registerRequest = new RegisterRequest("Cook", "bake", "chef@email.com");
         RegisterResponse registerResponse = registerService2.register(registerRequest);
         String authToken = registerResponse.authToken();

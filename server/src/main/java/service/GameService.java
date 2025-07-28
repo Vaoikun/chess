@@ -58,7 +58,7 @@ public class GameService {
     }
 
     public ListGameResponse listGames(String authToken)
-            throws DataAccessException, ServerException, ClientException {
+            throws DataAccessException, ServerException, ClientException, FullGameException {
         String username = authDB.getUsername(authToken);
         if (username == null) {
             throw new DataAccessException("Error: unauthorized.");

@@ -27,7 +27,7 @@ public class UserService {
     }
 
     public RegisterResponse register(RegisterRequest request)
-            throws DataAccessException, ServerException, SQLException {
+            throws DataAccessException, ServerException, SQLException, ClientException {
         UserData userData = userDB.getUser(request.username());
         if (userData != null) {
             throw new DataAccessException("Error: username already taken.");
