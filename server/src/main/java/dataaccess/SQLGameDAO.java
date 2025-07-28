@@ -25,8 +25,6 @@ public class SQLGameDAO implements GameDAO {
         try (var connection = DatabaseManager.getConnection()) {
             try (var createStatement = connection.prepareStatement(CREATE_STATEMENT)) {
                 createStatement.executeUpdate();
-            } catch (SQLException e) {
-                throw new DataAccessException(e.getMessage());
             }
         } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
@@ -159,14 +157,14 @@ public class SQLGameDAO implements GameDAO {
     public void updateGame(String username, ChessGame.TeamColor playerColor, GameData gameRequest)
         throws DataAccessException, ServerException {
         int gameID = gameRequest.gameID();
-        String update_STATEMENT;
+        final String UPDATE_STATEMENT;
         if (playerColor == ChessGame.TeamColor.WHITE) {
-            update_STATEMENT = "UPDATE Games SET whiteUserNameCol = ? WHERE gameIDCol = ?;";
+            UPDATE_STATEMENT = "UPDATE Games SET whiteUserNameCol = ? WHERE gameIDCol = ?;";
         } else {
-            update_STATEMENT = "UPDATE Games SET blackUserNameCol = ? WHERE gameIDCol = ?;";
+            UPDATE_STATEMENT = "UPDATE Games SET blackUserNameCol = ? WHERE gameIDCol = ?;";
         }
         try (var connection = DatabaseManager.getConnection()) {
-            try (var updateStatement = connection.prepareStatement(update_STATEMENT)) {
+            try (var updateStatement = connection.prepareStatement(UPDATE_STATEMENT)) {
                 updateStatement.setString(1, username);
                 updateStatement.setInt(2, gameID);
                 updateStatement.executeUpdate();

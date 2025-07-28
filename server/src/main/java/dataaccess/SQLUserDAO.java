@@ -6,7 +6,7 @@ import server.ServerException;
 import java.sql.SQLException;
 
 public class SQLUserDAO implements UserDAO{
-    private static String create_STATEMENT =
+    private static final String CREATE_STATEMENT =
             """
                     CREATE TABLE IF NOT EXISTS Users (
                     passwordCol varchar(255) NOT NULL,
@@ -19,8 +19,8 @@ public class SQLUserDAO implements UserDAO{
     }
 
     public static void createUserTable() throws DataAccessException, ServerException {
-        try (var connection =DatabaseManager.getConnection()){
-            try (var createStatement = connection.prepareStatement(create_STATEMENT)) {
+        try (var connection = DatabaseManager.getConnection()){
+            try (var createStatement = connection.prepareStatement(CREATE_STATEMENT)) {
                 createStatement.executeUpdate();
             } catch (SQLException e) {
                 throw new DataAccessException(e.getMessage());
