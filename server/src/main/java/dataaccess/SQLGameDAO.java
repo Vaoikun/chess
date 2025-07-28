@@ -17,10 +17,10 @@ public class SQLGameDAO implements GameDAO {
             """
                     CREATE TABLE IF NOT EXISTS Games(
                     gameIDCol INT NOT NULL,
-                    whiteUsernameCol varchar(255),
-                    blackUsernameCol varchar(255),
+                    whiteUsernNameCol varchar(255),
+                    blackUserNameCol varchar(255),
                     gameNameCol varchar(255) NOT NULL,
-                    gameCol TEXT NOT NULL,
+                    ChessGameCol TEXT NOT NULL,
                     PRIMARY KEY (gameIDCol));""";
 
 
@@ -43,15 +43,15 @@ public class SQLGameDAO implements GameDAO {
     @Override
     public int createGame(String gameName) throws DataAccessException {
         if (gameName == null) {
-            throw new DataAccessException("null gameName.");
+            throw new DataAccessException("Error: null gameName.");
         }
         Gson gson = new Gson();
         try (var connection = DatabaseManager.getConnection()) {
             try (var createStatement = connection.prepareStatement(
                     """ 
                         INSERT INTO Games(
-                        gameIDCol, whiteUsernameCol, blackUsernameCol, gameNameCol, gameCol)
-                        VALUES (?, ?, ?, ?, ?));"""
+                        gameIDCol, whiteUserNameCol, blackUserNameCol, gameNameCol, ChessGameCol)
+                        VALUES (?, ?, ?, ?, ?);"""
             )) {
                 ChessGame newGame = new ChessGame();
                 String json = gson.toJson(newGame);
@@ -95,17 +95,17 @@ public class SQLGameDAO implements GameDAO {
         try (var connection = DatabaseManager.getConnection()) {
             try (var selectStatement = connection.prepareStatement(
                     """
-                        SELECT gameIDCol, whiteUsernameCol, blackUsernameCol, gameNameCol, gameCol
+                        SELECT gameIDCol, whiteUserNameCol, blackUserNameCol, gameNameCol, ChessGameCol
                         FROM Games WHERE gameIDCol = ?;"""
 
             )) {
                 selectStatement.setInt(1, gameID);
                 try (var returnedData = selectStatement.executeQuery()) {
                     if (returnedData.next()) {
-                        whiteUsername = returnedData.getString("whiteUsernameCol");
-                        blackUsername = returnedData.getString("blackUsernameCol");
+                        whiteUsername = returnedData.getString("whiteUserNameCol");
+                        blackUsername = returnedData.getString("blackUserNameCol");
                         gameName = returnedData.getString("gameNameCol");
-                        game = returnedData.getString("gameCol");
+                        game = returnedData.getString("ChessGameCol");
                         ChessGame chessGame = json.fromJson(game, chess.ChessGame.class);
                         gameData = new GameData(gameID, whiteUsername, blackUsername, gameName, chessGame);
                         return gameData;
@@ -139,10 +139,10 @@ public class SQLGameDAO implements GameDAO {
                 try (var returnedData = selectStatement.executeQuery()) {
                     while (returnedData.next()) {
                         gameID = returnedData.getInt("gameIDCol");
-                        whiteUsername = returnedData.getString("whiteUsernameCol");
-                        blackUsername = returnedData.getString("blackUsernameCol");
+                        whiteUsername = returnedData.getString("whiteUserNameCol");
+                        blackUsername = returnedData.getString("blackUserNameCol");
                         gameName = returnedData.getString("gameNameCol");
-                        game = returnedData.getString("gameCol");
+                        game = returnedData.getString("ChessGameCol");
                         ChessGame chessGame = json.fromJson(game, chess.ChessGame.class);
                         gameList.add(new GameData(gameID, whiteUsername, blackUsername, gameName, chessGame));
                     }
@@ -164,9 +164,9 @@ public class SQLGameDAO implements GameDAO {
         int gameID = gameRequest.gameID();
         String UPDATE_STATEMENT;
         if (playerColor == ChessGame.TeamColor.WHITE) {
-            UPDATE_STATEMENT = "UPDATE Games SET whiteUsernameCol = ? WHERE gameIDCol = ?;";
+            UPDATE_STATEMENT = "UPDATE Games SET whiteUserNameCol = ? WHERE gameIDCol = ?;";
         } else {
-            UPDATE_STATEMENT = "UPDATE Games SET blackUsernameCol = ? WHERE gameIDCol = ?;";
+            UPDATE_STATEMENT = "UPDATE Games SET blackUserNameCol = ? WHERE gameIDCol = ?;";
         }
         try (var connection = DatabaseManager.getConnection()) {
             try (var updateStatement = connection.prepareStatement(UPDATE_STATEMENT)) {
@@ -195,7 +195,7 @@ public class SQLGameDAO implements GameDAO {
         String json = gson.toJson(game);
         try (var connection = DatabaseManager.getConnection()) {
             try (var updateStatement = connection.prepareStatement(
-                    "UPDATE Games SET gameCol = ?, WHERE gameIDCol = ?;"
+                    "UPDATE Games SET ChessGameCol = ?, WHERE gameIDCol = ?;"
             )) {
                 updateStatement.setString(1, json);
                 updateStatement.setInt(2, gameID);
