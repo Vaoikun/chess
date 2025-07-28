@@ -60,7 +60,7 @@ public class UserService {
     }
 
     public void logout(String authToken) throws DataAccessException, ServerException {
-        String username = authDB.getAuth(authToken);
+        String username = authDB.getUsername(authToken);
         if (username == null){
             throw new DataAccessException("Error: unauthorized.");
         } else {

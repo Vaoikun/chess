@@ -10,7 +10,7 @@ public class SQLAuthDAO implements AuthDAO {
             """
                     CREATE TABLE IF NOT EXISTS Auths (
                     authTokenCol varchar(255) NOT NULL,
-                    usernameCol varchar(255) NOT NULL,
+                    UserNameCol varchar(255) NOT NULL,
                     PRIMARY KEY (authTokenCol));""";
 
     public SQLAuthDAO() throws DataAccessException {
@@ -33,7 +33,7 @@ public class SQLAuthDAO implements AuthDAO {
     public String createAuth (String username) throws DataAccessException {
         try (var connection = DatabaseManager.getConnection()) {
             try (var createStatement = connection.prepareStatement(
-                    "INSERT INTO Auths(usernameCol, authTokenCol) VALUES (?, ?);"
+                    "INSERT INTO Auths(userNameCol, authTokenCol) VALUES (?, ?);"
             )) {
                 String authToken = UUID.randomUUID().toString();
                 createStatement.setString(1, username);
@@ -53,7 +53,7 @@ public class SQLAuthDAO implements AuthDAO {
         String authToken = null;
         try(var connection = DatabaseManager.getConnection()) {
             try (var selectStatement = connection.prepareStatement(
-                    "SELECT authTokenCol, usernameCol FROM Auths WHERE usernameCol = ?;"
+                    "SELECT authTokenCol, userNameCol FROM Auths WHERE userNameCol = ?;"
             )) {
                 selectStatement.setString(1, username);
                 try (var returnedData = selectStatement.executeQuery()) {
@@ -77,12 +77,12 @@ public class SQLAuthDAO implements AuthDAO {
         String username = null;
         try(var connection = DatabaseManager.getConnection()) {
             try (var selectStatement = connection.prepareStatement(
-                    "SELECT authTokenCol, usernameCol FROM Auths WHERE authTokenCol = ?;"
+                    "SELECT authTokenCol, userNameCol FROM Auths WHERE authTokenCol = ?;"
             )) {
-                selectStatement.setString(1, username);
+                selectStatement.setString(1, authToken);
                 try (var returnedData = selectStatement.executeQuery()) {
                     while (returnedData.next()) {
-                        username = returnedData.getString("usernameCol");
+                        username = returnedData.getString("userNameCol");
                     }
                 } catch (SQLException e) {
                     throw new DataAccessException(e.getMessage());
@@ -99,7 +99,7 @@ public class SQLAuthDAO implements AuthDAO {
     @Override
     public void deleteAuth(String authToken) throws DataAccessException {
         if (authToken == null) {
-            throw new DataAccessException("null authToken.");
+            throw new DataAccessException("Error: null authToken.");
         }
         try (var connection = DatabaseManager.getConnection()) {
             try (var deleteStatement = connection.prepareStatement(
