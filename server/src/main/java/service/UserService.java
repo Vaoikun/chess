@@ -14,7 +14,7 @@ import java.sql.SQLException;
 
 public class UserService {
 
-    private final GameDAO gameDB = new GameMDAO();
+    private final SQLGameDAO gameDB = new SQLGameDAO();
     private final SQLUserDAO userDB = new SQLUserDAO();
     private final SQLAuthDAO authDB = new SQLAuthDAO();
 
@@ -51,7 +51,7 @@ public class UserService {
         if (userData == null) {
             throw new DataAccessException("Error: user doesn't exist.");
         }
-        if (!loginRequest.password().equals(userData.password())){
+        if (!HashPassword.checkPassword(loginRequest.password(), userData.username())){
             throw new DataAccessException("Error: unauthorized.");
         } else {
             String authToken = authDB.createAuth(userData.username());

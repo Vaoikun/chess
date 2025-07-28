@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 public class GameService {
 
-    private final GameMDAO gameDB = new GameMDAO();
+    private final SQLGameDAO gameDB = new SQLGameDAO();
     private final SQLUserDAO userDB = new SQLUserDAO();
     private final SQLAuthDAO authDB = new SQLAuthDAO();
 
