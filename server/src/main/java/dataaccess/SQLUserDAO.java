@@ -3,11 +3,10 @@ package dataaccess;
 import model.UserData;
 import server.ServerException;
 
-import javax.xml.crypto.Data;
 import java.sql.SQLException;
 
 public class SQLUserDAO implements UserDAO{
-    private static String CREATE_STATEMENT =
+    private static String create_STATEMENT =
             """
                     CREATE TABLE IF NOT EXISTS Users (
                     passwordCol varchar(255) NOT NULL,
@@ -21,7 +20,7 @@ public class SQLUserDAO implements UserDAO{
 
     public static void createUserTable() throws DataAccessException, ServerException {
         try (var connection =DatabaseManager.getConnection()){
-            try (var createStatement = connection.prepareStatement(CREATE_STATEMENT)) {
+            try (var createStatement = connection.prepareStatement(create_STATEMENT)) {
                 createStatement.executeUpdate();
             } catch (SQLException e) {
                 throw new DataAccessException(e.getMessage());

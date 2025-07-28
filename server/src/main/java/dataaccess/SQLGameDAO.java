@@ -2,12 +2,9 @@ package dataaccess;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
-import com.mysql.cj.x.protobuf.MysqlxCrud;
 import model.GameData;
-import org.junit.jupiter.api.Order;
 import server.ServerException;
 
-import javax.xml.crypto.Data;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Random;
@@ -23,7 +20,6 @@ public class SQLGameDAO implements GameDAO {
                     gameNameCol varchar(255) NOT NULL,
                     ChessGameCol TEXT NOT NULL,
                     PRIMARY KEY (gameIDCol));""";
-
 
     public static void createGamesTable() throws DataAccessException, ServerException {
         try (var connection = DatabaseManager.getConnection()) {
@@ -163,14 +159,14 @@ public class SQLGameDAO implements GameDAO {
     public void updateGame(String username, ChessGame.TeamColor playerColor, GameData gameRequest)
         throws DataAccessException, ServerException {
         int gameID = gameRequest.gameID();
-        String UPDATE_STATEMENT;
+        String update_STATEMENT;
         if (playerColor == ChessGame.TeamColor.WHITE) {
-            UPDATE_STATEMENT = "UPDATE Games SET whiteUserNameCol = ? WHERE gameIDCol = ?;";
+            update_STATEMENT = "UPDATE Games SET whiteUserNameCol = ? WHERE gameIDCol = ?;";
         } else {
-            UPDATE_STATEMENT = "UPDATE Games SET blackUserNameCol = ? WHERE gameIDCol = ?;";
+            update_STATEMENT = "UPDATE Games SET blackUserNameCol = ? WHERE gameIDCol = ?;";
         }
         try (var connection = DatabaseManager.getConnection()) {
-            try (var updateStatement = connection.prepareStatement(UPDATE_STATEMENT)) {
+            try (var updateStatement = connection.prepareStatement(update_STATEMENT)) {
                 updateStatement.setString(1, username);
                 updateStatement.setInt(2, gameID);
                 updateStatement.executeUpdate();
@@ -189,24 +185,6 @@ public class SQLGameDAO implements GameDAO {
         }
         GameData game = getGame(gameID);
         updateGame(username, playerColor, game);
-    }
-
-    public void updateGameBoard (ChessGame game, int gameID) throws DataAccessException, ServerException {
-        Gson gson = new Gson();
-        String json = gson.toJson(game);
-        try (var connection = DatabaseManager.getConnection()) {
-            try (var updateStatement = connection.prepareStatement(
-                    "UPDATE Games SET ChessGameCol = ?, WHERE gameIDCol = ?;"
-            )) {
-                updateStatement.setString(1, json);
-                updateStatement.setInt(2, gameID);
-                updateStatement.executeUpdate();
-            } catch (SQLException e) {
-                throw new DataAccessException(e.getMessage());
-            }
-        } catch (SQLException e) {
-            throw new DataAccessException(e.getMessage());
-        }
     }
 
 }
