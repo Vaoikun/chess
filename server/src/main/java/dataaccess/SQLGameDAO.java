@@ -10,8 +10,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class SQLGameDAO implements GameDAO {
-
-    private static final String CREATE_STATEMENT =
+    private static final String createTableStatement =
             """
                     CREATE TABLE IF NOT EXISTS Games(
                     gameIDCol INT NOT NULL,
@@ -23,7 +22,7 @@ public class SQLGameDAO implements GameDAO {
 
     public static void createGamesTable() throws DataAccessException, ServerException {
         try (var connection = DatabaseManager.getConnection()) {
-            try (var createStatement = connection.prepareStatement(CREATE_STATEMENT)) {
+            try (var createStatement = connection.prepareStatement(createTableStatement)) {
                 createStatement.executeUpdate();
             }
         } catch (SQLException e) {
