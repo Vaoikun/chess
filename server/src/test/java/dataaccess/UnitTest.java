@@ -187,7 +187,7 @@ public class UnitTest {
     @Test
     @Order(18)
     public void getGameFailed() throws DataAccessException, SQLException {
-        assertThrows(DataAccessException.class, () -> SQLGameDB.getGame(00000));
+        assertThrows(DataAccessException.class, () -> SQLGameDB.getGame(000000));
     }
 
     @Test
