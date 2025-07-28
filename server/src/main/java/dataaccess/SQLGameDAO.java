@@ -14,7 +14,7 @@ public class SQLGameDAO implements GameDAO {
             """
                     CREATE TABLE IF NOT EXISTS Games(
                     gameIDCol INT NOT NULL,
-                    whiteUsernNameCol varchar(255),
+                    whiteUserNameCol varchar(255),
                     blackUserNameCol varchar(255),
                     gameNameCol varchar(255) NOT NULL,
                     ChessGameCol TEXT NOT NULL,
