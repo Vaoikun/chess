@@ -48,9 +48,10 @@ public class SQLGameDAO implements GameDAO {
         Gson gson = new Gson();
         try (var connection = DatabaseManager.getConnection()) {
             try (var createStatement = connection.prepareStatement(
-                    "INSERT INTO Games(" +
-                            "gameIDCol, whiteUsernameCol, blackUsernameCol, gameNameCol, gameCol)" +
-                            "VALUES (?, ?, ?, ?, ?));"
+                    """ 
+                        INSERT INTO Games(
+                        gameIDCol, whiteUsernameCol, blackUsernameCol, gameNameCol, gameCol)
+                        VALUES (?, ?, ?, ?, ?));"""
             )) {
                 ChessGame newGame = new ChessGame();
                 String json = gson.toJson(newGame);
@@ -93,8 +94,10 @@ public class SQLGameDAO implements GameDAO {
         GameData gameData;
         try (var connection = DatabaseManager.getConnection()) {
             try (var selectStatement = connection.prepareStatement(
-                    "SELECT gameIDCol, whiteUsernameCol, blackUsernameCol, gameNameCol, gameCol " +
-                            "FROM Games WHERE gameIDCol = ?;"
+                    """
+                        SELECT gameIDCol, whiteUsernameCol, blackUsernameCol, gameNameCol, gameCol
+                        FROM Games WHERE gameIDCol = ?;"""
+
             )) {
                 selectStatement.setInt(1, gameID);
                 try (var returnedData = selectStatement.executeQuery()) {
@@ -192,7 +195,7 @@ public class SQLGameDAO implements GameDAO {
         String json = gson.toJson(game);
         try (var connection = DatabaseManager.getConnection()) {
             try (var updateStatement = connection.prepareStatement(
-                    "UPDATE Games SET gameCol = ?, WHERE gameIDCol = ?"
+                    "UPDATE Games SET gameCol = ?, WHERE gameIDCol = ?;"
             )) {
                 updateStatement.setString(1, json);
                 updateStatement.setInt(2, gameID);
