@@ -1,6 +1,7 @@
 package dataaccess;
 
 import model.UserData;
+import server.ServerException;
 
 import javax.xml.crypto.Data;
 import java.sql.SQLException;
@@ -14,12 +15,11 @@ public class SQLUserDAO implements UserDAO{
                     emailCol varchar(255) NOT NULL,
                     PRIMARY KEY (usernameCol));
                     """;
-
-    public SQLUserDAO() throws DataAccessException {
+    public SQLUserDAO() throws DataAccessException, ServerException {
         createUserTable();
     }
 
-    public static void createUserTable() throws DataAccessException {
+    public static void createUserTable() throws DataAccessException, ServerException {
         try (var connection =DatabaseManager.getConnection()){
             try (var createStatement = connection.prepareStatement(CREATE_STATEMENT)) {
                 createStatement.executeUpdate();
@@ -32,7 +32,7 @@ public class SQLUserDAO implements UserDAO{
     }
 
     @Override
-    public void clear() throws DataAccessException {
+    public void clear() throws DataAccessException, ServerException {
         try (var connection = DatabaseManager.getConnection()) {
             try (var truncateStatement = connection.prepareStatement(
                     "TRUNCATE TABLE Users;"
@@ -45,7 +45,7 @@ public class SQLUserDAO implements UserDAO{
     }
 
     @Override
-    public void createUser(UserData userData) throws DataAccessException, SQLException {
+    public void createUser(UserData userData) throws DataAccessException, SQLException, ServerException {
         String password = userData.password();
         String hashedPassword = HashPassword.hashPassword(password);
         try (var connection = DatabaseManager.getConnection()) {
@@ -65,7 +65,7 @@ public class SQLUserDAO implements UserDAO{
     }
 
     @Override
-    public UserData getUser(String username) throws DataAccessException {
+    public UserData getUser(String username) throws DataAccessException, ServerException {
         if (username == null) {
             return null;
         }

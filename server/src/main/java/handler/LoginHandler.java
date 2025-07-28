@@ -30,7 +30,7 @@ public class LoginHandler extends BaseHandler {
             json = gson.toJson(loginResponse);
         } catch (ServerException e) {
             response.status(500);
-            json = gson.toJson(new MessageResponse(e.getMessage()));
+            json = gson.toJson(new MessageResponse("Error: " + e.getMessage()));
         } catch (DataAccessException | SQLException e) {
             response.status(401);
             json = gson.toJson(new MessageResponse(e.getMessage()));

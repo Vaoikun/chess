@@ -1,5 +1,7 @@
 package dataaccess;
 
+import server.ServerException;
+
 import javax.xml.crypto.Data;
 import java.sql.SQLException;
 import java.util.UUID;
@@ -13,11 +15,11 @@ public class SQLAuthDAO implements AuthDAO {
                     UserNameCol varchar(255) NOT NULL,
                     PRIMARY KEY (authTokenCol));""";
 
-    public SQLAuthDAO() throws DataAccessException {
+    public SQLAuthDAO() throws DataAccessException, ServerException {
         createAuthTable();
     }
 
-    public static void createAuthTable () throws DataAccessException {
+    public static void createAuthTable () throws DataAccessException, ServerException {
         try (var connection = DatabaseManager.getConnection()) {
             try (var createStatement = connection.prepareStatement(CREATE_STATEMENT)) {
                 createStatement.executeUpdate();
@@ -30,7 +32,7 @@ public class SQLAuthDAO implements AuthDAO {
     }
 
     @Override
-    public String createAuth (String username) throws DataAccessException {
+    public String createAuth (String username) throws DataAccessException, ServerException {
         try (var connection = DatabaseManager.getConnection()) {
             try (var createStatement = connection.prepareStatement(
                     "INSERT INTO Auths(userNameCol, authTokenCol) VALUES (?, ?);"
@@ -49,7 +51,7 @@ public class SQLAuthDAO implements AuthDAO {
     }
 
     @Override
-    public String getAuth (String username) throws DataAccessException {
+    public String getAuth (String username) throws DataAccessException, ServerException {
         String authToken = null;
         try(var connection = DatabaseManager.getConnection()) {
             try (var selectStatement = connection.prepareStatement(
@@ -73,7 +75,7 @@ public class SQLAuthDAO implements AuthDAO {
     }
 
     @Override
-    public String getUsername (String authToken) throws DataAccessException {
+    public String getUsername (String authToken) throws DataAccessException, ServerException {
         String username = null;
         try(var connection = DatabaseManager.getConnection()) {
             try (var selectStatement = connection.prepareStatement(
@@ -97,7 +99,7 @@ public class SQLAuthDAO implements AuthDAO {
     }
 
     @Override
-    public void deleteAuth(String authToken) throws DataAccessException {
+    public void deleteAuth(String authToken) throws DataAccessException, ServerException {
         if (authToken == null) {
             throw new DataAccessException("Error: null authToken.");
         }
@@ -116,7 +118,7 @@ public class SQLAuthDAO implements AuthDAO {
     }
 
     @Override
-    public void clear() throws DataAccessException {
+    public void clear() throws DataAccessException, ServerException {
         try (var connection = DatabaseManager.getConnection()) {
             try (var truncateStatement = connection.prepareStatement(
                     "TRUNCATE TABLE Auths;"

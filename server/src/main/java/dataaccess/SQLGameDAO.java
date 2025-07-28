@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.mysql.cj.x.protobuf.MysqlxCrud;
 import model.GameData;
 import org.junit.jupiter.api.Order;
+import server.ServerException;
 
 import javax.xml.crypto.Data;
 import java.sql.SQLException;
@@ -24,7 +25,7 @@ public class SQLGameDAO implements GameDAO {
                     PRIMARY KEY (gameIDCol));""";
 
 
-    public static void createGamesTable() throws DataAccessException {
+    public static void createGamesTable() throws DataAccessException, ServerException {
         try (var connection = DatabaseManager.getConnection()) {
             try (var createStatement = connection.prepareStatement(CREATE_STATEMENT)) {
                 createStatement.executeUpdate();
@@ -36,12 +37,12 @@ public class SQLGameDAO implements GameDAO {
         }
     }
 
-    public SQLGameDAO() throws DataAccessException {
+    public SQLGameDAO() throws DataAccessException, ServerException {
         createGamesTable();
     }
 
     @Override
-    public int createGame(String gameName) throws DataAccessException {
+    public int createGame(String gameName) throws DataAccessException, ServerException {
         if (gameName == null) {
             throw new DataAccessException("Error: null gameName.");
         }
@@ -73,7 +74,7 @@ public class SQLGameDAO implements GameDAO {
     }
 
     @Override
-    public void clear() throws DataAccessException {
+    public void clear() throws DataAccessException, ServerException {
         try (var connection = DatabaseManager.getConnection()) {
             try (var truncateStatement = connection.prepareStatement(
                     "TRUNCATE TABLE Games;"
@@ -88,7 +89,7 @@ public class SQLGameDAO implements GameDAO {
     }
 
     @Override
-    public GameData getGame(int gameID) throws DataAccessException {
+    public GameData getGame(int gameID) throws DataAccessException, ServerException {
         String whiteUsername, blackUsername, gameName, game;
         Gson json = new Gson();
         GameData gameData;
@@ -110,7 +111,7 @@ public class SQLGameDAO implements GameDAO {
                         gameData = new GameData(gameID, whiteUsername, blackUsername, gameName, chessGame);
                         return gameData;
                     } else {
-                        throw new DataAccessException("game not found.");
+                        throw new DataAccessException("Error: game not found.");
                     }
                 } catch (SQLException e) {
                     throw new DataAccessException(e.getMessage());
@@ -124,7 +125,7 @@ public class SQLGameDAO implements GameDAO {
     }
 
     @Override
-    public ArrayList<GameData> listGames(String authToken) throws DataAccessException {
+    public ArrayList<GameData> listGames(String authToken) throws DataAccessException, ServerException {
         if (authToken == null) {
             throw new DataAccessException("Error: null authToken.");
         }
@@ -160,7 +161,7 @@ public class SQLGameDAO implements GameDAO {
 
     @Override
     public void updateGame(String username, ChessGame.TeamColor playerColor, GameData gameRequest)
-        throws DataAccessException {
+        throws DataAccessException, ServerException {
         int gameID = gameRequest.gameID();
         String UPDATE_STATEMENT;
         if (playerColor == ChessGame.TeamColor.WHITE) {
@@ -182,7 +183,7 @@ public class SQLGameDAO implements GameDAO {
     }
 
     @Override
-    public void joinGame(int gameID, ChessGame.TeamColor playerColor, String username) throws DataAccessException {
+    public void joinGame(int gameID, ChessGame.TeamColor playerColor, String username) throws DataAccessException, ServerException {
         if (username == null) {
             throw new DataAccessException("Error: null username.");
         }
@@ -190,7 +191,7 @@ public class SQLGameDAO implements GameDAO {
         updateGame(username, playerColor, game);
     }
 
-    public void updateGameBoard (ChessGame game, int gameID) throws DataAccessException {
+    public void updateGameBoard (ChessGame game, int gameID) throws DataAccessException, ServerException {
         Gson gson = new Gson();
         String json = gson.toJson(game);
         try (var connection = DatabaseManager.getConnection()) {

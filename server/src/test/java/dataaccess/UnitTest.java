@@ -7,6 +7,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import server.ServerException;
 
 import javax.xml.crypto.Data;
 
@@ -21,11 +22,11 @@ public class UnitTest {
 
     private final UserData userData = new UserData("Wolf", "coyote", "wolf@email.com");
 
-    public UnitTest() throws DataAccessException {
+    public UnitTest() throws DataAccessException, ServerException {
     }
 
     @BeforeEach
-    public void createDB() throws DataAccessException {
+    public void createDB() throws DataAccessException, ServerException {
         DatabaseManager.createDatabase();
         SQLUserDAO.createUserTable();
         SQLAuthDAO.createAuthTable();
@@ -33,7 +34,7 @@ public class UnitTest {
     }
 
     @AfterEach
-    public void clear() throws DataAccessException {
+    public void clear() throws DataAccessException, ServerException {
         SQLUserDB.clear();
         SQLAuthDB.clear();
         SQLGameDB.clear();
@@ -41,7 +42,7 @@ public class UnitTest {
 
     @Test
     @Order(1)
-    public void clearTest() throws DataAccessException {
+    public void clearTest() throws DataAccessException, ServerException {
         SQLUserDB.clear();
         SQLAuthDB.clear();
         SQLGameDB.clear();
@@ -52,13 +53,13 @@ public class UnitTest {
 
     @Test
     @Order(2)
-    public void registerSuccess() throws DataAccessException {
+    public void registerSuccess() throws DataAccessException, ServerException {
         assertDoesNotThrow(() -> SQLUserDB.createUser(userData));
     }
 
     @Test
     @Order(3)
-    public void loginSuccess() throws DataAccessException, SQLException {
+    public void loginSuccess() throws DataAccessException, SQLException, ServerException {
         SQLUserDB.createUser(userData);
         UserData returnedData = SQLUserDB.getUser(userData.username());
         assertEquals(userData.username(), returnedData.username());
@@ -66,7 +67,7 @@ public class UnitTest {
 
     @Test
     @Order(4)
-    public void createGameSuccess() throws DataAccessException, SQLException {
+    public void createGameSuccess() throws DataAccessException, SQLException, ServerException {
         SQLUserDB.createUser(userData);
         assertDoesNotThrow(() -> SQLGameDB.createGame("game1"));
 
@@ -74,7 +75,7 @@ public class UnitTest {
 
     @Test
     @Order(5)
-    public void listGameSuccess() throws DataAccessException, SQLException {
+    public void listGameSuccess() throws DataAccessException, SQLException, ServerException {
         SQLUserDB.createUser(userData);
         UserData returnedData = SQLUserDB.getUser(userData.username());
         String authToken = SQLAuthDB.createAuth(returnedData.username());
@@ -83,7 +84,7 @@ public class UnitTest {
 
     @Test
     @Order(6)
-    public void joinGameSuccess() throws DataAccessException, SQLException {
+    public void joinGameSuccess() throws DataAccessException, SQLException, ServerException {
         SQLUserDB.createUser(userData);
         UserData returnedData = SQLUserDB.getUser(userData.username());
         int gameID = SQLGameDB.createGame("game1");
@@ -92,7 +93,7 @@ public class UnitTest {
 
     @Test
     @Order(7)
-    public void updateGameSuccess() throws DataAccessException, SQLException {
+    public void updateGameSuccess() throws DataAccessException, SQLException, ServerException {
         SQLUserDB.createUser(userData);
         UserData returnedData = SQLUserDB.getUser(userData.username());
         int gameID = SQLGameDB.createGame("game1");
@@ -103,7 +104,7 @@ public class UnitTest {
 
     @Test
     @Order(8)
-    public void logoutSuccess() throws DataAccessException, SQLException {
+    public void logoutSuccess() throws DataAccessException, SQLException, ServerException {
         SQLUserDB.createUser(userData);
         UserData returnedData = SQLUserDB.getUser(userData.username());
         String authToken = SQLAuthDB.createAuth(returnedData.username());
@@ -112,7 +113,7 @@ public class UnitTest {
 
     @Test
     @Order(9)
-    public void createAuthSuccess() throws DataAccessException, SQLException {
+    public void createAuthSuccess() throws DataAccessException, SQLException, ServerException {
         SQLUserDB.createUser(userData);
         UserData returnData = SQLUserDB.getUser(userData.username());
         assertDoesNotThrow(() -> SQLAuthDB.createAuth(returnData.username()));
@@ -120,7 +121,7 @@ public class UnitTest {
 
     @Test
     @Order(10)
-    public void getGameSuccess() throws DataAccessException, SQLException {
+    public void getGameSuccess() throws DataAccessException, SQLException, ServerException {
         SQLUserDB.createUser(userData);
         int gameID = SQLGameDB.createGame("game1");
         assertDoesNotThrow(() -> SQLGameDB.getGame(gameID));
@@ -128,14 +129,14 @@ public class UnitTest {
 
     @Test
     @Order(11)
-    public void registerFailed() throws DataAccessException, SQLException {
+    public void registerFailed() throws DataAccessException, SQLException, ServerException {
         SQLUserDB.createUser(userData);
         assertThrows(DataAccessException.class, () -> SQLUserDB.createUser(userData));
     }
 
     @Test
     @Order(12)
-    public void loginFailed() throws DataAccessException, SQLException {
+    public void loginFailed() throws DataAccessException, SQLException, ServerException {
         UserData wrongUserData = new UserData("Golf", "mayo", "golf@email.com");
         SQLUserDB.createUser(userData);
         UserData returnedData = SQLUserDB.getUser(userData.username());
@@ -144,38 +145,38 @@ public class UnitTest {
 
     @Test
     @Order(13)
-    public void createGameFailed() throws DataAccessException, SQLException {
+    public void createGameFailed() throws DataAccessException, SQLException, ServerException {
         SQLUserDB.createUser(userData);
         assertThrows(DataAccessException.class, () -> SQLGameDB.createGame(null));
     }
 
     @Test
     @Order(14)
-    public void listGameFailed() throws DataAccessException, SQLException {
+    public void listGameFailed() throws DataAccessException, SQLException, ServerException {
         DataAccessException exception = assertThrows(DataAccessException.class, () -> SQLGameDB.listGames(null));
         assertEquals("Error: null authToken.", exception.getMessage());
     }
 
     @Test
     @Order(15)
-    public void joinGameFailed() throws DataAccessException, SQLException {
+    public void joinGameFailed() throws DataAccessException, SQLException, ServerException {
         SQLUserDB.createUser(userData);
         UserData returnedData = SQLUserDB.getUser(userData.username());
         int gameID = SQLGameDB.createGame("game1");
         DataAccessException exception = assertThrows(DataAccessException.class, () -> SQLGameDB.joinGame(gameID, ChessGame.TeamColor.WHITE, null));
-        assertEquals("null username.", exception.getMessage());
+        assertEquals("Error: null username.", exception.getMessage());
     }
 
     @Test
     @Order(16)
-    public void logoutFailed() throws DataAccessException, SQLException {
+    public void logoutFailed() throws DataAccessException, SQLException, ServerException {
         DataAccessException exception = assertThrows(DataAccessException.class, () -> SQLAuthDB.deleteAuth(null));
-        assertEquals("null authToken.", exception.getMessage());
+        assertEquals("Error: null authToken.", exception.getMessage());
     }
 
     @Test
     @Order(17)
-    public void updateGameFailed() throws DataAccessException, SQLException {
+    public void updateGameFailed() throws DataAccessException, SQLException, ServerException {
         SQLUserDB.createUser(userData);
         UserData returnedData = SQLUserDB.getUser(userData.username());
         int gameID = SQLGameDB.createGame("game1");
@@ -186,13 +187,13 @@ public class UnitTest {
 
     @Test
     @Order(18)
-    public void getGameFailed() throws DataAccessException, SQLException {
+    public void getGameFailed() throws DataAccessException, SQLException, ServerException {
         assertThrows(DataAccessException.class, () -> SQLGameDB.getGame(000000));
     }
 
     @Test
     @Order(19)
-    public void createAuthFailed() throws DataAccessException, SQLException {
+    public void createAuthFailed() throws DataAccessException, SQLException, ServerException {
         assertThrows(DataAccessException.class, () -> SQLAuthDB.createAuth(null));
     }
 }

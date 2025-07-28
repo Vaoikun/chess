@@ -18,7 +18,7 @@ public class UserService {
     private final SQLUserDAO userDB = new SQLUserDAO();
     private final SQLAuthDAO authDB = new SQLAuthDAO();
 
-    public UserService() throws DataAccessException, SQLException {}
+    public UserService() throws DataAccessException, SQLException, ServerException {}
 
     public void clear() throws DataAccessException, ServerException {
         gameDB.clear();

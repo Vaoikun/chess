@@ -36,7 +36,7 @@ public class RegisterHandler extends BaseHandler{
             jsonResponse = gson.toJson(new MessageResponse(e.getMessage()));
         } catch (ServerException e) {
             response.status(500);
-            jsonResponse = gson.toJson(new MessageResponse(e.getMessage()));
+            jsonResponse = gson.toJson(new MessageResponse("Error: " + e.getMessage()));
         }
         response.type("application/json");
         return jsonResponse;

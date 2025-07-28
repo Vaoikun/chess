@@ -27,9 +27,10 @@ public class ClearHandler extends BaseHandler {
             body = new Gson().toJson(new MessageResponse(""));
             response.status(200);
         } catch (DataAccessException | SQLException e) {
-            body = gson.toJson(new MessageResponse(e.getMessage()));
+            body = gson.toJson(new MessageResponse("Error: " + e.getMessage()));
+            response.status(500);
         } catch (ServerException e) {
-            body = new Gson().toJson(new MessageResponse(e.getMessage()));
+            body = new Gson().toJson(new MessageResponse("Error: " + e.getMessage()));
             response.status(500);
         }
         response.type("application/type");

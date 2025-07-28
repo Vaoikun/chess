@@ -4,6 +4,7 @@ import chess.ChessGame;
 import dataaccess.ClientException;
 import dataaccess.DataAccessException;
 import dataaccess.GameMDAO;
+import dataaccess.SQLGameDAO;
 import httprequest.CreateGameRequest;
 import httprequest.JoinGameRequest;
 import httprequest.LoginRequest;
@@ -38,13 +39,13 @@ public class UnitTest {
     private final GameService listGameService2 = new GameService();
     private final CreateGameRequest createGameRequestA = new CreateGameRequest("GameA");
     private final CreateGameRequest createGameRequestB = new CreateGameRequest("GameB");
-    private final GameMDAO gameDAO = new GameMDAO();
+    private final SQLGameDAO gameDAO = new SQLGameDAO();
 
-    public UnitTest() throws DataAccessException, SQLException {
+    public UnitTest() throws DataAccessException, SQLException, ServerException {
     }
 
     @BeforeEach
-    public void setup() throws DataAccessException, SQLException {
+    public void setup() throws DataAccessException, SQLException, ServerException {
         gameDAO.clear();
     }
 

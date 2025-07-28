@@ -34,7 +34,7 @@ public class CreateGameHandler extends BaseHandler {
             json = gson.toJson(new MessageResponse(e.getMessage()));
             response.status(401);
         } catch (ServerException e) {
-            json = gson.toJson(new MessageResponse(e.getMessage()));
+            json = gson.toJson(new MessageResponse("Error: " + e.getMessage()));
             response.status(500);
         } catch (ClientException e) {
             json = gson.toJson(new MessageResponse(e.getMessage()));

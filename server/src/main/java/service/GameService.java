@@ -18,7 +18,7 @@ public class GameService {
     private final SQLUserDAO userDB = new SQLUserDAO();
     private final SQLAuthDAO authDB = new SQLAuthDAO();
 
-    public GameService() throws DataAccessException {}
+    public GameService() throws DataAccessException, ServerException {}
 
     public CreateGameResponse createGame(CreateGameRequest request, String authToken)
             throws DataAccessException, ServerException, ClientException {
