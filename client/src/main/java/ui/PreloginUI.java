@@ -2,6 +2,26 @@ package ui;
 
 public class PreloginUI {
 
+    public PreloginUI(String serverURL) {
+        ServerFacade serverFacade = new ServerFacade(serverURL);
+    }
+
+    public void run() {
+
+    }
+
+    public static void register() {
+
+    }
+
+    public static void login() {
+
+    }
+
+    public void quit() {
+
+    }
+
 
     public static String help() {
         return """
