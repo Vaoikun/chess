@@ -1,9 +1,12 @@
 package ui;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
+import httprequest.CreateGameRequest;
+import httprequest.JoinGameRequest;
+import httprequest.LoginRequest;
 import httprequest.RegisterRequest;
-import httpresponse.MessageResponse;
-import httpresponse.RegisterResponse;
+import httpresponse.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -68,6 +71,50 @@ public class ServerFacade {
         String method = "POST";
         HttpURLConnection httpURLConnection = sendRequest(netURL, request, method, null);
         return getResponse(httpURLConnection, RegisterResponse.class);
+    }
+
+    public static Object login (String username, String password) throws IOException {
+        LoginRequest request = new LoginRequest(username, password);
+        String path = "/session";
+        URL netURL = new URL(serverURL + path);
+        String method = "POST";
+        HttpURLConnection httpURLConnection = sendRequest(netURL, request, method, null);
+        return getResponse(httpURLConnection, LoginResponse.class);
+    }
+
+    public static MessageResponse logout (String authToken) throws IOException {
+        String path = "/session";
+        URL netURL = new URL(serverURL + path);
+        String method = "DELETE";
+        HttpURLConnection httpURLConnection = sendRequest(netURL, null, method, null);
+        return (MessageResponse) getResponse(httpURLConnection, MessageResponse.class);
+    }
+
+    public static Object createGame (String gameName, String authToken) throws IOException {
+        CreateGameRequest request = new CreateGameRequest(gameName);
+        String path = "/game";
+        URL netURL = new URL(serverURL + path);
+        String method = "POST";
+        HttpURLConnection httpURLConnection = sendRequest(netURL, request, method, authToken);
+        return getResponse(httpURLConnection, CreateGameResponse.class);
+    }
+
+    public static MessageResponse joinGame (int gameID, ChessGame.TeamColor teamColor, String authToken)
+            throws IOException {
+        JoinGameRequest request = new JoinGameRequest(teamColor, gameID);
+        String path = "/game";
+        URL netURL = new URL(serverURL + path);
+        String method = "PUT";
+        HttpURLConnection httpURLConnection = sendRequest(netURL, request, method, authToken);
+        return (MessageResponse) getResponse(httpURLConnection, MessageResponse.class);
+    }
+
+    public static Object listGames (String authToken) throws IOException {
+        String path = "/game";
+        URL netURL = new URL(serverURL + path);
+        String method = "GET";
+        HttpURLConnection httpURLConnection = sendRequest(netURL, null, method, authToken);
+        return getResponse(httpURLConnection, ListGameResponse.class);
     }
 
 }
