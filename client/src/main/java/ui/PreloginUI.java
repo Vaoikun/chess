@@ -30,10 +30,10 @@ public class PreloginUI {
 
     public static String help () {
         return """
-                   To create an account: Register (USERNAME) (PASSWORD) (EMAIL)
-                   To login: Login (USERNAME) (PASSWORD)
-                   To exit the server: Quit
-                   To show commands: Help
+                   Register (USERNAME) (PASSWORD) (EMAIL): Create an account.
+                   Login (USERNAME) (PASSWORD): Login.
+                   Quit: Exit the server.
+                   Help: Show commands.
                    """;
     }
 

@@ -36,12 +36,12 @@ public class PostloginUI {
 
     public static String help() {
         return """
-                To create a game: Create Game <Name>
-                To join a game: Join Game <GameID>
-                To list games: List Games
-                To observe a game: Observe <GameID>
-                To logout: Logout
-                To show commands: Help
+                Create Game <Name>: Create a game.
+                Join Game <GameID>: Join a game.
+                List Games: List games.
+                Observe <GameID>: Observe a game.
+                Logout: Logout.
+                Help: Show commands.
                 """;
     }
 
