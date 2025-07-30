@@ -1,7 +1,12 @@
 package ui;
 
-public class PreloginUI {
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 
+public class PreloginUI {
+    private static final PrintStream OUT = new PrintStream(System.out, true, StandardCharsets.UTF_8);
+    private static final Scanner SCANNER = new Scanner(System.in);
     public PreloginUI(String serverURL) {
         ServerFacade serverFacade = new ServerFacade(serverURL);
     }
@@ -23,12 +28,22 @@ public class PreloginUI {
     }
 
 
-    public static String help() {
+    public static String help () {
         return """
                    To create an account: Register (USERNAME) (PASSWORD) (EMAIL)
-                   To login into an account: Login (USERNAME) (PASSWORD)
+                   To login: Login (USERNAME) (PASSWORD)
                    To exit the server: Quit
                    To show commands: Help
                    """;
+    }
+
+    public void eval (String input) {
+        switch (input) {
+            case "Help" -> OUT.println(help());
+            case "Register" -> register();
+            case "Login" -> login();
+            case "Quit" -> quit();
+            default -> OUT.println(help());
+        }
     }
 }
