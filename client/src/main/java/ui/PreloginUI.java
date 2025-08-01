@@ -70,7 +70,7 @@ public class PreloginUI {
             if (loginResult instanceof LoginResponse loginResponse) {
                 String authToken = loginResponse.authToken();
                 PostloginUI postloginUI = new PostloginUI("http://localhost:8080", authToken);
-                OUT.println("Logging you in...");
+                OUT.println("Logging in...");
                 postloginUI.run();
             } else {
                 MessageResponse messageResponse = (MessageResponse) loginResult;

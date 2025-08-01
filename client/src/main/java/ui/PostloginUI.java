@@ -7,6 +7,7 @@ import httpresponse.ListGameResponse;
 import httpresponse.MessageResponse;
 import model.GameData;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
@@ -114,15 +115,82 @@ public class PostloginUI {
     }
 
     public void listGames () {
+        OUT.println(RESET_TEXT_COLOR);
+        OUT.println(RESET_BG_COLOR);
+        try {
+            Object listGameResult = ServerFacade.listGames(authToken);
+            if (listGameResult instanceof ListGameResponse listGameResponse) {
+                ArrayList<GameData> gameList = listGameResponse.games();
+                if (gameList.isEmpty()) {
+                    OUT.println("No games in the server. Please create one.");
+                } else {
+                    listOutput(gameList);
+                }
+            } else {
+                MessageResponse messageResponse = (MessageResponse) listGameResult;
+                OUT.println(messageResponse.message());
+            }
+            OUT.println("Enter command below.");
+        } catch (Exception e) {
+            OUT.println(e.getMessage());
+        }
+    }
 
+    public void listOutput (ArrayList<GameData> gameList) {
+        for (GameData game : gameList) {
+            if (!gameIDList.contains(game.gameID())) {
+                gameIDList.add(game.gameID());
+            }
+            String output = "Game name: " + game.gameName() + "  gameID: " + gameIDList.indexOf(game.gameID() + 1)
+                    + "  White team: " + game.whiteUsername() + "  Black team: " + game.blackUsername();
+            OUT.println(output);
+            OUT.println();
+        }
     }
 
     public void observeGame () {
-
+        OUT.println(RESET_BG_COLOR);
+        OUT.println(RESET_TEXT_COLOR);
+        try {
+            Object listGameResult = ServerFacade.listGames(authToken);
+            ListGameResponse listGameResponse = (ListGameResponse) listGameResult;
+            ArrayList<GameData> gameList = listGameResponse.games();
+            if (gameList.isEmpty()) {
+                OUT.println("No games in the server. Please create one.");
+            } else {
+                OUT.println("Enter a gameID below.");
+                String inputGameID = SCANNER.nextLine();
+                try {
+                    int gameID = Integer.parseInt(inputGameID);
+                    GameplayUI gameplayUI = new GameplayUI("http://localhost:8080", authToken,
+                            null, gameIDList.indexOf(gameID - 1));
+                    OUT.println("Observing the game...");
+                    gameplayUI.run();
+                } catch (Exception e) {
+                    OUT.println("Invalid gameID.");
+            }
+        }
+            OUT.println(RESET_BG_COLOR);
+            OUT.println(RESET_TEXT_COLOR);
+        } catch (IOException e) {
+            OUT.println(e.getMessage());
+        }
     }
 
     public void logout () {
-
+        try {
+            MessageResponse messageResponse = ServerFacade.logout(authToken);
+            if (!Objects.equals(messageResponse.message(), "")) {
+                OUT.println(messageResponse.message());
+            } else {
+                OUT.println("Logging out...");
+                PreloginUI preloginUI = new PreloginUI("http://localhost:8080");
+                preloginUI.run();
+            }
+        } catch (IOException e) {
+            OUT.println(e.getMessage());
+            OUT.println("Enter command below.");
+        }
     }
 
     public static String help() {
