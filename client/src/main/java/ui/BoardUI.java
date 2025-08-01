@@ -1,8 +1,6 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessMove;
+import chess.*;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -117,7 +115,7 @@ public class BoardUI {
                 }
             } else {
                 for (int col = 1; col <= COLUMNS; col ++) {
-                    if (col % 2 = 0) {
+                    if (col % 2 == 0) {
                         placePieceBlackTile();
                     } else {
                         placePieceWhiteTile();
@@ -137,8 +135,9 @@ public class BoardUI {
                 }
             } else {
                 for (int col = 8; col > 0; col--) {
-                    int colCopy = col--;
-                    if (col % 2 == 0) {
+                    int colCopy = col;
+                    colCopy--;
+                    if (colCopy % 2 == 0) {
                         placePieceBlackTile();
                     }else{
                         placePieceWhiteTile();
@@ -176,11 +175,84 @@ public class BoardUI {
         }
     }
 
-    private static void placePieceWhiteTile() {
-
+    private static void placePieceWhiteTile(int row, int col, int prefix, PrintStream OUT,
+                                            ChessBoard board, Collection<ChessMove> legalMoves) {
+        col--;
+        whiteTile(OUT);
+        OUT.print(EMPTY.repeat(prefix));
+        ChessPiece chessPiece = board.getPiece(new ChessPosition(row + 1, col + 1));
+        checkMoves(legalMoves, row, col, OUT);
+        if (chessPiece != null) {
+            String currentPiece = getPiece(chessPiece, null, OUT);
+            OUT.print(currentPiece);
+            OUT.print(EMPTY.repeat(prefix));
+        } else {
+            OUT.print(EMPTY);
+            OUT.print(EMPTY.repeat(prefix));
+        }
     }
 
-    private static void placePieceBlackTile () {
+    private static void placePieceBlackTile (int row, int col, int prefix, PrintStream OUT,
+                                             ChessBoard board, Collection<ChessMove> legalMoves) {
+        col--;
+        blackTile();
+        OUT.print(EMPTY.repeat(prefix));
+        ChessPiece chessPiece = board.getPiece(new ChessPosition(row + 1, col + 1));
+        checkMoves(legalMoves, row, col, OUT);
+        if (chessPiece != null) {
+            String currentPiece = getPiece(chessPiece, null, OUT);
+            OUT.print(currentPiece);
+            OUT.print(EMPTY.repeat(prefix));
+        } else {
+            OUT.print(EMPTY);
+            OUT.print(EMPTY.repeat(prefix));
+        }
+    }
 
+    private static void checkMoves (Collection<ChessMove> legalMoves, int row, int col, PrintStream OUT) {
+        if (legalMoves != null) {
+            for (ChessMove move : legalMoves) {
+                if (move.getEndPosition().equals(new ChessPosition(row + 1, col +1))) {
+                    OUT.print(SET_BG_COLOR_GREEN);
+                    OUT.print(SET_TEXT_COLOR_RED);
+                }
+            }
+        }
+    }
+
+    private static String getPiece (ChessPiece chessPiece, String currentPiece, PrintStream OUT) {
+        if (chessPiece.getTeamColor() == BLACK) {
+            return pieceTypeSwitchBLACK(chessPiece, currentPiece, OUT);
+        } else {
+            return pieceTypeSwitchWHITE(chessPiece, currentPiece, OUT);
+        }
+    }
+
+    private static String pieceTypeSwitchBLACK (ChessPiece chessPiece, String currentPiece,
+                                                PrintStream OUT) {
+    return typeSwitch(chessPiece, currentPiece, OUT, BLACK_PAWN, BLACK_ROOK, BLACK_KNIGHT,
+            BLACK_BISHOP, BLACK_KING, BLACK_QUEEN, SET_TEXT_COLOR_RED);
+    }
+
+    private static String pieceTypeSwitchWHITE (ChessPiece chessPiece, String currentPiece,
+                                                PrintStream OUT) {
+        return typeSwitch(chessPiece, currentPiece, OUT, WHITE_PAWN, WHITE_ROOK, WHITE_KNIGHT,
+                WHITE_BISHOP, WHITE_KING, WHITE_QUEEN, SET_TEXT_COLOR_BLUE);
+    }
+
+    private static String typeSwitch (ChessPiece chessPiece, String currentPiece, PrintStream OUT,
+                                      String newPawn, String newRook, String newKnight,
+                                      String newBishop, String newKing, String newQueen,
+                                      String textColor) {
+        switch (chessPiece.getPieceType()) {
+            case PAWN -> currentPiece = newPawn;
+            case ROOK -> currentPiece = newRook;
+            case KNIGHT -> currentPiece = newKnight;
+            case BISHOP -> currentPiece = newBishop;
+            case KING -> currentPiece = newKing;
+            case QUEEN -> currentPiece = newQueen;
+        }
+        OUT.print(textColor);
+        return currentPiece;
     }
 }
