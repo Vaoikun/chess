@@ -108,17 +108,17 @@ public class BoardUI {
             if (row % 2 == 0) {
                 for (int col = 1; col <= COLUMNS; col ++) {
                     if (col % 2 == 0) {
-                        placePieceWhiteTile();
+                        placePieceWhiteTile(row, col, prefix, OUT, board, legalMoves);
                     } else {
-                        placePieceBlackTile();
+                        placePieceBlackTile(row, col, prefix, OUT, board, legalMoves);
                     }
                 }
             } else {
                 for (int col = 1; col <= COLUMNS; col ++) {
                     if (col % 2 == 0) {
-                        placePieceBlackTile();
+                        placePieceBlackTile(row, col, prefix, OUT, board, legalMoves);
                     } else {
-                        placePieceWhiteTile();
+                        placePieceWhiteTile(row, col, prefix, OUT, board, legalMoves);
                     }
                 }
             }
@@ -128,9 +128,9 @@ public class BoardUI {
             if (rowCopy % 2 == 0) {
                 for (int col = 8; col > 0; col--) {
                     if (col % 2 == 0) {
-                        placePieceWhiteTile();
+                        placePieceWhiteTile(row, col, prefix, OUT, board, legalMoves);
                     }else{
-                        placePieceBlackTile();
+                        placePieceBlackTile(row, col, prefix, OUT, board, legalMoves);
                     }
                 }
             } else {
@@ -138,9 +138,9 @@ public class BoardUI {
                     int colCopy = col;
                     colCopy--;
                     if (colCopy % 2 == 0) {
-                        placePieceBlackTile();
+                        placePieceBlackTile(row, col, prefix, OUT, board, legalMoves);
                     }else{
-                        placePieceWhiteTile();
+                        placePieceWhiteTile(row, col, prefix, OUT, board, legalMoves);
                     }
                 }
             }
@@ -195,7 +195,7 @@ public class BoardUI {
     private static void placePieceBlackTile (int row, int col, int prefix, PrintStream OUT,
                                              ChessBoard board, Collection<ChessMove> legalMoves) {
         col--;
-        blackTile();
+        blackTile(OUT);
         OUT.print(EMPTY.repeat(prefix));
         ChessPiece chessPiece = board.getPiece(new ChessPosition(row + 1, col + 1));
         checkMoves(legalMoves, row, col, OUT);
