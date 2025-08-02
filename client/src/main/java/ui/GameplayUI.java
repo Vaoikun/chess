@@ -4,18 +4,33 @@ import chess.ChessGame;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class GameplayUI {
     private static final PrintStream OUT = new PrintStream(System.out, true, StandardCharsets.UTF_8);
     private static final Scanner SCANNER = new Scanner(System.in);
+    private String authToken;
+    private ChessGame.TeamColor teamColor;
+    private int gameID;
 
-    public GameplayUI (String serverURL, String authToken, ChessGame.TeamColor color, int gameID) {
+    public GameplayUI (String serverURL, String authToken, ChessGame.TeamColor teamColor, int gameID) {
         ServerFacade serverFacade = new ServerFacade(serverURL);
+        this.authToken = authToken;
+        this.teamColor = teamColor;
+        this.gameID = gameID;
     }
 
     public void run () {
-
+        OUT.println();
+        OUT.println("Welcome to the game!");
+        OUT.println();
+        OUT.println("Enter command...");
+        String input = SCANNER.nextLine();
+        while (!Objects.equals(input, "Quit")) {
+            this.eval(input);
+            input = SCANNER.nextLine();
+        }
     }
 
     public void reload () {
