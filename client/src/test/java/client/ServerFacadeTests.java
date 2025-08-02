@@ -55,8 +55,8 @@ public class ServerFacadeTests {
     @Test
     @Order(2)
     public void registerFail() throws IOException {
-        MessageResponse messageResponse = (MessageResponse) ServerFacade.register("Rook", "knight", "rook@email.com");
-        assertEquals("Error: bad request.", messageResponse.message());
+        MessageResponse messageResponse = (MessageResponse) ServerFacade.register("Rook", null, "rook@email.com");
+        assertEquals("Error: must set the password.", messageResponse.message());
     }
 
     @Test
@@ -76,9 +76,9 @@ public class ServerFacadeTests {
     @Test
     @Order(5)
     public void loginFail () throws IOException {
-        RegisterResponse registerResponse = (RegisterResponse) ServerFacade.register("Pawn", "bishop", "pawn@email.com");
-        MessageResponse messageResponse = (MessageResponse) ServerFacade.login("Pawn", "bishop");
-        assertEquals("Error: unauthorized.", messageResponse.message());
+        ServerFacade.register("Pawn", "bishop", "pawn@email.com");
+        MessageResponse messageResponse = (MessageResponse) ServerFacade.login("Pawn", null);
+        assertEquals("Error: bad request.", messageResponse.message());
     }
 
     @Test
