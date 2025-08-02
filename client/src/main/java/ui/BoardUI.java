@@ -13,8 +13,8 @@ import static ui.EscapeSequences.*;
 public class BoardUI {
     private static final int COLUMNS = 8;
     private static final int ROWS = 8;
-    private static final String[] blackTeamHeader = {"h", "g", "f", "e", "d", "c", "b", "a"};
-    private static final String[] whiteTeamHeader = {"a", "b", "c", "d", "e", "f", "g", "h"};
+    private static final String[] BLACK_TEAM_HEADER = {"h", "g", "f", "e", "d", "c", "b", "a"};
+    private static final String[] WHITE_TEAM_HEADER = {"a", "b", "c", "d", "e", "f", "g", "h"};
     public static ChessGame.TeamColor teamColor;
 
     public static void main (String[] args) {
@@ -22,104 +22,78 @@ public class BoardUI {
         out.print(ERASE_SCREEN);
     }
 
-    private static void grayTile (PrintStream OUT) {
-        OUT.print(SET_BG_COLOR_LIGHT_GREY);
-        OUT.print(SET_TEXT_COLOR_LIGHT_GREY);
+    private static void grayTile (PrintStream out) {
+        out.print(SET_BG_COLOR_LIGHT_GREY);
+        out.print(SET_TEXT_COLOR_LIGHT_GREY);
     }
-    private static void whiteTile (PrintStream OUT) {
-        OUT.print(SET_BG_COLOR_WHITE);
-        OUT.print(SET_TEXT_COLOR_WHITE);
+    private static void whiteTile (PrintStream out) {
+        out.print(SET_BG_COLOR_WHITE);
+        out.print(SET_TEXT_COLOR_WHITE);
     }
-    private static void blackTile (PrintStream OUT) {
-        OUT.print(SET_BG_COLOR_BLACK);
-        OUT.print(SET_TEXT_COLOR_BLACK);
+    private static void blackTile (PrintStream out) {
+        out.print(SET_BG_COLOR_BLACK);
+        out.print(SET_TEXT_COLOR_BLACK);
     }
-    private static void blank (PrintStream OUT) {
-        OUT.print(RESET_TEXT_COLOR);
-        OUT.print(RESET_BG_COLOR);
-    }
-
-    public static void callWhiteTiles (PrintStream OUT, ChessBoard board, Collection<ChessMove> legalMoves) {
-        teamColor = WHITE;
-        int startRow = 1;
-        grayTile(OUT);
-        OUT.print(" ");
-        outputHeaders(OUT, whiteTeamHeader);
-        drawBoard(OUT, startRow, board, legalMoves);
+    private static void blank (PrintStream out) {
+        out.print(RESET_TEXT_COLOR);
+        out.print(RESET_BG_COLOR);
     }
 
-    public static void callBlackTiles (PrintStream OUT, ChessBoard board, Collection<ChessMove> legalMoves) {
-        teamColor = BLACK;
-        int startRow = 1;
-        grayTile(OUT);
-        OUT.print(" ");
-        outputHeaders(OUT, blackTeamHeader);
-        drawBoard(OUT, startRow, board, legalMoves);
-    }
-
-    private static void outputHeaders (PrintStream OUT, String[] teamHeader) {
-        grayTile(OUT);
-        OUT.print(" ");
+    private static void outputHeaders (PrintStream out, String[] teamHeader) {
+        grayTile(out);
+        out.print(" ");
         for (int col =0; col < COLUMNS; col++) {
-            OUT.print("/u2003 ");
-            OUT.print(SET_TEXT_COLOR_BLACK);
-            OUT.print(teamHeader[col]);
+            out.print("/u2003 ");
+            out.print(SET_TEXT_COLOR_BLACK);
+            out.print(teamHeader[col]);
         }
-        OUT.print(" ");
-        blank(OUT);
-        OUT.println();
+        out.print(" ");
+        blank(out);
+        out.println();
     }
 
-    private static void drawBoard (PrintStream OUT, int startRow, ChessBoard board,
+    private static void drawBoard (PrintStream out, int startRow, ChessBoard board,
                                    Collection<ChessMove> legalMoves) {
         if (teamColor == WHITE) {
             for (int row = 7; row > -1; row--) {
-                outputRow(OUT, row, startRow, board, legalMoves);
+                outputRow(out, row, startRow, board, legalMoves);
             }
         } else {
             for (int row = 0; row < ROWS; row++) {
-                outputRow(OUT, row, startRow, board, legalMoves);
+                outputRow(out, row, startRow, board, legalMoves);
             }
         }
     }
 
-    private static void outputRow (PrintStream OUT, int row, int startRow, ChessBoard board,
+    private static void outputRow (PrintStream out, int row, int startRow, ChessBoard board,
                                    Collection<ChessMove> legalMoves) {
         int prefix = COLUMNS / 16;
-        grayTile(OUT);
-        OUT.print(SET_TEXT_COLOR_BLACK);
-        OUT.print(EMPTY.repeat(prefix));
+        grayTile(out);
+        out.print(SET_TEXT_COLOR_BLACK);
+        out.print(EMPTY.repeat(prefix));
         if (teamColor == BLACK) {
             int copyBlackRow = row;
             copyBlackRow++;
-            OUT.print(" ");
-            OUT.print(String.valueOf(copyBlackRow));
-            OUT.print(" ");
-            OUT.print(EMPTY.repeat(prefix));
+            out.print(" ");
+            out.print(String.valueOf(copyBlackRow));
+            out.print(" ");
+            out.print(EMPTY.repeat(prefix));
         } else {
             int copyWhiteRow = row;
             copyWhiteRow++;
-            OUT.print(" ");
-            OUT.print(String.valueOf(copyWhiteRow));
-            OUT.print(" ");
-            OUT.print(EMPTY.repeat(prefix));
+            out.print(" ");
+            out.print(String.valueOf(copyWhiteRow));
+            out.print(" ");
+            out.print(EMPTY.repeat(prefix));
         }
         if (teamColor == WHITE) {
             if (row % 2 == 0) {
                 for (int col = 1; col <= COLUMNS; col ++) {
-                    if (col % 2 == 0) {
-                        placePieceWhiteTile(row, col, prefix, OUT, board, legalMoves);
-                    } else {
-                        placePieceBlackTile(row, col, prefix, OUT, board, legalMoves);
-                    }
+                    placePiece(row, col, prefix, out, board, legalMoves);
                 }
             } else {
                 for (int col = 1; col <= COLUMNS; col ++) {
-                    if (col % 2 == 0) {
-                        placePieceBlackTile(row, col, prefix, OUT, board, legalMoves);
-                    } else {
-                        placePieceWhiteTile(row, col, prefix, OUT, board, legalMoves);
-                    }
+                    placePiece(row, col, prefix, out, board, legalMoves);
                 }
             }
         } else {
@@ -127,120 +101,121 @@ public class BoardUI {
             rowCopy++;
             if (rowCopy % 2 == 0) {
                 for (int col = 8; col > 0; col--) {
-                    if (col % 2 == 0) {
-                        placePieceWhiteTile(row, col, prefix, OUT, board, legalMoves);
-                    }else{
-                        placePieceBlackTile(row, col, prefix, OUT, board, legalMoves);
-                    }
+                    placePiece(row, col, prefix, out, board, legalMoves);
                 }
             } else {
                 for (int col = 8; col > 0; col--) {
                     int colCopy = col;
                     colCopy--;
-                    if (colCopy % 2 == 0) {
-                        placePieceBlackTile(row, col, prefix, OUT, board, legalMoves);
-                    }else{
-                        placePieceWhiteTile(row, col, prefix, OUT, board, legalMoves);
-                    }
+                    placePiece(row, col, prefix, out, board, legalMoves);
                 }
             }
         }
-        grayTile(OUT);
-        OUT.print(EMPTY.repeat(prefix));
-        OUT.print(SET_TEXT_COLOR_BLACK);
+        grayTile(out);
+        out.print(EMPTY.repeat(prefix));
+        out.print(SET_TEXT_COLOR_BLACK);
         if (teamColor == BLACK) {
             int copyWhiteRow = row + 1;
-            OUT.print(" ");
-            OUT.print(String.valueOf(copyWhiteRow));
-            OUT.print(" ");
-            OUT.print(EMPTY.repeat(prefix));
+            out.print(" ");
+            out.print(String.valueOf(copyWhiteRow));
+            out.print(" ");
+            out.print(EMPTY.repeat(prefix));
         } else {
             int copyBlackRow = row + 1;
-            OUT.print(" ");
-            OUT.print(String.valueOf(copyBlackRow));
-            OUT.print(" ");
-            OUT.print(EMPTY.repeat(prefix));
+            out.print(" ");
+            out.print(String.valueOf(copyBlackRow));
+            out.print(" ");
+            out.print(EMPTY.repeat(prefix));
         }
-        blank(OUT);
-        OUT.print(EMPTY.repeat(prefix));
-        OUT.println();
+        blank(out);
+        out.print(EMPTY.repeat(prefix));
+        out.println();
         if (row == 0 && teamColor == WHITE) {
-            grayTile(OUT);
-            OUT.print(" ");
-            outputHeaders(OUT, whiteTeamHeader);
+            grayTile(out);
+            out.print(" ");
+            outputHeaders(out, WHITE_TEAM_HEADER);
         } else if (row == 7 && teamColor == BLACK) {
-            grayTile(OUT);
-            OUT.print(" ");
-            outputHeaders(OUT, blackTeamHeader);
+            grayTile(out);
+            out.print(" ");
+            outputHeaders(out, BLACK_TEAM_HEADER);
         }
     }
 
-    private static void placePieceWhiteTile(int row, int col, int prefix, PrintStream OUT,
+    private static void placePiece (int row, int col, int prefix, PrintStream out,
+                                    ChessBoard board, Collection<ChessMove> legalMoves) {
+        if (col % 2 == 0) {
+            placePieceWhiteTile(row, col, prefix, out, board, legalMoves);
+        } else {
+            placePieceBlackTile(row, col, prefix, out, board, legalMoves);
+        }
+    }
+
+    private static void placePieceWhiteTile(int row, int col, int prefix, PrintStream out,
                                             ChessBoard board, Collection<ChessMove> legalMoves) {
         col--;
-        whiteTile(OUT);
-        OUT.print(EMPTY.repeat(prefix));
+        whiteTile(out);
+        out.print(EMPTY.repeat(prefix));
         ChessPiece chessPiece = board.getPiece(new ChessPosition(row + 1, col + 1));
-        checkMoves(legalMoves, row, col, OUT);
+        checkMoves(legalMoves, row, col, out);
         if (chessPiece != null) {
-            String currentPiece = getPiece(chessPiece, null, OUT);
-            OUT.print(currentPiece);
-            OUT.print(EMPTY.repeat(prefix));
+            String currentPiece = getPiece(chessPiece, null, out);
+            out.print(currentPiece);
+            out.print(EMPTY.repeat(prefix));
         } else {
-            OUT.print(EMPTY);
-            OUT.print(EMPTY.repeat(prefix));
+            out.print(EMPTY);
+            out.print(EMPTY.repeat(prefix));
         }
     }
 
-    private static void placePieceBlackTile (int row, int col, int prefix, PrintStream OUT,
+    private static void placePieceBlackTile (int row, int col, int prefix, PrintStream out,
                                              ChessBoard board, Collection<ChessMove> legalMoves) {
         col--;
-        blackTile(OUT);
-        OUT.print(EMPTY.repeat(prefix));
+        blackTile(out);
+        out.print(EMPTY.repeat(prefix));
         ChessPiece chessPiece = board.getPiece(new ChessPosition(row + 1, col + 1));
-        checkMoves(legalMoves, row, col, OUT);
+        checkMoves(legalMoves, row, col, out);
         if (chessPiece != null) {
-            String currentPiece = getPiece(chessPiece, null, OUT);
-            OUT.print(currentPiece);
-            OUT.print(EMPTY.repeat(prefix));
+            String currentPiece = getPiece(chessPiece, null, out);
+            out.print(currentPiece);
+            out.print(EMPTY.repeat(prefix));
         } else {
-            OUT.print(EMPTY);
-            OUT.print(EMPTY.repeat(prefix));
+            out.print(EMPTY);
+            out.print(EMPTY.repeat(prefix));
         }
     }
 
-    private static void checkMoves (Collection<ChessMove> legalMoves, int row, int col, PrintStream OUT) {
+    private static void checkMoves (Collection<ChessMove> legalMoves, int row, int col, PrintStream out) {
         if (legalMoves != null) {
             for (ChessMove move : legalMoves) {
                 if (move.getEndPosition().equals(new ChessPosition(row + 1, col +1))) {
-                    OUT.print(SET_BG_COLOR_GREEN);
-                    OUT.print(SET_TEXT_COLOR_RED);
+                    out.print(SET_BG_COLOR_GREEN);
+                    out.print(SET_TEXT_COLOR_RED);
                 }
             }
         }
     }
 
-    private static String getPiece (ChessPiece chessPiece, String currentPiece, PrintStream OUT) {
+    private static String getPiece (ChessPiece chessPiece, String currentPiece, PrintStream out) {
         if (chessPiece.getTeamColor() == BLACK) {
-            return pieceTypeSwitchBLACK(chessPiece, currentPiece, OUT);
+            return pieceTypeSwitchBLACK(chessPiece, currentPiece, out);
         } else {
-            return pieceTypeSwitchWHITE(chessPiece, currentPiece, OUT);
+            return pieceTypeSwitchWHITE(chessPiece, currentPiece, out);
         }
     }
 
     private static String pieceTypeSwitchBLACK (ChessPiece chessPiece, String currentPiece,
-                                                PrintStream OUT) {
-    return typeSwitch(chessPiece, currentPiece, OUT, BLACK_PAWN, BLACK_ROOK, BLACK_KNIGHT,
+                                                PrintStream out) {
+    return typeSwitch(chessPiece, currentPiece, out, BLACK_PAWN, BLACK_ROOK, BLACK_KNIGHT,
             BLACK_BISHOP, BLACK_KING, BLACK_QUEEN, SET_TEXT_COLOR_RED);
     }
 
     private static String pieceTypeSwitchWHITE (ChessPiece chessPiece, String currentPiece,
-                                                PrintStream OUT) {
-        return typeSwitch(chessPiece, currentPiece, OUT, WHITE_PAWN, WHITE_ROOK, WHITE_KNIGHT,
+                                                PrintStream out) {
+        return typeSwitch(chessPiece, currentPiece, out, WHITE_PAWN, WHITE_ROOK, WHITE_KNIGHT,
                 WHITE_BISHOP, WHITE_KING, WHITE_QUEEN, SET_TEXT_COLOR_BLUE);
     }
 
-    private static String typeSwitch (ChessPiece chessPiece, String currentPiece, PrintStream OUT,
+    private static String typeSwitch (ChessPiece chessPiece, String currentPiece, PrintStream out,
                                       String newPawn, String newRook, String newKnight,
                                       String newBishop, String newKing, String newQueen,
                                       String textColor) {
@@ -252,7 +227,7 @@ public class BoardUI {
             case KING -> currentPiece = newKing;
             case QUEEN -> currentPiece = newQueen;
         }
-        OUT.print(textColor);
+        out.print(textColor);
         return currentPiece;
     }
 }
