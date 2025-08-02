@@ -56,7 +56,7 @@ public class ServerFacade {
                 responseBody = json.fromJson(input, type);
             }
         } else {
-            try (InputStream inputStream = httpURLConnection.getInputStream()) {
+            try (InputStream inputStream = httpURLConnection.getErrorStream()) {
                 InputStreamReader input = new InputStreamReader(inputStream);
                 responseBody = json.fromJson(input, MessageResponse.class);
             }
