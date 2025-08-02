@@ -117,4 +117,12 @@ public class ServerFacade {
         return getResponse(httpURLConnection, ListGameResponse.class);
     }
 
+    public static MessageResponse clear() throws IOException {
+        String path = "/db";
+        URL netURL = new URL(serverURL + path);
+        String method = "DELETE";
+        HttpURLConnection httpURL = sendRequest(netURL, null, method, null);
+        return (MessageResponse) getResponse(httpURL, MessageResponse.class);
+    }
+
 }

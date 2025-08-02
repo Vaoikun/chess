@@ -20,16 +20,22 @@ public class ServerFacadeTests {
     private static Server server;
 
     @BeforeAll
-    public static void init() {
+    public static void init() throws IOException {
         server = new Server();
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
         ServerFacade serverFacade = new ServerFacade("http://localhost:" + port);
+        ServerFacade.clear();
     }
 
     @AfterAll
     static void stopServer() {
         server.stop();
+    }
+
+    @BeforeEach
+    public void clear() throws IOException {
+        ServerFacade.clear();
     }
 
 
