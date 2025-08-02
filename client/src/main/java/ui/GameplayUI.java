@@ -1,5 +1,6 @@
 package ui;
 
+import chess.ChessBoard;
 import chess.ChessGame;
 
 import java.io.PrintStream;
@@ -34,7 +35,17 @@ public class GameplayUI {
     }
 
     public void reload () {
-
+        try {
+            ChessGame chessGame = new ChessGame();
+            ChessBoard chessBoard = chessGame.getBoard();
+            if (teamColor == ChessGame.TeamColor.WHITE) {
+                BoardUI.callBlackTiles(OUT, chessBoard, null);
+            } else if (teamColor == ChessGame.TeamColor.BLACK) {
+                BoardUI.callWhiteTiles(OUT, chessBoard, null);
+            }
+        } catch (Exception e) {
+            System.out.println("Error: failed to reload.");
+        }
     }
 
     public void makeMove() {

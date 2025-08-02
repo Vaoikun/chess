@@ -39,6 +39,24 @@ public class BoardUI {
         out.print(RESET_BG_COLOR);
     }
 
+    public static void callWhiteTiles (PrintStream out, ChessBoard board, Collection<ChessMove> legalMoves) {
+        teamColor = WHITE;
+        int startRow = 1;
+        grayTile(out);
+        out.print(" ");
+        outputHeaders(out, WHITE_TEAM_HEADER);
+        drawBoard(out, startRow, board, legalMoves);
+    }
+
+    public static void callBlackTiles (PrintStream out, ChessBoard board, Collection<ChessMove> legalMoves) {
+        teamColor = BLACK;
+        int startRow = 1;
+        grayTile(out);
+        out.print(" ");
+        outputHeaders(out, BLACK_TEAM_HEADER);
+        drawBoard(out, startRow, board, legalMoves);
+    }
+
     private static void outputHeaders (PrintStream out, String[] teamHeader) {
         grayTile(out);
         out.print(" ");
