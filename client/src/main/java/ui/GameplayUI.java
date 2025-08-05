@@ -26,6 +26,7 @@ public class GameplayUI {
         OUT.println();
         OUT.println("Welcome to the game!");
         OUT.println();
+        reload();
         OUT.println("Enter command...");
         String input = SCANNER.nextLine();
         while (!Objects.equals(input, "Quit")) {

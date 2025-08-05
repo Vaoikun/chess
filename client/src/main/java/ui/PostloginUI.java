@@ -62,7 +62,7 @@ public class PostloginUI {
             }
             if (createGameResult instanceof CreateGameResponse createGameResponse) {
                 int gameID = createGameResponse.gameID();
-                Collections.sort(gameIDList);
+//                Collections.sort(gameIDList);
                 OUT.println("Game creation successful.");
                 OUT.println("gameID: " + (gameIDList.indexOf(gameID) + 1));
             } else {
@@ -99,7 +99,7 @@ public class PostloginUI {
 
     public void join (ChessGame.TeamColor chosenColor, int gameID) {
         try {
-            MessageResponse messageResponse = ServerFacade.joinGame(gameIDList.get(gameID - 1), chosenColor, authToken);
+            MessageResponse messageResponse = ServerFacade.joinGame(gameIDList.get(gameID), chosenColor, authToken);
             if (!Objects.equals(messageResponse, "")) {
                 OUT.println(messageResponse.message());
             } else {
@@ -163,7 +163,7 @@ public class PostloginUI {
                 try {
                     int gameID = Integer.parseInt(inputGameID);
                     GameplayUI gameplayUI = new GameplayUI("http://localhost:8080", authToken,
-                            null, gameIDList.indexOf(gameID - 1));
+                            ChessGame.TeamColor.WHITE, gameIDList.indexOf(gameID - 1));
                     OUT.println("Observing the game...");
                     gameplayUI.run();
                 } catch (Exception e) {
