@@ -46,6 +46,8 @@ public class BoardUI {
         out.print(" ");
         outputHeaders(out, WHITE_TEAM_HEADER);
         drawBoard(out, startRow, board, legalMoves);
+        out.println(RESET_BG_COLOR);
+        out.println(RESET_TEXT_COLOR);
     }
 
     public static void callBlackTiles (PrintStream out, ChessBoard board, Collection<ChessMove> legalMoves) {
@@ -55,17 +57,18 @@ public class BoardUI {
         out.print(" ");
         outputHeaders(out, BLACK_TEAM_HEADER);
         drawBoard(out, startRow, board, legalMoves);
+        out.println(RESET_BG_COLOR);
+        out.println(RESET_TEXT_COLOR);
     }
 
     private static void outputHeaders (PrintStream out, String[] teamHeader) {
         grayTile(out);
         out.print(" ");
         for (int col =0; col < COLUMNS; col++) {
-            out.print("/u2003 ");
             out.print(SET_TEXT_COLOR_BLACK);
             out.print(teamHeader[col]);
         }
-        out.print(" ");
+        out.print("    ");
         blank(out);
         out.println();
     }
@@ -123,8 +126,6 @@ public class BoardUI {
                 }
             } else {
                 for (int col = 8; col > 0; col--) {
-                    int colCopy = col;
-                    colCopy--;
                     placePiece(row, col, prefix, out, board, legalMoves);
                 }
             }
@@ -143,7 +144,6 @@ public class BoardUI {
             out.print(" ");
             out.print(String.valueOf(copyBlackRow));
             out.print(" ");
-            out.print(EMPTY.repeat(prefix));
         }
         blank(out);
         out.print(EMPTY.repeat(prefix));

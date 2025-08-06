@@ -62,9 +62,8 @@ public class PostloginUI {
             }
             if (createGameResult instanceof CreateGameResponse createGameResponse) {
                 int gameID = createGameResponse.gameID();
-//                Collections.sort(gameIDList);
                 OUT.println("Game creation successful.");
-                OUT.println("gameID: " + (gameIDList.indexOf(gameID) + 1));
+                OUT.println("gameID: " + gameID);
             } else {
                 MessageResponse messageResponse = (MessageResponse) createGameResult;
                 OUT.println(messageResponse.message());
@@ -99,11 +98,11 @@ public class PostloginUI {
 
     public void join (ChessGame.TeamColor chosenColor, int gameID) {
         try {
-            MessageResponse messageResponse = ServerFacade.joinGame(gameIDList.get(gameID), chosenColor, authToken);
+            MessageResponse messageResponse = ServerFacade.joinGame(gameID, chosenColor, authToken);
             if (!Objects.equals(messageResponse, "")) {
                 OUT.println(messageResponse.message());
             } else {
-                GameplayUI gameplayUI = new GameplayUI("http://localhost:8080", authToken, chosenColor, gameIDList.get(gameID - 1));
+                GameplayUI gameplayUI = new GameplayUI("http://localhost:8080", authToken, chosenColor, gameID);
                 OUT.println("Joining the game...");
                 gameplayUI.run();
                 OUT.println(RESET_BG_COLOR);
@@ -141,7 +140,7 @@ public class PostloginUI {
             if (!gameIDList.contains(game.gameID())) {
                 gameIDList.add(game.gameID());
             }
-            String output = "Game name: " + game.gameName() + "  gameID: " + gameIDList.indexOf(game.gameID() + 1)
+            String output = "Game name: " + game.gameName() + "  gameID: " + game.gameID()
                     + "  White team: " + game.whiteUsername() + "  Black team: " + game.blackUsername();
             OUT.println(output);
             OUT.println();
@@ -163,7 +162,7 @@ public class PostloginUI {
                 try {
                     int gameID = Integer.parseInt(inputGameID);
                     GameplayUI gameplayUI = new GameplayUI("http://localhost:8080", authToken,
-                            ChessGame.TeamColor.WHITE, gameIDList.indexOf(gameID - 1));
+                            ChessGame.TeamColor.WHITE, gameID);
                     OUT.println("Observing the game...");
                     gameplayUI.run();
                 } catch (Exception e) {
