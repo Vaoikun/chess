@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import model.GameData;
 import server.ServerException;
 
+import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Random;
@@ -182,6 +183,22 @@ public class SQLGameDAO implements GameDAO {
         }
         GameData game = getGame(gameID);
         updateGame(username, playerColor, game);
+    }
+
+    public void chessGameUpdate (ChessGame chessGame, int gameID) {
+        Gson json = new Gson();
+        String chessGameJson = json.toJson(chessGame);
+        try (var connection = DatabaseManager.getConnection()) {
+            try (var updateStatement = connection.prepareStatement("UPDATE Games SET ChessGameCol = ? WHERE gameIDCol = ?;")) {
+                updateStatement.setString(1, chessGameJson);
+                updateStatement.setInt(2, gameID);
+                updateStatement.executeUpdate();
+            } catch (SQLException e) {
+                throw new DataAccessException(e.getMessage());
+            }
+        } catch (SQLException | DataAccessException | ServerException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

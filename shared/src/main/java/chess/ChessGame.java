@@ -12,6 +12,7 @@ import java.util.Objects;
  */
 public class ChessGame {
 
+    public boolean isResigned = false;
     private TeamColor teamColor;
     private ChessBoard board = new ChessBoard();
 
