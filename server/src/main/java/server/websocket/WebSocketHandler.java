@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import dataaccess.SQLAuthDAO;
 import dataaccess.SQLGameDAO;
+import dataaccess.SQLUserDAO;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
@@ -12,7 +13,9 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import server.ServerException;
 import websocket.commands.UserGameCommand;
 import websocket.commands.websocketrequest.Connect;
+import websocket.commands.websocketrequest.Leave;
 import websocket.commands.websocketrequest.MakeMove;
+import websocket.commands.websocketrequest.Resign;
 import websocket.messages.ServerMessage;
 import websocket.messages.websocketresponse.Error;
 import websocket.messages.websocketresponse.LoadGame;
@@ -25,7 +28,6 @@ import java.util.Vector;
 @WebSocket
 public class WebSocketHandler {
     private static final ConnectionManager CONNECTION_MANAGER = new ConnectionManager();
-    public enum KEYITEMS {join, observe, makeMove, leave, resign, check, checkMake}
 
     @OnWebSocketMessage
     public void onWebSocketMessage(Session session, String message) {
@@ -34,7 +36,9 @@ public class WebSocketHandler {
             UserGameCommand userGameCommand = json.fromJson(message, UserGameCommand.class);
             switch (userGameCommand.getCommandType()) {
                 case UserGameCommand.CommandType.CONNECT -> join(session, message);
-
+                case UserGameCommand.CommandType.MAKE_MOVE -> makeMove(session, message);
+                case UserGameCommand.CommandType.LEAVE -> leave(session, message);
+                case UserGameCommand.CommandType.RESIGN -> resign(session, message);
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -121,7 +125,7 @@ public class WebSocketHandler {
         }
     }
 
-    public static void movePiece(Session session, String message) {
+    public static void makeMove(Session session, String message) {
         try {
             GameData gameData = null;
             Gson json = new Gson();
@@ -143,15 +147,17 @@ public class WebSocketHandler {
                 Error error = new Error(ServerMessage.ServerMessageType.ERROR);
                 error.setMessage("Error: Failed to find game.");
                 String errorMessage = json.toJson(error);
-                sendErrorMessage(session, message);
+                sendErrorMessage(session, errorMessage);
             }
             if (gameData != null && username != null) {
                 ChessMove chessMove = makeMove.getChessMove();
                 ChessGame chessGame = gameData.game();
                 Collection<ChessMove> legalMoves = chessGame.validMoves(chessMove.getStartPosition());
                 if (legalMoves.contains(chessMove)) {
-                    if (username.equals(ChessGame.TeamColor.WHITE) || username.equals(ChessGame.TeamColor.BLACK)) {
+                    if (username.equals(gameData.blackUsername())) {
                         checkmateChecker(session, json, authToken, username, gameID, chessGame, chessMove, gameDB, gameData, ChessGame.TeamColor.BLACK, ChessGame.TeamColor.WHITE);
+                    } else if (username.equals(gameData.whiteUsername())) {
+                        checkmateChecker(session, json, authToken, username, gameID, chessGame, chessMove, gameDB, gameData, ChessGame.TeamColor.WHITE, ChessGame.TeamColor.BLACK);
                     } else {
                         postErrorMessage(session, "Error: Observer can't make move.", json);
                     }
@@ -299,5 +305,114 @@ public class WebSocketHandler {
         error.setMessage(message);
         String errorMassage = json.toJson(error);
         sendErrorMessage(session, errorMassage);
+    }
+
+    public static void leave (Session session, String message) {
+        try {
+            Gson json = new Gson();
+            Leave leave = json.fromJson(message, Leave.class);
+            SQLGameDAO gameDB = new SQLGameDAO();
+            SQLAuthDAO authDB = new SQLAuthDAO();
+            String authToken = leave.getAuthToken();
+            int gameID = leave.getGameID();
+            String username = authDB.getUsername(authToken);
+            if (username == null) {
+                Error error = new Error(ServerMessage.ServerMessageType.ERROR);
+                error.setMessage("Error: unauthorized.");
+                String errorMessage = json.toJson(error);
+                sendErrorMessage(session, errorMessage);
+            } else {
+                GameData gameData = gameDB.getGame(gameID);
+                if (username.equals(gameData.whiteUsername())) {
+                    Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username, ChessGame.TeamColor.WHITE);
+                    notification.setMessage(username + "(white team) left the game.");
+                    String leaveMessage = json.toJson(notification);
+                    CONNECTION_MANAGER.broadcast(session, gameID, leaveMessage);
+                    CONNECTION_MANAGER.remove(authToken, gameID);
+                    gameDB.updateGame(null, ChessGame.TeamColor.WHITE, gameData);
+                } else if (username.equals(gameData.blackUsername())){
+                    Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username, ChessGame.TeamColor.WHITE);
+                    notification.setMessage(username + "(black team) left the game.");
+                    String leaveMessage = json.toJson(notification);
+                    CONNECTION_MANAGER.broadcast(session, gameID, leaveMessage);
+                    CONNECTION_MANAGER.remove(authToken, gameID);
+                    gameDB.updateGame(null, ChessGame.TeamColor.BLACK, gameData);
+                } else {
+                    Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username, ChessGame.TeamColor.WHITE);
+                    notification.setMessage(username + "(observer) left the game.");
+                    String leaveMessage = json.toJson(notification);
+                    CONNECTION_MANAGER.broadcast(session, gameID, leaveMessage);
+                    CONNECTION_MANAGER.remove(authToken, gameID);
+                }
+            }
+        } catch (DataAccessException | IOException | ServerException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    public static void resign(Session session, String message) {
+        try {
+            ChessGame chessGame = null;
+            GameData gameData = null;
+            Gson json = new Gson();
+            Resign resign = json.fromJson(message, Resign.class);
+            int gameID = resign.getGameID();
+            String authToken = resign.getAuthToken();
+            SQLGameDAO gameDB = new SQLGameDAO();
+            SQLAuthDAO authDB = new SQLAuthDAO();
+            SQLUserDAO userDB = new SQLUserDAO();
+            String username = authDB.getUsername(authToken);
+            if (username == null) {
+                Error error = new Error(ServerMessage.ServerMessageType.ERROR);
+                error.setMessage("Error: unauthorized.");
+                String errorMessage = json.toJson(error);
+                sendErrorMessage(session, errorMessage);
+            }
+            try {
+                gameData = gameDB.getGame(gameID);
+                chessGame = gameData.game();
+            } catch (DataAccessException e) {
+                Error error = new Error(ServerMessage.ServerMessageType.ERROR);
+                error.setMessage("Error: Game not found.");
+                String errorMessage = json.toJson(error);
+                sendErrorMessage(session, errorMessage);
+            }
+            if (username != null && gameData != null) {
+                if (username.equals(gameData.blackUsername())) {
+                    resignMessage(session, chessGame, authToken, username, gameID, json, ChessGame.TeamColor.BLACK, gameDB);
+                } else if (username.equals(gameData.blackUsername())){
+                    resignMessage(session, chessGame, authToken, username, gameID, json, ChessGame.TeamColor.WHITE, gameDB);
+                } else {
+                    Error error = new Error(ServerMessage.ServerMessageType.ERROR);
+                    error.setMessage("Error: Observer can't resign. Leave the game instead.");
+                    String errorMessage = json.toJson(error);
+                    sendErrorMessage(session, errorMessage);
+                }
+            }
+        } catch (DataAccessException | IOException | ServerException e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void resignMessage (Session session, ChessGame chessGame, String authToken, String username,
+                                int gameID, Gson json, ChessGame.TeamColor teamColor, SQLGameDAO gameDB) throws IOException {
+        if (!chessGame.isResigned) {
+            Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION,
+                    username, teamColor);
+            notification.setMessage(username + " resigned the game.");
+            String resignMessage = json.toJson(notification);
+            CONNECTION_MANAGER.broadcast(session, gameID, resignMessage);
+            Connection connection = new Connection(session, authToken);
+            if (connection.session.isOpen()) {
+                connection.send(resignMessage);
+            }
+            chessGame.isResigned = true;
+            gameDB.chessGameUpdate(chessGame, gameID);
+        } else {
+            Error error = new Error(ServerMessage.ServerMessageType.ERROR);
+            error.setMessage("Error: One player resigned already. You can leave the game.");
+            String errorMessage = json.toJson(error);
+            sendErrorMessage(session, errorMessage);
+        }
     }
 }
