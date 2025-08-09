@@ -2,6 +2,7 @@ package ui;
 
 import chess.ChessBoard;
 import chess.ChessGame;
+import com.google.gson.Gson;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -60,11 +61,42 @@ public class GameplayUI {
     }
 
     public void leave () {
-
+        try {
+            OUT.println("Enter gameID below.");
+            String enteredID = SCANNER.nextLine();
+            int gameID = Integer.parseInt(enteredID);
+            OUT.println("Are you sure you want to leave? (Yes/No)");
+            String answer = SCANNER.nextLine();
+            if (Objects.equals(answer, "Yes")) {
+                webSocketFacade.leave(authToken, gameID);
+                PostloginUI postloginUI = new PostloginUI("http://localhost:8080", authToken);
+                postloginUI.run();
+            } else {
+                System.out.println("You are still in the game.");
+            }
+        } catch (Exception e) {
+            System.out.println("Error: Failed to process.");
+        }
     }
 
     public void resign () {
-
+        Gson json = new Gson();
+        try {
+            OUT.println("Enter gameID below.");
+            String enteredID = SCANNER.nextLine();
+            int gameID = Integer.parseInt(enteredID);
+            OUT.println("Are you sure you want to resign? (Yes/No)");
+            String answer = SCANNER.nextLine();
+            if (Objects.equals(answer, "Yes")) {
+                webSocketFacade.resign(authToken, gameID);
+                PostloginUI postloginUI = new PostloginUI("http://localhost:8080", authToken);
+                postloginUI.run();
+            } else {
+                System.out.println("You are still in the game.");
+            }
+        } catch (Exception e) {
+            System.out.println("Error: Failed to process.");
+        }
     }
 
     public static String help () {
