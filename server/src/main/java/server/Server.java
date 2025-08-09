@@ -3,6 +3,7 @@ package server;
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import handler.*;
+import server.websocket.WebSocketHandler;
 import spark.*;
 
 public class Server {
@@ -10,6 +11,7 @@ public class Server {
     public int run(int desiredPort) {
         Spark.port(desiredPort);
         Spark.staticFiles.location("web");
+        Spark.webSocket("/ws", WebSocketHandler.class);
         Spark.post("/user", (request, response) -> new RegisterHandler(request, response).httpHandlerRequest(request, response));
         Spark.post("/session", (request, response) -> new LoginHandler(request, response).httpHandlerRequest(request, response));
         Spark.delete("/session", (request, response) -> new LogoutHandler(request, response).httpHandlerRequest(request, response));
