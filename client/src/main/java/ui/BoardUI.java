@@ -66,6 +66,7 @@ public class BoardUI {
         out.print(" ");
         for (int col =0; col < COLUMNS; col++) {
             out.print(SET_TEXT_COLOR_BLACK);
+            out.print(" ");
             out.print(teamHeader[col]);
         }
         out.print("    ");
@@ -93,28 +94,28 @@ public class BoardUI {
         out.print(SET_TEXT_COLOR_BLACK);
         out.print(EMPTY.repeat(prefix));
         if (teamColor == BLACK) {
-            int copyBlackRow = row;
-            copyBlackRow++;
-            out.print(" ");
-            out.print(String.valueOf(copyBlackRow));
-            out.print(" ");
-            out.print(EMPTY.repeat(prefix));
-        } else {
             int copyWhiteRow = row;
             copyWhiteRow++;
             out.print(" ");
             out.print(String.valueOf(copyWhiteRow));
             out.print(" ");
             out.print(EMPTY.repeat(prefix));
+        } else {
+            int copyBlackRow = row;
+            copyBlackRow++;
+            out.print(" ");
+            out.print(String.valueOf(copyBlackRow));
+            out.print(" ");
+            out.print(EMPTY.repeat(prefix));
         }
         if (teamColor == WHITE) {
             if (row % 2 == 0) {
                 for (int col = 1; col <= COLUMNS; col ++) {
-                    placePiece(row, col, prefix, out, board, legalMoves);
+                    placePiece(row, col, prefix, out, board, legalMoves, true);
                 }
             } else {
                 for (int col = 1; col <= COLUMNS; col ++) {
-                    placePiece(row, col, prefix, out, board, legalMoves);
+                    placePiece(row, col, prefix, out, board, legalMoves, false);
                 }
             }
         } else {
@@ -122,11 +123,11 @@ public class BoardUI {
             rowCopy++;
             if (rowCopy % 2 == 0) {
                 for (int col = 8; col > 0; col--) {
-                    placePiece(row, col, prefix, out, board, legalMoves);
+                    placePiece(row, col, prefix, out, board, legalMoves, false);
                 }
             } else {
                 for (int col = 8; col > 0; col--) {
-                    placePiece(row, col, prefix, out, board, legalMoves);
+                    placePiece(row, col, prefix, out, board, legalMoves, false);
                 }
             }
         }
@@ -160,11 +161,19 @@ public class BoardUI {
     }
 
     private static void placePiece (int row, int col, int prefix, PrintStream out,
-                                    ChessBoard board, Collection<ChessMove> legalMoves) {
-        if (col % 2 == 0) {
-            placePieceWhiteTile(row, col, prefix, out, board, legalMoves);
+                                    ChessBoard board, Collection<ChessMove> legalMoves, boolean evenRow) {
+        if (evenRow) {
+            if (col % 2 == 0) {
+                placePieceWhiteTile(row, col, prefix, out, board, legalMoves);
+            } else {
+                placePieceBlackTile(row, col, prefix, out, board, legalMoves);
+            }
         } else {
-            placePieceBlackTile(row, col, prefix, out, board, legalMoves);
+            if (col % 2 == 0) {
+                placePieceBlackTile(row, col, prefix, out, board, legalMoves);
+            } else {
+                placePieceWhiteTile(row, col, prefix, out, board, legalMoves);
+            }
         }
     }
 
