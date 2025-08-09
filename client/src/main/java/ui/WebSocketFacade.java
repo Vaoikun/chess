@@ -2,7 +2,13 @@ package ui;
 
 import chess.ChessBoard;
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPiece;
 import com.google.gson.Gson;
+import websocket.commands.websocketrequest.Connect;
+import websocket.commands.websocketrequest.Leave;
+import websocket.commands.websocketrequest.MakeMove;
+import websocket.commands.websocketrequest.Resign;
 import websocket.messages.ServerMessage;
 import websocket.messages.websocketresponse.LoadGame;
 
@@ -70,5 +76,49 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
+    public void setChessGame(ChessGame chessGame) {
+        this.chessGame = chessGame;
+    }
+    public ChessGame getChessGame(){
+        return this.chessGame;
+    }
+    public void setTeamColor(ChessGame.TeamColor teamColor) {
+        this.teamColor = teamColor;
+    }
+    public ChessGame.TeamColor getTeamColor() {
+        return this.teamColor;
+    }
 
+    public void connectPlayer (String authToken, int gameID) throws IOException {
+        Gson json = new Gson();
+        Connect connectPlayer = new Connect(authToken, gameID);
+        String connectPlayerMessage = json.toJson(connectPlayer);
+        this.session.getBasicRemote().sendText(connectPlayerMessage);
+    }
+
+    public void makeMove (String authToken, int gameID, ChessMove chessMove) throws IOException {
+        Gson json = new Gson();
+        MakeMove makeMove = new MakeMove(authToken, gameID, chessMove);
+        String message = json.toJson(makeMove);
+        this.session.getBasicRemote().sendText(message);
+    }
+
+    public void leave (String authToken, int gameID) throws IOException {
+        Gson json = new Gson();
+        Leave leave = new Leave(authToken, gameID);
+        String message = json.toJson(leave);
+        this.session.getBasicRemote().sendText(message);
+    }
+
+    public void resign (String authToken, int gameID) throws IOException {
+        Gson json = new Gson();
+        Resign resign = new Resign(authToken, gameID);
+        String message = json.toJson(resign);
+        this.session.getBasicRemote().sendText(message);
+    }
+
+    @Override
+    public void onOpen(Session session, EndpointConfig endpointConfig) {
+
+    }
 }
