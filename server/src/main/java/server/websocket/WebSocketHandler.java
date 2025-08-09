@@ -30,7 +30,7 @@ public class WebSocketHandler {
     private static final ConnectionManager CONNECTION_MANAGER = new ConnectionManager();
 
     @OnWebSocketMessage
-    public void onWebSocketMessage(Session session, String message) {
+    public void onMessage(Session session, String message) {
         try {
             Gson json = new Gson();
             UserGameCommand userGameCommand = json.fromJson(message, UserGameCommand.class);
