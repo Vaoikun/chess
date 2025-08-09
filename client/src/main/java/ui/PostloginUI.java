@@ -23,7 +23,7 @@ public class PostloginUI {
     private final String authToken;
     private static final PrintStream OUT = new PrintStream(System.out, true, StandardCharsets.UTF_8);
     private static final Scanner SCANNER = new Scanner(System.in);
-
+    private final WebSocketFacade webSocketFacade = new WebSocketFacade("http://localhost:8080", ChessGame.TeamColor.WHITE, null);
     public static ArrayList<Integer> gameIDList = new ArrayList<>();
 
     public PostloginUI (String serverURL, String authToken) {
@@ -102,7 +102,15 @@ public class PostloginUI {
             if (!Objects.equals(messageResponse, "")) {
                 OUT.println(messageResponse.message());
             } else {
-                GameplayUI gameplayUI = new GameplayUI("http://localhost:8080", authToken, chosenColor, gameID);
+                if (chosenColor == ChessGame.TeamColor.BLACK) {
+                    webSocketFacade.setTeamColor(ChessGame.TeamColor.BLACK);
+                    webSocketFacade.connectPlayer(authToken, gameID);
+                } else {
+                    webSocketFacade.setTeamColor(ChessGame.TeamColor.WHITE);
+                    webSocketFacade.connectPlayer(authToken, gameID);
+                }
+                GameplayUI gameplayUI = new GameplayUI("http://localhost:8080", authToken,
+                        chosenColor, gameID, webSocketFacade);
                 OUT.println("Joining the game...");
                 gameplayUI.run();
                 OUT.println(RESET_BG_COLOR);
@@ -157,16 +165,19 @@ public class PostloginUI {
             if (gameList.isEmpty()) {
                 OUT.println("No games in the server. Please create one.");
             } else {
+                System.err.println();
                 OUT.println("Enter a gameID below.");
                 String inputGameID = SCANNER.nextLine();
                 try {
                     int gameID = Integer.parseInt(inputGameID);
+                    webSocketFacade.setTeamColor(ChessGame.TeamColor.WHITE);
+                    webSocketFacade.connectPlayer(authToken, gameID);
                     GameplayUI gameplayUI = new GameplayUI("http://localhost:8080", authToken,
-                            ChessGame.TeamColor.WHITE, gameID);
+                            ChessGame.TeamColor.WHITE, gameID, webSocketFacade);
                     OUT.println("Observing the game...");
                     gameplayUI.run();
                 } catch (Exception e) {
-                    OUT.println("Invalid gameID.");
+                    OUT.println("Error: Invalid gameID.");
             }
         }
             OUT.println(RESET_BG_COLOR);

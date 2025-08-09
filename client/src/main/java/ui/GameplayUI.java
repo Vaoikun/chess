@@ -14,12 +14,14 @@ public class GameplayUI {
     private String authToken;
     private ChessGame.TeamColor teamColor;
     private int gameID;
+    private WebSocketFacade webSocketFacade;
 
-    public GameplayUI (String serverURL, String authToken, ChessGame.TeamColor teamColor, int gameID) {
+    public GameplayUI (String serverURL, String authToken, ChessGame.TeamColor teamColor, int gameID, WebSocketFacade webSocketFacade) {
         ServerFacade serverFacade = new ServerFacade(serverURL);
         this.authToken = authToken;
         this.teamColor = teamColor;
         this.gameID = gameID;
+        this.webSocketFacade = webSocketFacade;
     }
 
     public void run () {
