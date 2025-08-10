@@ -13,8 +13,8 @@ import static ui.EscapeSequences.*;
 public class BoardUI {
     private static final int COLUMNS = 8;
     private static final int ROWS = 8;
-    private static final String[] BLACK_TEAM_HEADER = {"h", "g", "f", "e", "d", "c", "b", "a"};
-    private static final String[] WHITE_TEAM_HEADER = {"a", "b", "c", "d", "e", "f", "g", "h"};
+    private static final String[] WHITE_TEAM_HEADER = {"h", "g", "f", "e", "d", "c", "b", "a"};
+    private static final String[] BLACK_TEAM_HEADER = {"a", "b", "c", "d", "e", "f", "g", "h"};
     public static ChessGame.TeamColor teamColor;
 
     public static void main (String[] args) {
@@ -66,7 +66,7 @@ public class BoardUI {
         out.print(" ");
         for (int col =0; col < COLUMNS; col++) {
             out.print(SET_TEXT_COLOR_BLACK);
-            out.print(" ");
+            out.print("  ");
             out.print(teamHeader[col]);
         }
         out.print("    ");
@@ -93,21 +93,7 @@ public class BoardUI {
         grayTile(out);
         out.print(SET_TEXT_COLOR_BLACK);
         out.print(EMPTY.repeat(prefix));
-        if (teamColor == BLACK) {
-            int copyWhiteRow = row;
-            copyWhiteRow++;
-            out.print(" ");
-            out.print(String.valueOf(copyWhiteRow));
-            out.print(" ");
-            out.print(EMPTY.repeat(prefix));
-        } else {
-            int copyBlackRow = row;
-            copyBlackRow++;
-            out.print(" ");
-            out.print(String.valueOf(copyBlackRow));
-            out.print(" ");
-            out.print(EMPTY.repeat(prefix));
-        }
+        numbering(out, row, prefix);
         if (teamColor == WHITE) {
             if (row % 2 == 0) {
                 for (int col = 1; col <= COLUMNS; col ++) {
@@ -123,7 +109,7 @@ public class BoardUI {
             rowCopy++;
             if (rowCopy % 2 == 0) {
                 for (int col = 8; col > 0; col--) {
-                    placePiece(row, col, prefix, out, board, legalMoves, false);
+                    placePiece(row, col, prefix, out, board, legalMoves, true);
                 }
             } else {
                 for (int col = 8; col > 0; col--) {
@@ -134,18 +120,7 @@ public class BoardUI {
         grayTile(out);
         out.print(EMPTY.repeat(prefix));
         out.print(SET_TEXT_COLOR_BLACK);
-        if (teamColor == BLACK) {
-            int copyWhiteRow = row + 1;
-            out.print(" ");
-            out.print(String.valueOf(copyWhiteRow));
-            out.print(" ");
-            out.print(EMPTY.repeat(prefix));
-        } else {
-            int copyBlackRow = row + 1;
-            out.print(" ");
-            out.print(String.valueOf(copyBlackRow));
-            out.print(" ");
-        }
+        numbering(out, row, prefix);
         blank(out);
         out.print(EMPTY.repeat(prefix));
         out.println();
@@ -174,6 +149,24 @@ public class BoardUI {
             } else {
                 placePieceWhiteTile(row, col, prefix, out, board, legalMoves);
             }
+        }
+    }
+
+    private static void numbering (PrintStream out, int row, int prefix) {
+        if (teamColor == WHITE) {
+            int copyWhiteRow = row;
+            copyWhiteRow++;
+            out.print(" ");
+            out.print(String.valueOf(copyWhiteRow));
+            out.print(" ");
+            out.print(EMPTY.repeat(prefix));
+        } else {
+            int copyBlackRow = row;
+            copyBlackRow++;
+            out.print(" ");
+            out.print(String.valueOf(copyBlackRow));
+            out.print(" ");
+            out.print(EMPTY.repeat(prefix));
         }
     }
 
