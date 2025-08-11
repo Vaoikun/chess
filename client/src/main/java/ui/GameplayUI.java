@@ -43,9 +43,9 @@ public class GameplayUI {
         try {
             ChessGame chessGame = new ChessGame();
             ChessBoard chessBoard = chessGame.getBoard();
-            if (teamColor == ChessGame.TeamColor.WHITE) {
+            if (teamColor == ChessGame.TeamColor.BLACK) {
                 BoardUI.callBlackTiles(OUT, chessBoard, null);
-            } else if (teamColor == ChessGame.TeamColor.BLACK) {
+            } else {
                 BoardUI.callWhiteTiles(OUT, chessBoard, null);
             }
         } catch (Exception e) {
@@ -131,7 +131,7 @@ public class GameplayUI {
             System.out.println("Error: Invalid row number.");
         }
         try {
-            String colInput = String.valueOf(input.charAt(2));
+            String colInput = String.valueOf(input.charAt(0));
             switch (colInput) {
                 case "a" -> col = 1;
                 case "b" -> col = 2;
@@ -166,7 +166,7 @@ public class GameplayUI {
                 System.out.println("You are still in the game.");
             }
         } catch (Exception e) {
-            System.out.println("Error: Failed to process.");
+            System.out.println("Error: Failed to leave game.");
         }
     }
 
