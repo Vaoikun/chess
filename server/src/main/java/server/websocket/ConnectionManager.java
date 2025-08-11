@@ -39,10 +39,12 @@ public class ConnectionManager {
     }
 
     public void remove(String authToken, int gameID) {
-        if (!(CONNECTION.get(gameID) == null)) {
+        if (CONNECTION.get(gameID) == null) {
+            return;
+        } else {
             var gameList = CONNECTION.get(gameID);
             for (int i = gameList.size() - 1; i >= 0; i--) {
-                if (!Objects.equals(gameList.get(i).authToken, authToken)) {
+                if (Objects.equals(gameList.get(i).authToken, authToken)) {
                     gameList.remove(i);
                 }
             }
