@@ -13,8 +13,8 @@ import static ui.EscapeSequences.*;
 public class BoardUI {
     private static final int COLUMNS = 8;
     private static final int ROWS = 8;
-    private static final String[] WHITE_TEAM_HEADER = {"h", "g", "f", "e", "d", "c", "b", "a"};
-    private static final String[] BLACK_TEAM_HEADER = {"a", "b", "c", "d", "e", "f", "g", "h"};
+    private static final String[] BLACK_TEAM_HEADER = {"h", "g", "f", "e", "d", "c", "b", "a"};
+    private static final String[] WHITE_TEAM_HEADER = {"a", "b", "c", "d", "e", "f", "g", "h"};
     public static ChessGame.TeamColor teamColor;
 
     public static void main (String[] args) {
@@ -226,13 +226,13 @@ public class BoardUI {
     private static String pieceTypeSwitchBLACK (ChessPiece chessPiece, String currentPiece,
                                                 PrintStream out) {
     return typeSwitch(chessPiece, currentPiece, out, BLACK_PAWN, BLACK_ROOK, BLACK_KNIGHT,
-            BLACK_BISHOP, BLACK_KING, BLACK_QUEEN, SET_TEXT_COLOR_RED);
+            BLACK_BISHOP, BLACK_KING, BLACK_QUEEN, SET_TEXT_COLOR_BLUE);
     }
 
     private static String pieceTypeSwitchWHITE (ChessPiece chessPiece, String currentPiece,
                                                 PrintStream out) {
         return typeSwitch(chessPiece, currentPiece, out, WHITE_PAWN, WHITE_ROOK, WHITE_KNIGHT,
-                WHITE_BISHOP, WHITE_KING, WHITE_QUEEN, SET_TEXT_COLOR_BLUE);
+                WHITE_BISHOP, WHITE_KING, WHITE_QUEEN, SET_TEXT_COLOR_RED);
     }
 
     private static String typeSwitch (ChessPiece chessPiece, String currentPiece, PrintStream out,

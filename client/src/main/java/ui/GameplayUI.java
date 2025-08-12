@@ -43,7 +43,7 @@ public class GameplayUI {
         try {
             ChessGame chessGame = new ChessGame();
             ChessBoard chessBoard = chessGame.getBoard();
-            if (teamColor == ChessGame.TeamColor.BLACK) {
+            if (teamColor == ChessGame.TeamColor.WHITE) {
                 BoardUI.callBlackTiles(OUT, chessBoard, null);
             } else {
                 BoardUI.callWhiteTiles(OUT, chessBoard, null);

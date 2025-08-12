@@ -26,7 +26,6 @@ public class PreloginUI {
         String input = SCANNER.nextLine();
         while (!Objects.equals(input, "Quit")) {
             this.eval(input);
-            OUT.println("Enter command below.");
             input = SCANNER.nextLine();
         }
     }
