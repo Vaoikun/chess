@@ -13,7 +13,7 @@ import java.util.Objects;
 public class ChessGame {
 
     public boolean isResigned = false;
-    private TeamColor teamColor;
+    public TeamColor teamColor;
     private ChessBoard board = new ChessBoard();
 
     //default initiation

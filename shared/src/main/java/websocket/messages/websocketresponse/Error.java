@@ -3,16 +3,16 @@ package websocket.messages.websocketresponse;
 import websocket.messages.ServerMessage;
 
 public class Error extends ServerMessage {
-    private String message;
+    private String errorMessage;
     public Error(ServerMessageType type) {
         super(type);
     }
 
-    public void setMessage (String message) {
-        this.message = message;
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 
-    public String getMessage() {
-        return message;
+    public String getErrorMessage() {
+        return errorMessage;
     }
 }

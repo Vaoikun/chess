@@ -6,6 +6,7 @@ import dataaccess.DataAccessException;
 import dataaccess.SQLAuthDAO;
 import dataaccess.SQLGameDAO;
 import dataaccess.SQLUserDAO;
+import httpresponse.MessageResponse;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
@@ -36,7 +37,7 @@ public class WebSocketHandler {
             UserGameCommand userGameCommand = json.fromJson(message, UserGameCommand.class);
             switch (userGameCommand.getCommandType()) {
                 case UserGameCommand.CommandType.CONNECT -> join(session, message);
-                case UserGameCommand.CommandType.MAKE_MOVE -> makeMove(session, message);
+                case UserGameCommand.CommandType.MAKE_MOVE -> movePiece(session, message);
                 case UserGameCommand.CommandType.LEAVE -> leave(session, message);
                 case UserGameCommand.CommandType.RESIGN -> resign(session, message);
             }
@@ -57,7 +58,7 @@ public class WebSocketHandler {
             String username = authDB.getUsername(authToken);
             if (username == null) {
                 Error error = new Error(ServerMessage.ServerMessageType.ERROR);
-                error.setMessage("Error: unauthorized.");
+                error.setErrorMessage("Error: unauthorized.");
                 String errorMessage = json.toJson(error);
                 sendErrorMessage(session, errorMessage);
             }
@@ -65,7 +66,7 @@ public class WebSocketHandler {
                 gameData = gameDB.getGame(gameID);
             } catch (DataAccessException | ServerException e) {
                 Error error = new Error(ServerMessage.ServerMessageType.ERROR);
-                error.setMessage("Error: game not found.");
+                error.setErrorMessage("Error: game not found.");
                 String errorMessage = json.toJson(error);
                 sendErrorMessage(session, errorMessage);
             }
@@ -89,10 +90,12 @@ public class WebSocketHandler {
                     sendLoadGameMessage(loadGame, authToken, gameID);
                 } else {
                     Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username, null);
-                    notification.setMessage(username + "left the game.");
+                    notification.setMessage(username + "is observing the game.");
                     String notificationMessage = json.toJson(notification);
                     CONNECTION_MANAGER.broadcast(session, gameID, notificationMessage);
-                    CONNECTION_MANAGER.remove(authToken, gameID);
+                    ChessGame chessGame = gameData.game();
+                    LoadGame loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, chessGame);
+                    sendLoadGameMessage(loadGame, authToken, gameID);
                 }
             }
         } catch (DataAccessException | IOException | ServerException e) {
@@ -125,119 +128,161 @@ public class WebSocketHandler {
         }
     }
 
-    public static void makeMove(Session session, String message) {
+    public static void movePiece(Session session, String message){
         try {
-            GameData gameData = null;
-            Gson json = new Gson();
-            SQLGameDAO gameDB = new SQLGameDAO();
-            SQLAuthDAO authDB = new SQLAuthDAO();
-            MakeMove makeMove = json.fromJson(message, MakeMove.class);
+            GameData currentGame = null;
+            Gson gson = new Gson();
+            SQLGameDAO sqlGame = new SQLGameDAO();
+            SQLAuthDAO sqlAuth = new SQLAuthDAO();
+            MakeMove makeMove = gson.fromJson(message, MakeMove.class);
             int gameID = makeMove.getGameID();
             String authToken = makeMove.getAuthToken();
-            String username = authDB.getUsername(authToken);
+            String username = sqlAuth.getUsername(authToken);
             if (username == null) {
                 Error error = new Error(ServerMessage.ServerMessageType.ERROR);
-                error.setMessage("Unauthorized.");
-                String errorMessage = json.toJson(error);
-                sendErrorMessage(session, errorMessage);
+                error.setErrorMessage("Unauthorized.");
+                String errorJson = gson.toJson(error);
+                sendErrorMessage(session, errorJson);
             }
             try {
-                gameData = gameDB.getGame(gameID);
+                currentGame = sqlGame.getGame(gameID);
             } catch (DataAccessException e) {
                 Error error = new Error(ServerMessage.ServerMessageType.ERROR);
-                error.setMessage("Error: Failed to find game.");
-                String errorMessage = json.toJson(error);
-                sendErrorMessage(session, errorMessage);
+                error.setErrorMessage("Game is not found.");
+                String errorJson = gson.toJson(error);
+                sendErrorMessage(session, errorJson);
             }
-            if (gameData != null && username != null) {
+            if ( currentGame != null && username != null) {
                 ChessMove chessMove = makeMove.getChessMove();
-                ChessGame chessGame = gameData.game();
-                Collection<ChessMove> legalMoves = chessGame.validMoves(chessMove.getStartPosition());
-                if (legalMoves.contains(chessMove)) {
-                    if (username.equals(gameData.blackUsername())) {
-                        checkmateChecker(session, json, authToken, username, gameID, chessGame, chessMove, gameDB, gameData, ChessGame.TeamColor.BLACK, ChessGame.TeamColor.WHITE);
-                    } else if (username.equals(gameData.whiteUsername())) {
-                        checkmateChecker(session, json, authToken, username, gameID, chessGame, chessMove, gameDB, gameData, ChessGame.TeamColor.WHITE, ChessGame.TeamColor.BLACK);
+                ChessGame chessGame = currentGame.game();
+                Collection<ChessMove> validMoves = chessGame.validMoves(chessMove.getStartPosition());
+                if (validMoves.contains(chessMove)) {
+                    if (username.equals(currentGame.blackUsername())) {
+                        blackCheckmateStalemateChecker(chessGame, chessMove, sqlGame, gameID, currentGame, username, authToken, gson, session);
+                    } else if (username.equals(currentGame.whiteUsername())) {
+                        whiteCheckmateStalemateChecker(chessGame, chessMove, sqlGame, gameID, currentGame, username, authToken, gson, session);
                     } else {
-                        postErrorMessage(session, "Error: Observer can't make move.", json);
+                        sendErrorMessage(session, "Observer cannot make move.");
                     }
                 } else {
-                    postErrorMessage(session, "Error: Illegal move.", json);
+                    sendErrorMessage(session,"The move is not valid.");
                 }
             }
-        } catch (DataAccessException | IOException | ServerException | InvalidMoveException e) {
+        } catch (DataAccessException | IOException | InvalidMoveException | ServerException e) {
             System.out.println(e.getMessage());
         }
     }
 
-    private static void checkmateChecker(Session session, Gson json, String authToken,
-                                              String username, int gameID, ChessGame chessGame,
-                                              ChessMove chessMove, SQLGameDAO gameDB, GameData gameData,
-                                         ChessGame.TeamColor teamColor, ChessGame.TeamColor oppositeTeam)
+    public static void blackCheckmateStalemateChecker(ChessGame chessGame, ChessMove chessMove, SQLGameDAO sqlGame, int gameID,
+                                                      GameData currentGame, String username, String authToken, Gson gson, Session session)
             throws IOException, InvalidMoveException, DataAccessException, ServerException {
-        if (chessGame.getTeamTurn() == teamColor) {
-            if (chessGame.isInCheckmate(teamColor) && !chessGame.isInStalemate(teamColor) && !chessGame.isResigned) {
+
+        if (chessGame.teamColor == ChessGame.TeamColor.BLACK) {
+            if (!chessGame.isInCheckmate(ChessGame.TeamColor.BLACK) && !chessGame.isInStalemate(ChessGame.TeamColor.BLACK) && !chessGame.isResigned) {
                 chessGame.makeMove(chessMove);
-                gameDB.chessGameUpdate(chessGame, gameID);
-                Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username, teamColor);
-                notification.setMessage(username + " made move from" + coordinateConverter(chessMove.getStartPosition()) +
-                        "to" + coordinateConverter(chessMove.getEndPosition()));
-                String moveMessage = json.toJson(notification);
-                CONNECTION_MANAGER.broadcast(session, gameID, moveMessage);
-                if (chessGame.isInStalemate(oppositeTeam)) {
-                    Notification staleNotification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username, teamColor);
-                    String notificationUsername = usernameSwitcher(gameData, teamColor);
-                    staleNotification.setMessage(notificationUsername + " is in stalemate.");
-                    String staleMessage = json.toJson(staleNotification);
-                    CONNECTION_MANAGER.broadcast(session, gameID, staleMessage);
-                    Connection connection = new Connection(session, authToken);
-                    if (connection.session.isOpen()) {
-                        connection.send(staleMessage);
-                    }
+                sqlGame.chessGameUpdate(chessGame, gameID);
+                Notification moveNotification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username, ChessGame.TeamColor.BLACK);
+                moveNotification.setMessage(username + " made move from " + coordinateConverter(chessMove.getStartPosition()) + " to " + coordinateConverter(chessMove.getEndPosition()));
+                String moveMessageJson = gson.toJson(moveNotification);
+                CONNECTION_MANAGER.broadcast(session, gameID, moveMessageJson);
+                if (chessGame.isInStalemate(ChessGame.TeamColor.WHITE)) {
+                    Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username, ChessGame.TeamColor.BLACK);
+                    notification.setMessage(currentGame.blackUsername() + " is in stalemate.");
+                    String messageJson = gson.toJson(notification);
+                    CONNECTION_MANAGER.broadcast(session, gameID, messageJson);
                     sendGameSetMessage(notification, gameID, authToken);
                     LoadGame loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, chessGame);
                     sendLoadGameMessage(loadGame, authToken, gameID);
-                    broadcastLoadGameMessage(loadGame, authToken, gameID);
-                } else if (chessGame.isInCheckmate(oppositeTeam)) {
-                    Notification staleNotification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username, teamColor);
-                    String notificationUsername = usernameSwitcher(gameData, teamColor);
-                    staleNotification.setMessage(notificationUsername + " is in checkmate.");
-                    String checkMessage = json.toJson(staleNotification);
-                    CONNECTION_MANAGER.broadcast(session, gameID, checkMessage);
-                    Connection connection = new Connection(session, authToken);
-                    if (connection.session.isOpen()) {
-                        connection.send(checkMessage);
-                    }
+                    broadcastLoadGameMessage(loadGame, authToken , gameID);
+                } else if (chessGame.isInCheckmate(ChessGame.TeamColor.WHITE)) {
+                    Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username, ChessGame.TeamColor.BLACK);
+                    notification.setMessage(currentGame.blackUsername() + " is in checkmate.");
+                    String messageJson = gson.toJson(notification);
+                    CONNECTION_MANAGER.broadcast(session, gameID, messageJson);
                     sendGameSetMessage(notification, gameID, authToken);
                     LoadGame loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, chessGame);
                     sendLoadGameMessage(loadGame, authToken, gameID);
-                    broadcastLoadGameMessage(loadGame, authToken, gameID);
-                } else if (chessGame.isInCheck(oppositeTeam)) {
-                    Notification staleNotification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username, teamColor);
-                    String notificationUsername = usernameSwitcher(gameData, teamColor);
-                    staleNotification.setMessage(notificationUsername + " is in check.");
-                    String staleMessage = json.toJson(staleNotification);
-                    CONNECTION_MANAGER.broadcast(session, gameID, staleMessage);
-                    Connection connection = new Connection(session, authToken);
-                    if (connection.session.isOpen()) {
-                        connection.send(staleMessage);
-                    }
+                    broadcastLoadGameMessage(loadGame, authToken , gameID);
+                } else if (chessGame.isInCheck(ChessGame.TeamColor.WHITE)) {
+                    Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username, ChessGame.TeamColor.BLACK);
+                    notification.setMessage(currentGame.whiteUsername() + " is in check.");
+                    String messageJson = gson.toJson(notification);
+                    CONNECTION_MANAGER.broadcast(null, gameID, messageJson);
                     sendGameSetMessage(notification, gameID, authToken);
                     LoadGame loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, chessGame);
                     sendLoadGameMessage(loadGame, authToken, gameID);
-                    broadcastLoadGameMessage(loadGame, authToken, gameID);
+                    broadcastLoadGameMessage(loadGame, authToken , gameID);
                 } else {
                     LoadGame loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, chessGame);
                     sendLoadGameMessage(loadGame, authToken, gameID);
                     broadcastLoadGameMessage(loadGame, authToken, gameID);
                 }
             } else {
-                postErrorMessage(session, "You can't move after the game is set.", json);
+                sendErrorMessage(session, "You cannot make move after the game is over.");
             }
         } else {
-            postErrorMessage(session, "Wait for your turn.", json);
+            sendErrorMessage(session, "It's not your turn yet. Please wait your opponent to finish the move.");
         }
+    }
 
+    public static void whiteCheckmateStalemateChecker(ChessGame chessGame, ChessMove chessMove, SQLGameDAO sqlGame, int gameID,
+                                                      GameData currentGame, String username, String authToken, Gson gson, Session session)
+            throws IOException, InvalidMoveException {
+        if (chessGame.teamColor == ChessGame.TeamColor.WHITE) {
+            if (!chessGame.isInCheckmate(ChessGame.TeamColor.WHITE) && !chessGame.isInStalemate(ChessGame.TeamColor.WHITE) && !chessGame.isResigned) {
+                chessGame.makeMove(chessMove);
+                sqlGame.chessGameUpdate(chessGame, gameID);
+                if (chessGame.isInStalemate(ChessGame.TeamColor.BLACK)) {
+                    Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username, ChessGame.TeamColor.WHITE);
+                    notification.setMessage(currentGame.blackUsername() + " is in stalemate.");
+                    String messageJson = gson.toJson(notification);
+                    CONNECTION_MANAGER.broadcast(session, gameID, messageJson);
+                    Connection connectionMover = new Connection(session, authToken);
+                    if (connectionMover.session.isOpen()) {
+                        connectionMover.send(messageJson);
+                    }
+                    LoadGame loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, chessGame);
+                    sendLoadGameMessage(loadGame, authToken, gameID);
+                    broadcastLoadGameMessage(loadGame, authToken , gameID);
+                } else if (chessGame.isInCheckmate(ChessGame.TeamColor.BLACK)) {
+                    Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username, ChessGame.TeamColor.WHITE);
+                    notification.setMessage(currentGame.blackUsername() + " is in checkmate.");
+                    String messageJson = gson.toJson(notification);
+                    CONNECTION_MANAGER.broadcast(session, gameID, messageJson);
+                    Connection connectionMover = new Connection(session, authToken);
+                    if (connectionMover.session.isOpen()) {
+                        connectionMover.send(messageJson);
+                    }
+                    LoadGame loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, chessGame);
+                    sendLoadGameMessage(loadGame, authToken, gameID);
+                    broadcastLoadGameMessage(loadGame, authToken , gameID);
+                } else if (chessGame.isInCheck(ChessGame.TeamColor.BLACK)) {
+                    Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username, ChessGame.TeamColor.WHITE);
+                    notification.setMessage(currentGame.blackUsername() + " is in check.");
+                    String messageJson = gson.toJson(notification);
+                    CONNECTION_MANAGER.broadcast(session, gameID, messageJson);
+                    Connection connectionMover = new Connection(session, authToken);
+                    if (connectionMover.session.isOpen()) {
+                        connectionMover.send(messageJson);
+                    }
+                    LoadGame loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, chessGame);
+                    sendLoadGameMessage(loadGame, authToken, gameID);
+                    broadcastLoadGameMessage(loadGame, authToken , gameID);
+                } else {
+                    Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username, ChessGame.TeamColor.WHITE);
+                    notification.setMessage(username + " made move from " + coordinateConverter(chessMove.getStartPosition()) + " to " + coordinateConverter(chessMove.getEndPosition()));
+                    String messageJson = gson.toJson(notification);
+                    CONNECTION_MANAGER.broadcast(session, gameID, messageJson);LoadGame loadGame
+                            = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, chessGame);
+                    sendLoadGameMessage(loadGame, authToken, gameID);
+                    broadcastLoadGameMessage(loadGame, authToken , gameID);
+                }
+            } else {
+                sendErrorMessage(session, "You cannot make move after the game is over.");
+            }
+        } else {
+            sendErrorMessage(session, "It's not your turn yet. Please wait your opponent to finish the move.");
+        }
     }
 
     private static String coordinateConverter (ChessPosition chessPosition) {
@@ -302,7 +347,7 @@ public class WebSocketHandler {
 
     private static void postErrorMessage (Session session, String message, Gson json) throws IOException {
         Error error = new Error(ServerMessage.ServerMessageType.ERROR);
-        error.setMessage(message);
+        error.setErrorMessage(message);
         String errorMassage = json.toJson(error);
         sendErrorMessage(session, errorMassage);
     }
@@ -318,7 +363,7 @@ public class WebSocketHandler {
             String username = authDB.getUsername(authToken);
             if (username == null) {
                 Error error = new Error(ServerMessage.ServerMessageType.ERROR);
-                error.setMessage("Error: unauthorized.");
+                error.setErrorMessage("Error: unauthorized.");
                 String errorMessage = json.toJson(error);
                 sendErrorMessage(session, errorMessage);
             } else {
@@ -364,7 +409,7 @@ public class WebSocketHandler {
             String username = authDB.getUsername(authToken);
             if (username == null) {
                 Error error = new Error(ServerMessage.ServerMessageType.ERROR);
-                error.setMessage("Error: unauthorized.");
+                error.setErrorMessage("Error: unauthorized.");
                 String errorMessage = json.toJson(error);
                 sendErrorMessage(session, errorMessage);
             }
@@ -373,7 +418,7 @@ public class WebSocketHandler {
                 chessGame = gameData.game();
             } catch (DataAccessException e) {
                 Error error = new Error(ServerMessage.ServerMessageType.ERROR);
-                error.setMessage("Error: Game not found.");
+                error.setErrorMessage("Error: Game not found.");
                 String errorMessage = json.toJson(error);
                 sendErrorMessage(session, errorMessage);
             }
@@ -384,7 +429,7 @@ public class WebSocketHandler {
                     resignMessage(session, chessGame, authToken, username, gameID, json, ChessGame.TeamColor.WHITE, gameDB);
                 } else {
                     Error error = new Error(ServerMessage.ServerMessageType.ERROR);
-                    error.setMessage("Error: Observer can't resign. Leave the game instead.");
+                    error.setErrorMessage("Error: Observer can't resign. Leave the game instead.");
                     String errorMessage = json.toJson(error);
                     sendErrorMessage(session, errorMessage);
                 }
@@ -410,7 +455,7 @@ public class WebSocketHandler {
             gameDB.chessGameUpdate(chessGame, gameID);
         } else {
             Error error = new Error(ServerMessage.ServerMessageType.ERROR);
-            error.setMessage("Error: One player resigned already. You can leave the game.");
+            error.setErrorMessage("Error: One player resigned already. You can leave the game.");
             String errorMessage = json.toJson(error);
             sendErrorMessage(session, errorMessage);
         }

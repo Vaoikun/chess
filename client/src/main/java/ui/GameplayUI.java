@@ -192,7 +192,7 @@ public class GameplayUI {
 
     public static String help () {
         return """
-                Reload: Reload the chess board.
+                Redraw: Reload the chess board.
                 Make Move: Make a move.
                 Highlight Moves: Highlight possible moves.
                 Leave: Leave the game.
@@ -202,7 +202,7 @@ public class GameplayUI {
 
     public void eval (String input) {
         switch (input) {
-            case "Reload" -> reload();
+            case "Redraw" -> reload();
             case "Make Move" -> makeMove();
             case "Highlight Moves" -> highlight();
             case "Leave" -> leave();
