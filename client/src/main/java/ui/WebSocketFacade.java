@@ -3,7 +3,6 @@ package ui;
 import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessMove;
-import chess.ChessPiece;
 import com.google.gson.Gson;
 import websocket.commands.websocketrequest.Connect;
 import websocket.commands.websocketrequest.Leave;
@@ -14,7 +13,6 @@ import websocket.messages.websocketresponse.LoadGame;
 
 import javax.management.Notification;
 import javax.websocket.*;
-import javax.xml.stream.events.StartDocument;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URI;
@@ -26,12 +24,12 @@ public class WebSocketFacade extends Endpoint {
     public ChessGame.TeamColor teamColor;
     public ChessGame chessGame;
 
-    public WebSocketFacade (String URL, ChessGame.TeamColor teamColor, ChessGame chessGame) {
+    public WebSocketFacade (String url, ChessGame.TeamColor teamColor, ChessGame chessGame) {
         this.teamColor = teamColor;
         this.chessGame = chessGame;
         try {
-            URL = URL.replace("http", "ws");
-            URI webSocketURI = new URI(URL + "/ws");
+            url = url.replace("http", "ws");
+            URI webSocketURI = new URI(url + "/ws");
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, webSocketURI);
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
