@@ -41,21 +41,23 @@ public class BoardUI {
 
     public static void callWhiteTiles (PrintStream out, ChessBoard board, Collection<ChessMove> legalMoves) {
         teamColor = WHITE;
-        int startRow = 1;
-        grayTile(out);
-        out.print(" ");
-        outputHeaders(out, WHITE_TEAM_HEADER);
-        drawBoard(out, startRow, board, legalMoves);
-        out.println(RESET_BG_COLOR);
-        out.println(RESET_TEXT_COLOR);
+        callTiles(out, board, legalMoves);
     }
 
     public static void callBlackTiles (PrintStream out, ChessBoard board, Collection<ChessMove> legalMoves) {
         teamColor = BLACK;
+        callTiles(out, board, legalMoves);
+    }
+
+    private static void callTiles (PrintStream out, ChessBoard board, Collection<ChessMove> legalMoves) {
         int startRow = 1;
         grayTile(out);
         out.print(" ");
-        outputHeaders(out, BLACK_TEAM_HEADER);
+        if (teamColor == BLACK){
+            outputHeaders(out, BLACK_TEAM_HEADER);
+        } else if (teamColor == WHITE) {
+            outputHeaders(out, WHITE_TEAM_HEADER);
+        }
         drawBoard(out, startRow, board, legalMoves);
         out.println(RESET_BG_COLOR);
         out.println(RESET_TEXT_COLOR);

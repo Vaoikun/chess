@@ -81,7 +81,7 @@ public class WebSocketHandler {
                     LoadGame loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, chessGame);
                     sendLoadGameMessage(loadGame, authToken, gameID);
                 } else if (username.equals(gameData.blackUsername())) {
-                    Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username, ChessGame.TeamColor.WHITE);
+                    Notification notification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username, ChessGame.TeamColor.BLACK);
                     notification.setMessage(username + " has joined the game as white team.");
                     String notificationMessage = json.toJson(notification);
                     CONNECTION_MANAGER.broadcast(session, gameID, notificationMessage);
@@ -158,9 +158,11 @@ public class WebSocketHandler {
                 Collection<ChessMove> legalMoves = chessGame.validMoves(chessMove.getStartPosition());
                 if (legalMoves.contains(chessMove)) {
                     if (username.equals(gameData.blackUsername())) {
-                        checkmateChecker(session, json, authToken, username, gameID, chessGame, chessMove, gameDB, gameData, ChessGame.TeamColor.BLACK, ChessGame.TeamColor.WHITE);
+                        checkmateChecker(session, json, authToken, username, gameID, chessGame,
+                                chessMove, gameDB, gameData, ChessGame.TeamColor.BLACK, ChessGame.TeamColor.WHITE);
                     } else if (username.equals(gameData.whiteUsername())) {
-                        checkmateChecker(session, json, authToken, username, gameID, chessGame, chessMove, gameDB, gameData, ChessGame.TeamColor.WHITE, ChessGame.TeamColor.BLACK);
+                        checkmateChecker(session, json, authToken, username, gameID, chessGame,
+                                chessMove, gameDB, gameData, ChessGame.TeamColor.WHITE, ChessGame.TeamColor.BLACK);
                     } else {
                         postErrorMessage(session, "Error: Observer can't make move.", json);
                     }
@@ -234,7 +236,8 @@ public class WebSocketHandler {
                     broadcastLoadGameMessage(loadGame, authToken, gameID);
                 } else {
                     Notification moveNotification = new Notification(ServerMessage.ServerMessageType.NOTIFICATION, username, teamColor);
-                    moveNotification.setMessage(username + " made move from " + coordinateConverter(chessMove.getStartPosition()) + "to" + coordinateConverter(chessMove.getEndPosition()));
+                    moveNotification.setMessage(username + " made move from " + coordinateConverter(chessMove.getStartPosition())
+                            + "to" + coordinateConverter(chessMove.getEndPosition()));
                     String moveJson = json.toJson(moveNotification);
                     CONNECTION_MANAGER.broadcast(session, gameID, moveJson);
                     LoadGame loadGame = new LoadGame(ServerMessage.ServerMessageType.LOAD_GAME, chessGame);
